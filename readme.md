@@ -1,7 +1,7 @@
 ## What it is?
 It is not a module!
 It's a boilerplate to show how to use PIXI.js with Typescript.
-You can use it for your own PIXI (Typescript) projects.
+You can use it for your own PIXI.js (with Typescript) projects.
 
 ## Getting started with Typescript & PIXI.js
 
