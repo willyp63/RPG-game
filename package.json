@@ -1,0 +1,26 @@
+{
+  "name": "typescript_pixi_v4_boilerplate",
+  "version": "1.0.0",
+  "description": "Simple boilerplate to show how to use PIXI.js with Typescript",
+  "main": "public/bundle.js",
+  "scripts": {
+    "build:base": "npm install && typings install && npm run build:changes_pixi",
+    "build:changes_pixi": "cd ./node_modules/pixi.js && npm i babelify babel-preset-es2015",
+    "build:browserify": "gulp browser_friendly",
+    "prestart": "npm run build:browserify",
+    "start": "http-server ./public -p 5355"
+  },
+  "author": "Arvo Saalits",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^4.1.1"
+  },
+  "devDependencies": {
+    "browserify": "^13.1.1",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.2",
+    "http-server": "^0.9.0",
+    "typescript": "^2.0.7",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
