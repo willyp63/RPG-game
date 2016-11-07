@@ -10,7 +10,7 @@ You can use it for your own PIXI.js projects.
 - Build it with command **npm run build:base**
 - Please read the **"note"** section below!!!
 - **npm start**, open a web browser and go to http://localhost:5355
-- It works! You are free to go and create a new hit in gameworld
+- It works!
 
 **For building manually**  
 ```
