@@ -1,12 +1,10 @@
-/// <reference path="./../typings/index.d.ts" />
-import * as PIXI from 'pixi.js';
+import { Container, Application } from 'pixi.js';
 
 // Custom classes
 import * as Shape from './shapes';
 
-class Main {
-    renderer: any;
-    stage: PIXI.Container;
+new class Main {
+    app: Application;
 
     settings: Object = {
         backgroundColor: 0xFFFFFF,
@@ -14,33 +12,16 @@ class Main {
     };
 
     constructor() {
-        this.renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, this.settings);
-        this.stage = new PIXI.Container();
+        this.app = new Application(window.innerWidth, window.innerHeight, this.settings);
+        document.body.appendChild(this.app.view);
 
-        this.addShapes();
+        let circle: Shape.Circle = new Shape.Circle();
+        this.app.stage.addChild(circle);
 
-        document.body.appendChild(this.renderer.view);
+        // Animation loop
+        this.app.ticker.add((delta) => {
+            circle.position.x += delta * 0.3;
+            circle.position.y += delta * 0.3;
+        });
     }
-
-    addShapes() {
-
-        // Circles
-        let circle = new Shape.Circle();
-        this.stage.addChild(circle);
-    }
-
-    render() {
-        // Render
-        this.renderer.render(this.stage);
-
-        // Do something more
-    }
-
-    animate() {
-        this.render();
-
-        window.requestAnimationFrame(this.animate.bind(this));
-    }
-} 
-
-new Main().animate();
+}

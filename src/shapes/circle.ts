@@ -1,11 +1,13 @@
-export default class Circle extends PIXI.Sprite {
+import { Sprite, Graphics } from 'pixi.js';
 
-    graphics: PIXI.Graphics;
+export default class Circle extends Sprite {
+
+    graphics: Graphics;
 
     constructor() { 
         super();
 
-        this.graphics = new PIXI.Graphics();
+        this.graphics = new Graphics();
         this.graphics.beginFill(0xF00d0F, 0.7);
         this.graphics.drawCircle(100, 100, 20);
 

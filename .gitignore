@@ -1,2 +1,2 @@
-typings
-build
+node_modules
+public/js/*.js
