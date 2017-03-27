@@ -1,4 +1,4 @@
-import { Container, Application } from 'pixi.js';
+import { Container, Application, IApplicationOptions } from 'pixi.js';
 
 // Custom classes
 import * as Shape from './shapes';
@@ -6,7 +6,7 @@ import * as Shape from './shapes';
 new class Main {
     app: Application;
 
-    settings: Object = {
+    settings: IApplicationOptions = {
         backgroundColor: 0xFFFFFF,
         antialias: true
     };
