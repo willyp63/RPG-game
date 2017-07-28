@@ -5,7 +5,7 @@
         "removeComments": true,
         "sourceMap": true,
         "watch": false,
-        "outDir": "build"
+        "outDir": "./public/js"
     },
     "filesGlob": [
         "src/**/*.ts"

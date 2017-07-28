@@ -4,7 +4,7 @@
   "description": "Simple boilerplate to show how to use PIXI.js with Typescript",
   "main": "public/bundle.js",
   "scripts": {
-    "preinstall": "npm i -g webpack@2",
+    "preinstall": "yarn global add webpack@2",
     "build": "webpack",
     "build:watch": "webpack --watch"
   },
@@ -12,11 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "awesome-typescript-loader": "^3.1.2",
-    "pixi.js": "^4.4.3",
-    "webpack": "^2.3.2"
+    "pixi.js": "^4.5.4"
   },
   "devDependencies": {
-    "@types/pixi.js": "^4.4.0",
-    "typescript": "^2.3.0-dev.20170327"
+    "@types/pixi.js": "^4.5.2",
+    "typescript": "next",
+    "webpack": "^3.4.1"
   }
 }

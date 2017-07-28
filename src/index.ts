@@ -1,4 +1,4 @@
-import { Container, Application, IApplicationOptions } from 'pixi.js';
+import { Container, Application, ApplicationOptions } from 'pixi.js';
 
 // Custom classes
 import * as Shape from './shapes';
@@ -6,7 +6,7 @@ import * as Shape from './shapes';
 new class Main {
     app: Application;
 
-    settings: IApplicationOptions = {
+    settings: ApplicationOptions = {
         backgroundColor: 0xFFFFFF,
         antialias: true
     };
@@ -21,7 +21,7 @@ new class Main {
         // Animation loop
         this.app.ticker.add((delta) => {
             circle.position.x += delta * 0.3;
-            circle.position.y += delta * 0.3;
+            circle.position.y += delta * 0.3; 
         });
     }
 }
