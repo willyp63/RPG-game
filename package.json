@@ -11,12 +11,13 @@
   "author": "Arvo Saalits",
   "license": "ISC",
   "dependencies": {
-    "awesome-typescript-loader": "^3.1.2",
-    "pixi.js": "^4.5.4"
+    "pixi.js": "^4.8.2"
   },
   "devDependencies": {
-    "@types/pixi.js": "^4.5.2",
-    "typescript": "next",
-    "webpack": "^3.4.1"
+    "@types/pixi.js": "^4.8.0",
+    "ts-loader": "^5.1.1",
+    "typescript": "^3.0.3",
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.0"
   }
 }

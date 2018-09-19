@@ -1,11 +1,12 @@
 import { UIElement } from "../../engine/stage";
 import { Container, Sprite, Graphics } from "pixi.js";
+import { Vector } from "../../engine/physics";
 
 export default class PowerBar extends UIElement {
 
   static assets = ["imgs/power-bar.png"];
   
-  constructor(position, color) {
+  constructor(position: Vector, color: number) {
     super(
       () => {
         const sprite = new Container();

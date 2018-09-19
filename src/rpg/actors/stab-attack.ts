@@ -1,12 +1,12 @@
 import { Actor } from "../../engine/stage";
-import { Collision, Direction } from "../../engine/physics";
+import { Collision, Vector } from "../../engine/physics";
 
 export default class StabAttack extends Actor {
 
   static isFriendly = true;
   static isStatic = true;
 
-  constructor(position) {
+  constructor(position: Vector) {
     super(
       () => {
         const sprite = new PIXI.Graphics();

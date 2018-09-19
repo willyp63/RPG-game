@@ -37,8 +37,8 @@ export default class RPGStage extends Stage {
     this._addActor(new Wall(new Vector(0, 128), new Vector(256, 48)));
     this._addActor(new Wall(new Vector(-768, 256), new Vector(768 * 2 + 256, 32)));
 
-    this._addActor(new OscillatingWall(new Vector(-256, 220), new Vector(96, 24), new Vector(1, 0), 3000));
-    this._addActor(new OscillatingWall(new Vector(288, 240), new Vector(96, 12), new Vector(0, -1), 3000));
+    this._addActor(new OscillatingWall(new Vector(-256, 220), new Vector(96, 24), new Vector(1, 0), 100));
+    this._addActor(new OscillatingWall(new Vector(288, 240), new Vector(96, 12), new Vector(0, -1), 100));
 
     this._addActor(new Wall(new Vector(-288, 224), new Vector(32, 32)));
 

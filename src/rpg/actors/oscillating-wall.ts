@@ -1,18 +1,27 @@
 import Wall from "./wall";
+import { Vector } from "../../engine/physics";
 
 export default class OscillatingWall extends Wall {
 
   static isStatic = false;
 
-  constructor(position, size, velocity, halfOscillationPeriod) {
+  private _tickCount = 0;
+
+  constructor(position: Vector, size: Vector, velocity: Vector, private _halfOscillationPeriod: number) {
     super(
       position,
       size,
     );
 
     this.velocity = velocity;
+  }
 
-    setInterval(this._turnAround.bind(this), halfOscillationPeriod);
+  afterTick() {
+    this._tickCount++;
+    if (this._tickCount >= this._halfOscillationPeriod) {
+      this._turnAround();
+      this._tickCount = 0;
+    }
   }
 
   _turnAround() {

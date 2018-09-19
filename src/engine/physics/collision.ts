@@ -69,4 +69,5 @@ export default class Collision {
       ? (this._velocityDiff.x > 0 ? Direction.Right : Direction.Left)
       : (this._velocityDiff.y > 0 ? Direction.Down : Direction.Up);
   }
+  
 }

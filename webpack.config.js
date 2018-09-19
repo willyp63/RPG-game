@@ -1,11 +1,10 @@
 const path = require('path');
-const publicFolder = 'public';
 
 module.exports = {
     devtool: 'source-map',
     entry: "./src/rpg/index.ts",
     output: {
-        path: path.join(__dirname, publicFolder),
+        path: path.join(__dirname, 'public'),
         filename: 'js/bundle.js',
         publicPath: '/'
     },
@@ -17,7 +16,7 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                loaders: ['awesome-typescript-loader']
+                loaders: ['ts-loader']
             }
         ]
     }

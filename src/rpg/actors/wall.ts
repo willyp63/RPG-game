@@ -8,7 +8,7 @@ export default class Wall extends Actor {
   static isFriendly = true;
   static isStatic = true;
 
-  constructor(position, size) {
+  constructor(position: Vector, size: Vector) {
     super(
       () => {
         const sprite = new Graphics();

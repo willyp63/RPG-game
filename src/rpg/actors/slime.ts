@@ -8,7 +8,11 @@ export default class Slime extends Actor {
   static isWallBound = true;
   static isGravityBound = true;
 
-  static get _textures() { return loader.resources["imgs/slime.json"].textures; }
+  static get _textures() {
+    const textures = loader.resources["imgs/slime.json"].textures;
+    if (!textures) throw "Can't find textures for Slime";
+    return textures;
+  }
   static get _slimeTextures() { return [
     Slime._textures["slime_1.png"],
     Slime._textures["slime_2.png"],
@@ -20,7 +24,7 @@ export default class Slime extends Actor {
 
   get sprite() { return <extras.AnimatedSprite>this._sprite; }
 
-  constructor(position) {
+  constructor(position: Vector) {
     super(
       new extras.AnimatedSprite(Slime._slimeTextures),
       position,
@@ -52,8 +56,8 @@ export default class Slime extends Actor {
 
     if (otherActor.isFriendly && !this._recharging) {
       let attackForce = otherActor.position.minus(this.position).toUnitVector().scaled(new Vector(4, 1));
-      if (attackForce.x === 0) attackForce = attackForce.withNewX(4);
-      else if (attackForce.x < 4) attackForce = attackForce.x > 0 ? attackForce.withNewX(4) : attackForce.withNewX(-4);
+      if (attackForce.x === 0) attackForce = attackForce.withNewX(2);
+      else if (attackForce.x < 2) attackForce = attackForce.x > 0 ? attackForce.withNewX(2) : attackForce.withNewX(-2);
       otherActor.applyForce(attackForce);
 
       this._recharging = true;

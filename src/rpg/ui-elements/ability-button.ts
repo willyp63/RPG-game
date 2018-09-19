@@ -1,10 +1,11 @@
 import { UIElement } from "../../engine/stage";
 import { Graphics, Text } from "pixi.js";
 import KeyListener from "../../engine/interaction/key-listener";
+import { Vector } from "../../engine/physics";
 
 export default class AbilityButton extends UIElement {
   
-  constructor(position, keyCode, buttonText, onClick) {
+  constructor(position: Vector, keyCode: number, buttonText: string, onClick: Function) {
     super(
       () => {
         const circle = new Graphics();

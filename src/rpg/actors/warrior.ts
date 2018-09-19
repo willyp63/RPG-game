@@ -12,7 +12,11 @@ export default class Warrior extends Actor {
   static isGravityBound = true;
   static isFriendly = true;
 
-  static get _textures() { return loader.resources["imgs/warrior.json"].textures; }
+  static get _textures() {
+    const textures = loader.resources["imgs/warrior.json"].textures;
+    if (!textures) throw "Can't find textures for Warrior";
+    return textures;
+  }
   static get _runTextures() { return [
     Warrior._textures["run_1.png"],
     Warrior._textures["run_2.png"],
@@ -32,7 +36,7 @@ export default class Warrior extends Actor {
 
   get sprite() { return <extras.AnimatedSprite>this._sprite; }
 
-  constructor(position) {
+  constructor(position: Vector) {
     super(
       new extras.AnimatedSprite(Warrior._runTextures),
       position,
@@ -127,7 +131,7 @@ export default class Warrior extends Actor {
       this.sprite.textures = Warrior._runTextures;
       this.sprite.loop = true;
       this.sprite.loop = true;
-      this.sprite.onComplete = undefined;
+      this.sprite.onComplete = () => {};
 
       if (this._rightDown) {
         this._goRight();

@@ -43,9 +43,9 @@ export default class Stage {
     pixiAppContainer.appendChild(this._app.view);
 
     // Scale the canvse to fit the window
-    let scale = scaleToWindow(this._app.renderer.view);
+    scaleToWindow(this._app.renderer.view);
     window.addEventListener("resize", () => { 
-      scale = scaleToWindow(this._app.renderer.view);
+      scaleToWindow(this._app.renderer.view);
     });
 
     // Start loading assets
