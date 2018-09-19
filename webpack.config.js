@@ -2,7 +2,8 @@ const path = require('path');
 const publicFolder = 'public';
 
 module.exports = {
-    entry: "./src/index.ts",
+    devtool: 'source-map',
+    entry: "./src/rpg/index.ts",
     output: {
         path: path.join(__dirname, publicFolder),
         filename: 'js/bundle.js',
