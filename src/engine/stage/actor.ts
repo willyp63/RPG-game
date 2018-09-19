@@ -16,8 +16,13 @@ export default class Actor extends Rect {
   protected _sprite: Sprite;
 
   public _isDead = false;
-  public _newActors = [];
-  public _touchingWallsInDirections = {};
+  public _newActors: Array<Actor> = [];
+  public _touchingWallsInDirections: {
+    [Direction.Up]?: boolean,
+    [Direction.Right]?: boolean,
+    [Direction.Down]?: boolean,
+    [Direction.Left]?: boolean,
+  } = {};
 
   private get _subclassType() { return <typeof Actor>this.constructor; }
 
@@ -56,11 +61,11 @@ export default class Actor extends Rect {
   }
 
   isTouchingWallInAnyDirection(directions: Array<Direction>): boolean {
-    return directions.some(direction => this._touchingWallsInDirections[direction]);
+    return directions.some(direction => this._touchingWallsInDirections[direction] === true);
   }
 
   isTouchingWallsInAllDirections(directions: Array<Direction>): boolean {
-    return directions.every(direction => this._touchingWallsInDirections[direction]);
+    return directions.every(direction => this._touchingWallsInDirections[direction] === true);
   }
 
   kill() {

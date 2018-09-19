@@ -13,7 +13,7 @@ export default class RPGStage extends Stage {
   protected static floorFrictionForce = 0.1333;
   protected static width = 455;
   protected static height = 256;
-  protected static assets = [].concat(
+  protected static assets = (<Array<string>>[]).concat(
     Warrior.assets,
     Wall.assets,
     Slime.assets,

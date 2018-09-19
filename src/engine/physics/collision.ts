@@ -23,14 +23,12 @@ export default class Collision {
 
     this._combinedHalfSize = r1HalfSize.plus(r2HalfSize);
     this._positionDiff = _r1.position.minus(_r2.position);
+    this._velocityDiff = this._r1.velocity.minus(this._r2.velocity);
 
     this._hit =
       Math.abs(this._positionDiff.x) < this._combinedHalfSize.x &&
       Math.abs(this._positionDiff.y) < this._combinedHalfSize.y;
-
-    if (!this._hit) return;
-
-    this._velocityDiff = _r1.velocity.minus(_r2.velocity);
+      
     this._direction = this._calcDirection();
   }
 
@@ -49,6 +47,8 @@ export default class Collision {
   }
 
   _calcDirection(): Direction {
+    if (!this._hit) return Direction.Up;
+
     let penetrationX, penetrationY;
 
     if (this._velocityDiff.x === 0) penetrationX = 0;

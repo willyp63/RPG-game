@@ -1,5 +1,5 @@
-export default function scaleToWindow(canvas) {
-  var scaleX, scaleY, scale, center;
+export default function scaleToWindow(canvas: HTMLElement) {
+  var scaleX, scaleY, scale;
 
   //1. Scale the canvas to the correct size
   //Figure out the scale amount on each axis

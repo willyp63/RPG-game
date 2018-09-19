@@ -14,7 +14,7 @@ export default class Stage {
 
   private _app: Application;
   private _actors: Array<Actor> = [];
-  private _actorToFollow: Actor;
+  private _actorToFollow?: Actor;
   private _uiContainer: Sprite;
   private _uiElements: Array<UIElement> = [];
   
@@ -38,7 +38,9 @@ export default class Stage {
     this._uiContainer = new PIXI.Sprite(RenderTexture.create(this._subclassType.width, this._subclassType.height));
 
     // Add the canvas that Pixi automatically created for you to the HTML document
-    document.body.querySelector('#pixi-app').appendChild(this._app.view);
+    const pixiAppContainer = document.body.querySelector('#pixi-app');
+    if (!pixiAppContainer) throw 'Couldnt find pixi app container';
+    pixiAppContainer.appendChild(this._app.view);
 
     // Scale the canvse to fit the window
     let scale = scaleToWindow(this._app.renderer.view);
