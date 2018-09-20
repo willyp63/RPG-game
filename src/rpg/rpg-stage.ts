@@ -6,6 +6,8 @@ import { Vector } from "../engine/physics";
 import PowerBar from "./ui-elements/power-bar";
 import AbilityButton from "./ui-elements/ability-button";
 import OscillatingWall from "./actors/oscillating-wall";
+import RampWall from "./actors/ramp-wall";
+import { RampOrientation } from "../engine/physics/ramp";
 
 export default class RPGStage extends Stage {
 
@@ -24,24 +26,29 @@ export default class RPGStage extends Stage {
     super._onInit();
 
     // Warrior
-    const warrior = new Warrior(new Vector(128, 192));
+    const warrior = new Warrior(new Vector(100, 224));
     this._addActor(warrior);
     this._followActor(warrior);
 
     // Slime
-    for (let i = 0; i < 16; i++) {
-      this._addActor(new Slime(new Vector(Math.random() * 256, 0)));
-    }
+    // for (let i = 0; i < 16; i++) {
+    //   this._addActor(new Slime(new Vector(Math.random() * 256, 0)));
+    // }
 
     // Walls
     this._addActor(new Wall(new Vector(0, 128), new Vector(256, 48)));
-    this._addActor(new Wall(new Vector(-768, 256), new Vector(768 * 2 + 256, 32)));
+    this._addActor(new Wall(new Vector(-256, 256), new Vector(768 * 2 + 256, 32)));
+    this._addActor(new Wall(new Vector(-288, 224), new Vector(32, 32)));
+    this._addActor(new Wall(new Vector(-64, 224), new Vector(64, 32)));
+    this._addActor(new Wall(new Vector(564, 224), new Vector(64, 32)));
+    this._addActor(new Wall(new Vector(110, 232), new Vector(64, 24)));
+
+    this._addActor(new RampWall(new Vector(0, 224), new Vector(64, 32), RampOrientation.TopLeftToBottomRight));
+    this._addActor(new RampWall(new Vector(500, 224), new Vector(64, 32), RampOrientation.TopRightToBottomLeft));
 
     this._addActor(new OscillatingWall(new Vector(-256, 220), new Vector(96, 24), new Vector(1, 0), 100));
     this._addActor(new OscillatingWall(new Vector(288, 240), new Vector(96, 12), new Vector(0, -1), 100));
-
-    this._addActor(new Wall(new Vector(-288, 224), new Vector(32, 32)));
-
+    
     // UI
     const healthBar = new PowerBar(new Vector(0, 0), 0xFF0000);
     const energyBar = new PowerBar(new Vector(0, 0), 0xdccf00);

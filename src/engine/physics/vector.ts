@@ -24,6 +24,10 @@ export default class Vector {
     return new Vector(this.x * scaleVector.x, this.y * scaleVector.y);
   }
 
+  dot(scaleVector: Vector) {
+    return this.x * scaleVector.x + this.y * scaleVector.y;
+  }
+
   capped(maxVector: Vector | number) {
     if (typeof maxVector === 'number') {
       maxVector = new Vector(maxVector, maxVector);

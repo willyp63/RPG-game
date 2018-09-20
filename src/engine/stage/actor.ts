@@ -1,19 +1,23 @@
 import { Vector, Rect, Direction, Collision } from '../physics';
 import { Sprite, ObservablePoint } from 'pixi.js';
 
-export default class Actor extends Rect {
+export default class Actor {
 
   static assets: Array<string> = [];
   static size: Vector;
-  static weight: number = 1;
-  static isWall: boolean = false;
-  static isWallBound: boolean = false; 
-  static isGravityBound: boolean = false; 
-  static isFriendly: boolean = false; 
-  static isStatic: boolean = false; 
+  static weight = 1;
+  static maxAcceleration = 16;
+  static isWall = false;
+  static isWallBound = false; 
+  static isGravityBound = false; 
+  static isFriendly = false; 
+  static isStatic = false; 
 
   get sprite() { return this._sprite; }
   protected _sprite: Sprite;
+
+  get bounds() { return this._bounds; }
+  protected _bounds: Rect;
 
   public _isDead = false;
   public _newActors: Array<Actor> = [];
@@ -30,16 +34,17 @@ export default class Actor extends Rect {
     sprite: Sprite | Function,
     position: Vector,
   ) {
-    super(position, Actor.size);
-
     this._sprite = typeof sprite === 'function' ? sprite() : sprite;
     this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
-    this._sprite.x = this.position.x;
-    this._sprite.y = this.position.y;
+    this._bounds = new Rect(position, this._subclassType.size || new Vector(this._sprite.width, this._sprite.height));
+    this._sprite.x = this.bounds.position.x;
+    this._sprite.y = this.bounds.position.y;
+  }
 
-    if (!Actor.size) {
-      this.size = new Vector(this._sprite.width, this._sprite.height);
-    }
+  tick() {
+    this.bounds.velocity = this.bounds.velocity.plus(this.bounds.acceleration.capped(this._subclassType.maxAcceleration));
+    this.bounds.position = this.bounds.position.plus(this.bounds.velocity);
+    this.bounds.acceleration = new Vector(0, 0);
   }
 
   afterTick() { }
@@ -53,7 +58,7 @@ export default class Actor extends Rect {
   get isStatic(): boolean { return this._subclassType.isStatic; } 
 
   applyForce(force: Vector) {
-    this.acceleration = this.acceleration.plus(force.scaled(1 / Actor.weight));
+    this.bounds.acceleration = this.bounds.acceleration.plus(force.scaled(1 / this._subclassType.weight));
   }
 
   addActor(actor: Actor) {

@@ -92,6 +92,7 @@ export default class Stage {
 
       const wallBoundActor = this._actors[i];
       let appliedFloorFriction = false;
+      let newVelocity;
 
       // reset touchingWalls
       wallBoundActor._touchingWallsInDirections = {};
@@ -100,33 +101,39 @@ export default class Stage {
         if (i === j || !this._actors[j].isWall) continue;
 
         const wallActor = this._actors[j];
-        const collision = new Collision(wallBoundActor, wallActor);
+        const collision = Collision.between(wallBoundActor.bounds, wallActor.bounds, true);
 
         if (collision.hit) {
-          collision.recedeFirstRect();
 
           // add to touchingWalls
-          wallBoundActor._touchingWallsInDirections[collision.direction] = true;
+          if (collision.direction === undefined) {
+            wallBoundActor.kill();
+            break;
+          }
+
+          // add to touchingWalls
+          if (collision.direction) {
+            wallBoundActor._touchingWallsInDirections[collision.direction] = true;
+          }
 
           // floor friction
           if (collision.direction === Direction.Down && !appliedFloorFriction) {
-            wallBoundActor.applyForce(new Vector((wallActor.velocity.x - wallBoundActor.velocity.x) * this._subclassType.floorFrictionForce, 0));
+            wallBoundActor.applyForce(new Vector((wallActor.bounds.velocity.x - wallBoundActor.bounds.velocity.x) * this._subclassType.floorFrictionForce, 0));
             appliedFloorFriction = true;
 
             // remove bounce when an actor is standing on a wall that is moving down
-            if (wallActor.velocity.y > 0 && wallBoundActor.velocity.y >= 0) {
-              wallBoundActor.velocity = wallBoundActor.velocity.withNewY(wallActor.velocity.y);
+            if (wallActor.bounds.velocity.y > 0 && wallBoundActor.bounds.velocity.y >= 0) {
+              newVelocity = wallBoundActor.bounds.velocity.withNewY(wallActor.bounds.velocity.y);
             } else {
               // reset y velocity
-              wallBoundActor.velocity = wallBoundActor.velocity.scaled(new Vector(1, 0));
+              newVelocity = wallBoundActor.bounds.velocity.scaled(new Vector(1, 0));
             }
           }
 
           // bounce off ceiling
           if (collision.direction === Direction.Up) {
-            let newVelocity = wallBoundActor.velocity.scaled(new Vector(1, -0.666));
-            if (wallActor.velocity.y > 0) newVelocity = newVelocity.plus(new Vector(0, wallActor.velocity.y));
-            wallBoundActor.velocity = newVelocity;
+            newVelocity = wallBoundActor.bounds.velocity.scaled(new Vector(1, -0.666));
+            if (wallActor.bounds.velocity.y > 0) newVelocity = newVelocity.plus(new Vector(0, wallActor.bounds.velocity.y));
           }
         }
       }
@@ -134,8 +141,13 @@ export default class Stage {
       // squish
       if (wallBoundActor.isTouchingWallsInAllDirections([Direction.Up, Direction.Down]) ||
           wallBoundActor.isTouchingWallsInAllDirections([Direction.Left, Direction.Right])) {
-        wallBoundActor.kill();     
+        wallBoundActor.kill();   
       }
+
+      // apply new velocity
+      if (newVelocity) wallBoundActor.bounds.velocity = newVelocity;
+
+      console.log(wallBoundActor.isTouchingWallsInAllDirections([Direction.Up]));
     }
 
     // gravity
@@ -146,19 +158,19 @@ export default class Stage {
     });
 
     // collisions
-    for (let i = 0; i < this._actors.length; i++) {
-      for (let j = i + 1; j < this._actors.length; j++) {
-        const actor1 = this._actors[i];
-        const actor2 = this._actors[j];
-        const collision = new Collision(actor1, actor2);
+    // for (let i = 0; i < this._actors.length; i++) {
+    //   for (let j = i + 1; j < this._actors.length; j++) {
+    //     const actor1 = this._actors[i];
+    //     const actor2 = this._actors[j];
+    //     const collision = Collision.between(actor1.bounds, actor2.bounds);
 
-        if (!collision.hit) continue;
+    //     if (!collision.hit) continue;
 
-        // call with both actors in the primary position
-        actor1.onCollision(actor2, collision);
-        actor2.onCollision(actor1, collision);
-      }
-    }
+    //     // call with both actors in the primary position
+    //     actor1.onCollision(actor2, collision);
+    //     actor2.onCollision(actor1, collision);
+    //   }
+    // }
 
     // actor updates
     this._actors.forEach(actor => actor.afterTick());
@@ -183,14 +195,14 @@ export default class Stage {
     this._actors.forEach(actor => {
       if (actor.isStatic) return;
 
-      actor.sprite.x = actor.position.x;
-      actor.sprite.y = actor.position.y;
+      actor.sprite.x = actor.bounds.position.x;
+      actor.sprite.y = actor.bounds.position.y;
     });
 
     // follow actor
     if (this._actorToFollow) {
-      this._app.stage.x = this._subclassType.width / 2 - this._actorToFollow.position.x;
-      this._app.stage.y = this._subclassType.height / 2 - this._actorToFollow.position.y;
+      this._app.stage.x = this._subclassType.width / 2 - this._actorToFollow.bounds.position.x;
+      this._app.stage.y = this._subclassType.height / 2 - this._actorToFollow.bounds.position.y;
 
       // make UI fixed
       this._uiContainer.x = this._app.stage.x * -1;

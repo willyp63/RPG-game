@@ -13,7 +13,7 @@ export default class OscillatingWall extends Wall {
       size,
     );
 
-    this.velocity = velocity;
+    this.bounds.velocity = velocity;
   }
 
   afterTick() {
@@ -25,7 +25,7 @@ export default class OscillatingWall extends Wall {
   }
 
   _turnAround() {
-    this.velocity = this.velocity.scaled(-1);
+    this.bounds.velocity = this.bounds.velocity.scaled(-1);
   }
 
 }

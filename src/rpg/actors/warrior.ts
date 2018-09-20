@@ -126,7 +126,7 @@ export default class Warrior extends Actor {
     this.sprite.onComplete = () => {
       this._isStabbing = false;
 
-      this.addActor(new StabAttack(new Vector(this.sprite.scale.x === 1 ? this.position.x + 24 : this.position.x - 24, this.position.y + 2)));
+      this.addActor(new StabAttack(new Vector(this.sprite.scale.x === 1 ? this.bounds.position.x + 24 : this.bounds.position.x - 24, this.bounds.position.y + 2)));
 
       this.sprite.textures = Warrior._runTextures;
       this.sprite.loop = true;

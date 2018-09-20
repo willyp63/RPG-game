@@ -55,7 +55,7 @@ export default class Slime extends Actor {
     super.onCollision(otherActor, collision);
 
     if (otherActor.isFriendly && !this._recharging) {
-      let attackForce = otherActor.position.minus(this.position).toUnitVector().scaled(new Vector(4, 1));
+      let attackForce = otherActor.bounds.position.minus(this.bounds.position).toUnitVector().scaled(new Vector(4, 1));
       if (attackForce.x === 0) attackForce = attackForce.withNewX(2);
       else if (attackForce.x < 2) attackForce = attackForce.x > 0 ? attackForce.withNewX(2) : attackForce.withNewX(-2);
       otherActor.applyForce(attackForce);
@@ -66,13 +66,13 @@ export default class Slime extends Actor {
   }
 
   _turnRight() {
-    this.velocity = this.velocity.scaled(new Vector(0, 1));
+    this.bounds.velocity = this.bounds.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(0.05, 0);
     this.sprite.scale.x = 1;
   }
 
   _turnLeft() {
-    this.velocity = this.velocity.scaled(new Vector(0, 1));
+    this.bounds.velocity = this.bounds.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(-0.05, 0);
     this.sprite.scale.x = -1;
   }
