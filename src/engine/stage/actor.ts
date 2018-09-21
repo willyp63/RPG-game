@@ -22,10 +22,10 @@ export default class Actor {
   public _isDead = false;
   public _newActors: Array<Actor> = [];
   public _touchingWallsInDirections: {
-    [Direction.Up]?: boolean,
-    [Direction.Right]?: boolean,
-    [Direction.Down]?: boolean,
-    [Direction.Left]?: boolean,
+    [Direction.Up]?: Actor,
+    [Direction.Down]?: Actor,
+    [Direction.Right]?: Actor,
+    [Direction.Left]?: Actor,
   } = {};
 
   private get _subclassType() { return <typeof Actor>this.constructor; }
@@ -66,11 +66,11 @@ export default class Actor {
   }
 
   isTouchingWallInAnyDirection(directions: Array<Direction>): boolean {
-    return directions.some(direction => this._touchingWallsInDirections[direction] === true);
+    return directions.some(direction => this._touchingWallsInDirections[direction] !== undefined);
   }
 
   isTouchingWallsInAllDirections(directions: Array<Direction>): boolean {
-    return directions.every(direction => this._touchingWallsInDirections[direction] === true);
+    return directions.every(direction => this._touchingWallsInDirections[direction] !== undefined);
   }
 
   kill() {

@@ -81,7 +81,9 @@ export default class Warrior extends Actor {
       this.applyForce(this._runForce);
 
       this._isOnGround = true;
-    } else {
+    } else if (Math.abs(this.bounds.velocity.x) < 2) {
+      this.applyForce(this._runForce.scaled(0.333));
+
       this._isOnGround = false;
     }
   }

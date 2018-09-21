@@ -91,8 +91,6 @@ export default class Stage {
       if (!this._actors[i].isWallBound) continue;
 
       const wallBoundActor = this._actors[i];
-      let appliedFloorFriction = false;
-      let newVelocity;
 
       // reset touchingWalls
       wallBoundActor._touchingWallsInDirections = {};
@@ -103,51 +101,59 @@ export default class Stage {
         const wallActor = this._actors[j];
         const collision = Collision.between(wallBoundActor.bounds, wallActor.bounds, true);
 
-        if (collision.hit) {
-
-          // add to touchingWalls
-          if (collision.direction === undefined) {
-            wallBoundActor.kill();
-            break;
-          }
-
-          // add to touchingWalls
-          if (collision.direction) {
-            wallBoundActor._touchingWallsInDirections[collision.direction] = true;
-          }
-
-          // floor friction
-          if (collision.direction === Direction.Down && !appliedFloorFriction) {
-            wallBoundActor.applyForce(new Vector((wallActor.bounds.velocity.x - wallBoundActor.bounds.velocity.x) * this._subclassType.floorFrictionForce, 0));
-            appliedFloorFriction = true;
-
-            // remove bounce when an actor is standing on a wall that is moving down
-            if (wallActor.bounds.velocity.y > 0 && wallBoundActor.bounds.velocity.y >= 0) {
-              newVelocity = wallBoundActor.bounds.velocity.withNewY(wallActor.bounds.velocity.y);
-            } else {
-              // reset y velocity
-              newVelocity = wallBoundActor.bounds.velocity.scaled(new Vector(1, 0));
-            }
-          }
-
-          // bounce off ceiling
-          if (collision.direction === Direction.Up) {
-            newVelocity = wallBoundActor.bounds.velocity.scaled(new Vector(1, -0.666));
-            if (wallActor.bounds.velocity.y > 0) newVelocity = newVelocity.plus(new Vector(0, wallActor.bounds.velocity.y));
-          }
+        // add to touchingWalls
+        if (collision.hit && collision.direction !== undefined) {
+          wallBoundActor._touchingWallsInDirections[collision.direction] = wallActor;
         }
       }
 
+      const upWallActor = wallBoundActor._touchingWallsInDirections[Direction.Up];
+      const rightWallActor = wallBoundActor._touchingWallsInDirections[Direction.Right];
+      const downWallActor = wallBoundActor._touchingWallsInDirections[Direction.Down];
+      const leftWallActor = wallBoundActor._touchingWallsInDirections[Direction.Left];
+
       // squish
-      if (wallBoundActor.isTouchingWallsInAllDirections([Direction.Up, Direction.Down]) ||
-          wallBoundActor.isTouchingWallsInAllDirections([Direction.Left, Direction.Right])) {
-        wallBoundActor.kill();   
+      if ((downWallActor && upWallActor) || (rightWallActor && leftWallActor)) {
+        wallBoundActor.kill();
+        break;   
       }
 
-      // apply new velocity
-      if (newVelocity) wallBoundActor.bounds.velocity = newVelocity;
+      // floor friction
+      if (downWallActor !== undefined) {
+        if (Math.abs(wallBoundActor.bounds.velocity.x) < 0.001) {
+          wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewX(0);
+        } else {
+          wallBoundActor.applyForce(new Vector((downWallActor.bounds.velocity.x - wallBoundActor.bounds.velocity.x) * this._subclassType.floorFrictionForce, 0));
+        }
+      }
 
-      console.log(wallBoundActor.isTouchingWallsInAllDirections([Direction.Up]));
+      // floor push up
+      if (downWallActor !== undefined) {
+        // remove bounce when an actor is standing on a wall that is moving down
+        if (downWallActor.bounds.velocity.y > 0 && wallBoundActor.bounds.velocity.y >= 0) {
+          wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewY(downWallActor.bounds.velocity.y);
+        } else {
+          wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewY(Math.min(wallBoundActor.bounds.velocity.y, downWallActor.bounds.velocity.y));
+        }
+      }
+
+      // floor push left
+      if (leftWallActor !== undefined) {
+        wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewX(Math.max(wallBoundActor.bounds.velocity.x, leftWallActor.bounds.velocity.x));
+      }
+
+      // floor push right
+      if (rightWallActor !== undefined) {
+        wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewX(Math.min(wallBoundActor.bounds.velocity.x, rightWallActor.bounds.velocity.x));
+      }
+
+      // bounce off ceiling
+      if (upWallActor !== undefined) {
+        wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewY(wallBoundActor.bounds.velocity.y * -0.666);
+        if (upWallActor.bounds.velocity.y > 0) wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.plus(new Vector(0, upWallActor.bounds.velocity.y));
+      }
+
+      console.log(wallBoundActor.bounds.velocity);
     }
 
     // gravity

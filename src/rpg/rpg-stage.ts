@@ -31,20 +31,19 @@ export default class RPGStage extends Stage {
     this._followActor(warrior);
 
     // Slime
-    // for (let i = 0; i < 16; i++) {
-    //   this._addActor(new Slime(new Vector(Math.random() * 256, 0)));
-    // }
+    for (let i = 0; i < 16; i++) {
+      this._addActor(new Slime(new Vector(Math.random() * 256, 0)));
+    }
 
     // Walls
     this._addActor(new Wall(new Vector(0, 128), new Vector(256, 48)));
     this._addActor(new Wall(new Vector(-256, 256), new Vector(768 * 2 + 256, 32)));
     this._addActor(new Wall(new Vector(-288, 224), new Vector(32, 32)));
     this._addActor(new Wall(new Vector(-64, 224), new Vector(64, 32)));
-    this._addActor(new Wall(new Vector(564, 224), new Vector(64, 32)));
-    this._addActor(new Wall(new Vector(110, 232), new Vector(64, 24)));
+    this._addActor(new Wall(new Vector(532, 224), new Vector(64, 32)));
 
     this._addActor(new RampWall(new Vector(0, 224), new Vector(64, 32), RampOrientation.TopLeftToBottomRight));
-    this._addActor(new RampWall(new Vector(500, 224), new Vector(64, 32), RampOrientation.TopRightToBottomLeft));
+    this._addActor(new RampWall(new Vector(500, 224), new Vector(32, 32), RampOrientation.TopRightToBottomLeft));
 
     this._addActor(new OscillatingWall(new Vector(-256, 220), new Vector(96, 24), new Vector(1, 0), 100));
     this._addActor(new OscillatingWall(new Vector(288, 240), new Vector(96, 12), new Vector(0, -1), 100));

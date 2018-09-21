@@ -43,9 +43,7 @@ export default class Collision {
 
     const penetration = Collision._getPenetrationVector(combinedHalfSize, positionDiff, velocityDiff, r1, r2);
     
-    if (penetration.x === 0 && penetration.y === 0) {
-      direction = undefined;
-    } else if (penetration.x > penetration.y) {
+    if (penetration.x > penetration.y) {
       if (velocityDiff.x > 0) {
         direction = Direction.Right;
       } else {
@@ -60,7 +58,9 @@ export default class Collision {
     }
 
     // recede if need be
-    if (direction && recedeRect) Collision._recedeFirstRect(r1, r2, direction, combinedHalfSize);
+    if (direction !== undefined && recedeRect) {
+      Collision._recedeFirstRect(r1, r2, direction, combinedHalfSize);
+    }
 
     return new Collision(hit, direction);
   }
@@ -92,27 +92,17 @@ export default class Collision {
     // calc dist from test point to ramp
     const a = rampSlope;
     const b = -1;
-    const c = ramp.position.y - 3 - (rampSlope * ramp.position.x);
+    const c = ramp.position.y - (rampSlope * ramp.position.x);
     const distToRamp = (a * cornerPointToTest.x + b * cornerPointToTest.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
     const hit = distToRamp < 0;
 
     if (hit && recedeRect) {
-      Collision._recedeRectFromRamp(rect, ramp, distToRamp, rampSlope);
+      const newY = a * (cornerPointToTest.x - ramp.position.x) + ramp.position.y;
+      rect.position = rect.position.plus(new Vector(0, newY - cornerPointToTest.y));
     }
 
     return new Collision(hit, Direction.Down);
-  }
-
-  static _recedeRectFromRamp(
-    rect: Rect,
-    ramp: Ramp,
-    distToRamp: number,
-    rampSlope: number,
-  ) {
-    let displacement = new Vector(1, rampSlope / -1).toUnitVector().scaled(-distToRamp);
-    if (ramp.orientation === RampOrientation.TopRightToBottomLeft) displacement = displacement.scaled(-1);
-    rect.position = rect.position.plus(displacement);
   }
 
   static _recedeFirstRect(
@@ -121,19 +111,14 @@ export default class Collision {
     direction: Direction,
     combinedHalfSize: Vector,
   ) {
-    switch (direction) {
-      case Direction.Up:
-        r1.position = r1.position.withNewY(r2.position.y + combinedHalfSize.y);
-        break;
-      case Direction.Right:
-        r1.position = r1.position.withNewX(r2.position.x - combinedHalfSize.x);
-        break;
-      case Direction.Down:
-        r1.position = r1.position.withNewY(r2.position.y - combinedHalfSize.y);
-        break;
-      case Direction.Left:
-        r1.position = r1.position.withNewX(r2.position.x + combinedHalfSize.x);
-        break;
+    if (direction === Direction.Up) {
+      r1.position = r1.position.withNewY(r2.position.y + combinedHalfSize.y);
+    } else if (direction === Direction.Right) {
+      r1.position = r1.position.withNewX(r2.position.x - combinedHalfSize.x);
+    } else if (direction === Direction.Down) {
+      r1.position = r1.position.withNewY(r2.position.y - combinedHalfSize.y);
+    } else if (direction === Direction.Left) {
+      r1.position = r1.position.withNewX(r2.position.x + combinedHalfSize.x);
     }
   }
 
@@ -147,26 +132,23 @@ export default class Collision {
 
     let penetrationX, penetrationY;
 
-    if (velocityDiff.x === 0) penetrationX = 0;
-    else if (velocityDiff.x > 0 ) penetrationX = (combinedHalfSize.x + positionDiff.x);
-    else penetrationX = (combinedHalfSize.x - positionDiff.x);
-    
-    if (velocityDiff.y === 0) penetrationY = 0;
-    else if (velocityDiff.y > 0 ) penetrationY = (combinedHalfSize.y + positionDiff.y);
-    else penetrationY = (combinedHalfSize.y - positionDiff.y);
-
-    if (penetrationX === 0 || penetrationX > Math.abs(velocityDiff.x) + 0.001) penetrationX = 0;
-    else penetrationX /= Math.abs(velocityDiff.x);
-
-    if (penetrationY === 0 || penetrationY > Math.abs(velocityDiff.y) + 0.001) penetrationY = 0;
-    else penetrationY /= Math.abs(velocityDiff.y);
-
-    if (penetrationX === 0 && penetrationY === 0) {
-      console.log('here');
+    if (velocityDiff.x > 0) {
+      penetrationX = (combinedHalfSize.x + positionDiff.x);
+    } else {
+      penetrationX = (combinedHalfSize.x - positionDiff.x);
     }
+    penetrationX = 1 / Math.abs(penetrationX - velocityDiff.x);
+    
+    if (velocityDiff.y > 0) {
+      penetrationY = (combinedHalfSize.y + positionDiff.y);
+    } else {
+      penetrationY = (combinedHalfSize.y - positionDiff.y);
+    }
+    penetrationY = 1 / Math.abs(penetrationY - velocityDiff.y);
 
-    console.log(penetrationX);
-    console.log(penetrationY);
+    if (penetrationX > penetrationY) {
+      console.log('hehe');
+    }
 
     return new Vector(penetrationX, penetrationY);
   }
