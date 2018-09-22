@@ -5,7 +5,7 @@ import { Sprite, loader, ObservablePoint } from "pixi.js";
 export default class OscillatingWall extends Wall {
 
   static isStatic = false;
-  static assets = ['imgs/wood-plank.jpg'];
+  static assets = ['public/imgs/wood-plank.jpg'];
 
   private _tickCount = 0;
 
@@ -15,7 +15,7 @@ export default class OscillatingWall extends Wall {
       size,
     );
 
-    const img = new Sprite(loader.resources['imgs/wood-plank.jpg'].texture);
+    const img = new Sprite(loader.resources['public/imgs/wood-plank.jpg'].texture);
     img.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
     this._sprite.addChild(img);
 

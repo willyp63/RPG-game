@@ -6,14 +6,14 @@ import StabAttack from "./stab-attack";
 
 export default class Warrior extends Actor {
 
-  static assets = ["imgs/warrior.json"];
+  static assets = ["public/imgs/warrior.json"];
   static size = new Vector(16, 35);
   static isWallBound = true;
   static isGravityBound = true;
   static isFriendly = true;
 
   static get _textures() {
-    const textures = loader.resources["imgs/warrior.json"].textures;
+    const textures = loader.resources["public/imgs/warrior.json"].textures;
     if (!textures) throw "Can't find textures for Warrior";
     return textures;
   }

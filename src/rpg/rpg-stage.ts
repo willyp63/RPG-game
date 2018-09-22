@@ -23,9 +23,9 @@ export default class RPGStage extends Stage {
     OscillatingWall.assets,
     AbilityButton.assets,
   );
-  protected static foregroundAsset = 'imgs/castle-foreground.png';
-  protected static backgroundAsset = 'imgs/castle-background.png';
-  protected static backdropAsset = 'imgs/castle-backdrop.jpg';
+  protected static foregroundAsset = 'public/imgs/castle-foreground.png';
+  protected static backgroundAsset = 'public/imgs/castle-background.png';
+  protected static backdropAsset = 'public/imgs/castle-backdrop.jpg';
 
   _onInit() {
     super._onInit();

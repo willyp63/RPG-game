@@ -4,14 +4,14 @@ import { Vector } from "../../engine/physics";
 
 export default class PowerBar extends UIElement {
 
-  static assets = ["imgs/power-bar.png"];
+  static assets = ["public/imgs/power-bar.png"];
   
   constructor(position: Vector, color: number) {
     super(
       () => {
         const sprite = new Container();
 
-        const imageOverlay = new Sprite(PIXI.loader.resources["imgs/power-bar.png"].texture);
+        const imageOverlay = new Sprite(PIXI.loader.resources["public/imgs/power-bar.png"].texture);
         const remainingBar = new Graphics();
         remainingBar.beginFill(color);
         remainingBar.drawRect(0, 0, imageOverlay.width, imageOverlay.height);

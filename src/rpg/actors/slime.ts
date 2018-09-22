@@ -4,12 +4,12 @@ import { Vector, Collision, Direction } from "../../engine/physics";
 
 export default class Slime extends Actor {
 
-  static assets = ["imgs/slime.json"];
+  static assets = ["public/imgs/slime.json"];
   static isWallBound = true;
   static isGravityBound = true;
 
   static get _textures() {
-    const textures = loader.resources["imgs/slime.json"].textures;
+    const textures = loader.resources["public/imgs/slime.json"].textures;
     if (!textures) throw "Can't find textures for Slime";
     return textures;
   }

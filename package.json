@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "2d platform, rpg game",
   "scripts": {
+    "start": "node server.js",
     "build": "webpack",
     "build:watch": "webpack --watch"
   },
   "author": "Wil Pirino",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.16.3",
+    "morgan": "^1.9.1",
     "pixi.js": "^4.8.2"
   },
   "devDependencies": {
