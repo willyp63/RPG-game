@@ -1,14 +1,12 @@
 {
-  "name": "typescript_pixijs_v4_boilerplate",
+  "name": "rpg-game",
   "version": "1.0.0",
-  "description": "Simple boilerplate to show how to use PIXI.js with Typescript",
-  "main": "public/bundle.js",
+  "description": "2d platform, rpg game",
   "scripts": {
-    "preinstall": "yarn global add webpack@2",
     "build": "webpack",
     "build:watch": "webpack --watch"
   },
-  "author": "Arvo Saalits",
+  "author": "Wil Pirino",
   "license": "ISC",
   "dependencies": {
     "pixi.js": "^4.8.2"
