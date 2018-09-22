@@ -1,6 +1,6 @@
 import { Vector } from "../../engine/physics";
 import { Actor } from "../../engine/stage";
-import { Graphics } from "pixi.js";
+import { RenderTexture } from "pixi.js";
 import Ramp, { RampOrientation } from "../../engine/physics/ramp";
 
 export default class RampWall extends Actor {
@@ -17,24 +17,7 @@ export default class RampWall extends Actor {
     private _orientation: RampOrientation,
   ) {
     super(
-      () => {
-        const sprite = new Graphics();
-        sprite.beginFill(0x888888);
-        const halfSize = size.scaled(0.5);
-        const rampPath = _orientation === RampOrientation.TopLeftToBottomRight
-          ? [
-            -halfSize.x, -halfSize.y,
-            halfSize.x, halfSize.y,
-            -halfSize.x, halfSize.y,
-          ] : [
-            halfSize.x, -halfSize.y,
-            -halfSize.x, halfSize.y,
-            halfSize.x, halfSize.y,
-          ];
-        sprite.drawPolygon(rampPath);
-        sprite.endFill();
-        return sprite;
-      },
+      new PIXI.Sprite(RenderTexture.create(size.x, size.y)),
       position,
     );
 

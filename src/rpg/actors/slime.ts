@@ -54,7 +54,7 @@ export default class Slime extends Actor {
   onCollision(otherActor: Actor, collision: Collision) {
     super.onCollision(otherActor, collision);
 
-    if (otherActor.isFriendly && !this._recharging) {
+    if (!otherActor.isWall && otherActor.isFriendly && !this._recharging) {
       let attackForce = otherActor.bounds.position.minus(this.bounds.position).toUnitVector().scaled(new Vector(4, 1));
       if (attackForce.x === 0) attackForce = attackForce.withNewX(2);
       else if (attackForce.x < 2) attackForce = attackForce.x > 0 ? attackForce.withNewX(2) : attackForce.withNewX(-2);

@@ -1,5 +1,5 @@
 import scaleToWindow from '../misc/scale-to-window';
-import { Application, settings, Sprite, RenderTexture } from 'pixi.js';
+import { Application, settings, Sprite, RenderTexture, loader } from 'pixi.js';
 import Actor from './actor';
 import { Vector, Collision, Direction } from '../physics';
 import UIElement from './ui-element';
@@ -11,10 +11,14 @@ export default class Stage {
   protected static width: number;
   protected static height: number;
   protected static assets: Array<string> = [];
+  protected static foregroundAsset: string = '';
+  protected static backgroundAsset: string = '';
+  protected static backdropAsset: string = '';
 
   private _app: Application;
   private _actors: Array<Actor> = [];
   private _actorToFollow?: Actor;
+  private _backdropSprite?: Sprite;
   private _uiContainer: Sprite;
   private _uiElements: Array<UIElement> = [];
   
@@ -49,13 +53,17 @@ export default class Stage {
     });
 
     // Start loading assets
+    const assets = this._subclassType.assets.concat([this._subclassType.foregroundAsset, this._subclassType.backgroundAsset, this._subclassType.backdropAsset]);
     PIXI.loader
-      .add(this._subclassType.assets)
+      .add(assets)
       .load(() => {
-        // Init game
+        this._backdropSprite = new PIXI.Sprite(loader.resources[this._subclassType.backdropAsset].texture);
+        this._app.stage.addChild(this._backdropSprite);
+        this._app.stage.addChild(new PIXI.Sprite(loader.resources[this._subclassType.backgroundAsset].texture));
+
         this._onInit();
 
-        // Add UI container to stage
+        this._app.stage.addChild(new PIXI.Sprite(loader.resources[this._subclassType.foregroundAsset].texture));
         this._app.stage.addChild(this._uiContainer);
 
         // Start game
@@ -152,8 +160,6 @@ export default class Stage {
         wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.withNewY(wallBoundActor.bounds.velocity.y * -0.666);
         if (upWallActor.bounds.velocity.y > 0) wallBoundActor.bounds.velocity = wallBoundActor.bounds.velocity.plus(new Vector(0, upWallActor.bounds.velocity.y));
       }
-
-      console.log(wallBoundActor.bounds.velocity);
     }
 
     // gravity
@@ -164,19 +170,19 @@ export default class Stage {
     });
 
     // collisions
-    // for (let i = 0; i < this._actors.length; i++) {
-    //   for (let j = i + 1; j < this._actors.length; j++) {
-    //     const actor1 = this._actors[i];
-    //     const actor2 = this._actors[j];
-    //     const collision = Collision.between(actor1.bounds, actor2.bounds);
+    for (let i = 0; i < this._actors.length; i++) {
+      for (let j = i + 1; j < this._actors.length; j++) {
+        const actor1 = this._actors[i];
+        const actor2 = this._actors[j];
+        const collision = Collision.between(actor1.bounds, actor2.bounds);
 
-    //     if (!collision.hit) continue;
+        if (!collision.hit) continue;
 
-    //     // call with both actors in the primary position
-    //     actor1.onCollision(actor2, collision);
-    //     actor2.onCollision(actor1, collision);
-    //   }
-    // }
+        // call with both actors in the primary position
+        actor1.onCollision(actor2, collision);
+        actor2.onCollision(actor1, collision);
+      }
+    }
 
     // actor updates
     this._actors.forEach(actor => actor.afterTick());
@@ -209,6 +215,12 @@ export default class Stage {
     if (this._actorToFollow) {
       this._app.stage.x = this._subclassType.width / 2 - this._actorToFollow.bounds.position.x;
       this._app.stage.y = this._subclassType.height / 2 - this._actorToFollow.bounds.position.y;
+
+      // backdrop img
+      if (this._backdropSprite) {
+        this._backdropSprite.x = this._app.stage.x * -0.2;
+        this._backdropSprite.y = this._app.stage.y * -0.2;
+      }
 
       // make UI fixed
       this._uiContainer.x = this._app.stage.x * -1;

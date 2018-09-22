@@ -1,6 +1,6 @@
 import { Actor } from "../../engine/stage";
 import { Vector } from "../../engine/physics";
-import { Graphics } from "pixi.js";
+import { RenderTexture } from "pixi.js";
 
 export default class Wall extends Actor {
 
@@ -10,13 +10,7 @@ export default class Wall extends Actor {
 
   constructor(position: Vector, size: Vector) {
     super(
-      () => {
-        const sprite = new Graphics();
-        sprite.beginFill(0x888888);
-        sprite.drawRect(size.x / -2, size.y / -2, size.x, size.y);
-        sprite.endFill();
-        return sprite;
-      },
+      new PIXI.Sprite(RenderTexture.create(size.x, size.y)),
       new Vector(position.x + size.x / 2, position.y + size.y / 2),
     );
   }

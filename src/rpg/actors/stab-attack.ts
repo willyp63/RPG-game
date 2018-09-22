@@ -1,5 +1,6 @@
 import { Actor } from "../../engine/stage";
 import { Collision, Vector } from "../../engine/physics";
+import { RenderTexture } from "pixi.js";
 
 export default class StabAttack extends Actor {
 
@@ -8,13 +9,7 @@ export default class StabAttack extends Actor {
 
   constructor(position: Vector) {
     super(
-      () => {
-        const sprite = new PIXI.Graphics();
-        sprite.beginFill(0xFF0000);
-        sprite.drawRect(-4, -4, 8, 8);
-        sprite.endFill();
-        return sprite;
-      },
+      new PIXI.Sprite(RenderTexture.create(8, 8)),
       position,
     );
 

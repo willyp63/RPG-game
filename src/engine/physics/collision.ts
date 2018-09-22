@@ -146,10 +146,6 @@ export default class Collision {
     }
     penetrationY = 1 / Math.abs(penetrationY - velocityDiff.y);
 
-    if (penetrationX > penetrationY) {
-      console.log('hehe');
-    }
-
     return new Vector(penetrationX, penetrationY);
   }
   

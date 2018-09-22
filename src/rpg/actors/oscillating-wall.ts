@@ -1,9 +1,11 @@
 import Wall from "./wall";
 import { Vector } from "../../engine/physics";
+import { Sprite, loader, ObservablePoint } from "pixi.js";
 
 export default class OscillatingWall extends Wall {
 
   static isStatic = false;
+  static assets = ['imgs/wood-plank.jpg'];
 
   private _tickCount = 0;
 
@@ -12,6 +14,10 @@ export default class OscillatingWall extends Wall {
       position,
       size,
     );
+
+    const img = new Sprite(loader.resources['imgs/wood-plank.jpg'].texture);
+    img.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    this._sprite.addChild(img);
 
     this.bounds.velocity = velocity;
   }

@@ -81,8 +81,10 @@ export default class Warrior extends Actor {
       this.applyForce(this._runForce);
 
       this._isOnGround = true;
-    } else if (Math.abs(this.bounds.velocity.x) < 2) {
-      this.applyForce(this._runForce.scaled(0.333));
+    } else {
+      if (Math.abs(this.bounds.velocity.x) < 2) {
+        this.applyForce(this._runForce.scaled(0.333));
+      }
 
       this._isOnGround = false;
     }
@@ -114,7 +116,7 @@ export default class Warrior extends Actor {
   _jump() {
     if (this._isStabbing) return;
 
-    if (this._isOnGround) this.applyForce(new Vector(0, -6.5));
+    if (this._isOnGround) this.applyForce(new Vector(0, -7));
   }
 
   stab() {
