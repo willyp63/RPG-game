@@ -34,7 +34,7 @@ export default class Collision {
     const velocityDiff = r1.velocity.minus(r2.velocity);
     const positionDiff = r1.position.minus(r2.position);
 
-    const hit = Math.abs(positionDiff.x) < combinedHalfSize.x && Math.abs(positionDiff.y) < combinedHalfSize.y;
+    const hit = Math.abs(positionDiff.x) <= combinedHalfSize.x && Math.abs(positionDiff.y) <= combinedHalfSize.y;
 
     if (!hit) return new Collision(false);
 
@@ -95,7 +95,7 @@ export default class Collision {
     const c = ramp.position.y - (rampSlope * ramp.position.x);
     const distToRamp = (a * cornerPointToTest.x + b * cornerPointToTest.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
-    const hit = distToRamp < 0;
+    const hit = distToRamp <= 0;
 
     if (hit && recedeRect) {
       const newY = a * (cornerPointToTest.x - ramp.position.x) + ramp.position.y;

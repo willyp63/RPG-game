@@ -8,6 +8,7 @@ import RampWall from "./actors/ramp-wall";
 import { RampOrientation } from "../engine/physics/ramp";
 import AbilityButton from "./ui-elements/ability-button";
 import OscillatingWall from "./actors/oscillating-wall";
+import Ogre from "./actors/ogre";
 
 export default class RPGStage extends Stage {
 
@@ -22,6 +23,7 @@ export default class RPGStage extends Stage {
     PowerBar.assets,
     OscillatingWall.assets,
     AbilityButton.assets,
+    Ogre.assets,
   );
   protected static foregroundAsset = 'public/imgs/castle-foreground.png';
   protected static backgroundAsset = 'public/imgs/castle-background.png';
@@ -31,7 +33,7 @@ export default class RPGStage extends Stage {
     super._onInit();
 
     // Warrior
-    const warrior = new Warrior(new Vector(500, 280));
+    const warrior = new Warrior(new Vector(1600, 50));
     this._addActor(warrior);
     this._followActor(warrior);
 
@@ -48,13 +50,16 @@ export default class RPGStage extends Stage {
     this._addActor(new Wall(new Vector(812, 0), new Vector(32, 224)));
 
     // // Slime
-    for (let i = 0; i < 24; i++) {
-      const dx = Math.random() * 600;
-      this._addActor(new Slime(new Vector(1475 + dx, 60)));
-    }
+    // for (let i = 0; i < 24; i++) {
+    //   const dx = Math.random() * 600;
+    //   this._addActor(new Slime(new Vector(1475 + dx, 60)));
+    // }
+
+    // Ogre
+    this._addActor(new Ogre(new Vector(2000, 50)));
 
     this._addActor(new OscillatingWall(new Vector(1068, 192), new Vector(96, 16), new Vector(1, 0), 150));
-    this._addActor(new OscillatingWall(new Vector(1468, 182), new Vector(96, 16), new Vector(0, -1), 100));
+    this._addActor(new OscillatingWall(new Vector(1468, 182), new Vector(96, 16), new Vector(0, -1), 70));
     
     // UI
     // const healthBar = new PowerBar(new Vector(0, 0), 0xFF0000);

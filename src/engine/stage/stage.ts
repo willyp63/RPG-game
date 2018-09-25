@@ -3,6 +3,7 @@ import { Application, settings, Sprite, RenderTexture, loader } from 'pixi.js';
 import Actor from './actor';
 import { Vector, Collision, Direction } from '../physics';
 import UIElement from './ui-element';
+import { oppositeDirection } from '../physics/direction';
 
 export default class Stage {
 
@@ -180,7 +181,7 @@ export default class Stage {
 
         // call with both actors in the primary position
         actor1.onCollision(actor2, collision);
-        actor2.onCollision(actor1, collision);
+        actor2.onCollision(actor1, new Collision(collision.hit, oppositeDirection(collision.direction)));
       }
     }
 

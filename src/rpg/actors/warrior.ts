@@ -134,7 +134,6 @@ export default class Warrior extends Actor {
 
       this.sprite.textures = Warrior._runTextures;
       this.sprite.loop = true;
-      this.sprite.loop = true;
       this.sprite.onComplete = () => {};
 
       if (this._rightDown) {
