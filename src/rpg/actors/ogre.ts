@@ -1,18 +1,25 @@
-import { Actor } from "../../engine/stage";
 import { loader, extras } from "pixi.js";
-import { Vector, Direction, Collision } from "../../engine/physics";
+import PIXIEntity from "../../engine/pixi/pixi-entity";
+import Vector from "../../engine/core/vector";
+import Direction from "../../engine/core/direction";
+import Entity from "../../engine/core/entity";
+import Collision from "../../engine/core/collision";
+import EntityType from "../../engine/core/entity-type";
 
-export default class Ogre extends Actor {
+const TEXTURES_FILE = "public/imgs/ogre.json";
 
-  static assets = ["public/imgs/ogre.json"];
-  static isWall = true;
-  static isWallBound = true;
-  static isGravityBound = true;
-  static size = new Vector(44, 96);
+export default class Ogre extends PIXIEntity {
+
+  static assets = [TEXTURES_FILE];
+
+  get size() { return new Vector(44, 96); }
+  get isGravityBound() { return true; }
+  get isWallBound() { return true; }
+  get isWall() { return true; }
 
   static get _textures() {
-    const textures = loader.resources["public/imgs/ogre.json"].textures;
-    if (!textures) throw "Can't find textures for Ogre";
+    const textures = loader.resources[TEXTURES_FILE].textures;
+    if (!textures) throw "Can't find textures for Ogre!!";
     return textures;
   }
 
@@ -63,26 +70,26 @@ export default class Ogre extends Actor {
     }
 
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
-      this.applyForce(this._runForce);
+      this.push(this._runForce);
     }
   }
 
-  onCollision(otherActor: Actor, collision: Collision) {
-    super.onCollision(otherActor, collision);
+  onCollision(otherEntity: Entity, collision: Collision) {
+    super.onCollision(otherEntity, collision);
 
-    if (!otherActor.isWall && otherActor.isFriendly) {
+    if (otherEntity.type === EntityType.Friendly) {
       this._swipeAttack();
     }
   }
 
   _turnRight() {
-    this.bounds.velocity = this.bounds.velocity.withNewY(0);
+    this.velocity = this.velocity.withNewY(0);
     this._runForce = new Vector(Ogre.runSpeed, 0);
     this.sprite.scale.x = 1;
   }
 
   _turnLeft() {
-    this.bounds.velocity = this.bounds.velocity.withNewY(0);
+    this.velocity = this.velocity.withNewY(0);
     this._runForce = new Vector(-Ogre.runSpeed, 0);
     this.sprite.scale.x = -1;
   }

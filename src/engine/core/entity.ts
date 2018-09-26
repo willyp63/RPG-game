@@ -19,6 +19,7 @@ export default abstract class Entity {
   get frictionCoefficient() { return DEFAULT_FRICTION_COEFFICIENT; }
   get elasticity() { return 0.5; }
   get maxVelocity() { return DEFAULT_MAX_VELOCITY; }
+  get isWall() { return false; }
   get isWallBound() { return false; }
   get isGravityBound() { return false; }
 
@@ -63,11 +64,13 @@ export default abstract class Entity {
     this.touchingWallInDirection = {};
   }
 
+  public afterTick() { }
+
   public onCollision(otherEntity: Entity, collision: Collision) {
     if (collision.hit) {
 
       // wall physics
-      if (this.type === EntityType.Wall && otherEntity.isWallBound) {
+      if (this.isWall && otherEntity.isWallBound) {
 
         // recede from walls
         if (CollisionDetector.isRamp(this)) {

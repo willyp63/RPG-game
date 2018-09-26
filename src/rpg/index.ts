@@ -1,3 +1,3 @@
-import RPGStage from "./rpg-stage";
+import TestArea from "./areas/test-area";
 
-new RPGStage();
+new TestArea();

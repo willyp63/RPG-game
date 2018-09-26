@@ -1,18 +1,27 @@
-import { Actor } from "../../engine/stage";
 import { loader, extras } from "pixi.js";
-import { Vector, Collision, Direction } from "../../engine/physics";
+import PIXIEntity from "../../engine/pixi/pixi-entity";
+import Vector from "../../engine/core/vector";
+import Direction from "../../engine/core/direction";
+import Entity from "../../engine/core/entity";
+import Collision from "../../engine/core/collision";
+import EntityType from "../../engine/core/entity-type";
 
-export default class Slime extends Actor {
+const TEXTURES_FILE = "public/imgs/slime.json";
 
-  static assets = ["public/imgs/slime.json"];
-  static isWallBound = true;
-  static isGravityBound = true;
+export default class Slime extends PIXIEntity {
+
+  static assets = [TEXTURES_FILE];
+
+  get size() { return new Vector(22, 16); }
+  get isGravityBound() { return true; }
+  get isWallBound() { return true; }
 
   static get _textures() {
-    const textures = loader.resources["public/imgs/slime.json"].textures;
-    if (!textures) throw "Can't find textures for Slime";
+    const textures = loader.resources[TEXTURES_FILE].textures;
+    if (!textures) throw "Can't find textures for Slime!!";
     return textures;
   }
+
   static get _slimeTextures() { return [
     Slime._textures["slime_1.png"],
     Slime._textures["slime_2.png"],
@@ -47,18 +56,19 @@ export default class Slime extends Actor {
     }
 
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
-      this.applyForce(this._crawlForce);
+      this.push(this._crawlForce);
     }
   }
 
-  onCollision(otherActor: Actor, collision: Collision) {
-    super.onCollision(otherActor, collision);
+  onCollision(otherEntity: Entity, collision: Collision) {
+    super.onCollision(otherEntity, collision);
 
-    if (!otherActor.isWall && otherActor.isFriendly && !this._recharging) {
-      let attackForce = otherActor.bounds.position.minus(this.bounds.position).toUnitVector().scaled(new Vector(4, 1));
+    if (!this._recharging && otherEntity.type === EntityType.Friendly) {
+
+      let attackForce = otherEntity.position.minus(this.position).toUnitVector().scaled(new Vector(4, 1));
       if (attackForce.x === 0) attackForce = attackForce.withNewX(2);
       else if (attackForce.x < 2) attackForce = attackForce.x > 0 ? attackForce.withNewX(2) : attackForce.withNewX(-2);
-      otherActor.applyForce(attackForce);
+      otherEntity.push(attackForce);
 
       this._recharging = true;
       setTimeout(() => this._recharging = false, 250);
@@ -66,13 +76,13 @@ export default class Slime extends Actor {
   }
 
   _turnRight() {
-    this.bounds.velocity = this.bounds.velocity.scaled(new Vector(0, 1));
+    this.velocity = this.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(0.05, 0);
     this.sprite.scale.x = 1;
   }
 
   _turnLeft() {
-    this.bounds.velocity = this.bounds.velocity.scaled(new Vector(0, 1));
+    this.velocity = this.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(-0.05, 0);
     this.sprite.scale.x = -1;
   }

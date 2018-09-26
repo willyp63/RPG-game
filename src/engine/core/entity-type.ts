@@ -1,5 +1,4 @@
 enum EntityType {
-  Wall,
   Friendly,
   Unfriendly,
   Neutral,

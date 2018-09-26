@@ -1,25 +1,28 @@
 import Wall from "./wall";
-import { Vector } from "../../engine/physics";
-import { Sprite, loader, ObservablePoint } from "pixi.js";
+import { Sprite, loader } from "pixi.js";
+import Vector from "../../engine/core/vector";
+
+const TEXTURES_FILE = 'public/imgs/wood-plank.jpg';
 
 export default class OscillatingWall extends Wall {
 
-  static isStatic = false;
-  static assets = ['public/imgs/wood-plank.jpg'];
+  static assets = [TEXTURES_FILE];
 
   private _tickCount = 0;
 
-  constructor(position: Vector, size: Vector, velocity: Vector, private _halfOscillationPeriod: number) {
+  constructor(
+    position: Vector,
+    size: Vector,
+    velocity: Vector,
+    private _halfOscillationPeriod: number,
+  ) {
     super(
       position,
       size,
+      new Sprite(loader.resources[TEXTURES_FILE].texture),
     );
 
-    const img = new Sprite(loader.resources['public/imgs/wood-plank.jpg'].texture);
-    img.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
-    this._sprite.addChild(img);
-
-    this.bounds.velocity = velocity;
+    this.velocity = velocity;
   }
 
   afterTick() {
@@ -31,7 +34,7 @@ export default class OscillatingWall extends Wall {
   }
 
   _turnAround() {
-    this.bounds.velocity = this.bounds.velocity.scaled(-1);
+    this.velocity = this.velocity.scaled(-1);
   }
 
 }

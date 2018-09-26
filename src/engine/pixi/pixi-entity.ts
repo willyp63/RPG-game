@@ -4,9 +4,10 @@ import Entity from "../core/entity";
 
 export default abstract class PIXIEntity extends Entity {
 
-  abstract get assets(): Array<string>;
+  static assets: Array<string> = [];
 
-  public sprite: Sprite;
+  get sprite() { return this._sprite; }
+  protected _sprite: Sprite;
 
   constructor(
     sprite: Sprite | Function,
@@ -14,7 +15,7 @@ export default abstract class PIXIEntity extends Entity {
   ) {
     super(position);
 
-    this.sprite = typeof sprite === 'function' ? sprite() : sprite;
+    this._sprite = typeof sprite === 'function' ? sprite() : sprite;
 
     // all sprites are anchored at their center
     this.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };

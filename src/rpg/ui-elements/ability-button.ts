@@ -1,7 +1,7 @@
-import { UIElement } from "../../engine/stage";
 import { Graphics, Text } from "pixi.js";
 import KeyListener from "../../engine/interaction/key-listener";
-import { Vector } from "../../engine/physics";
+import UIElement from "../../engine/pixi/ui-element";
+import Vector from "../../engine/core/vector";
 
 export default class AbilityButton extends UIElement {
   

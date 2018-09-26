@@ -1,28 +1,33 @@
-import { Actor } from "../../engine/stage";
 import { loader, extras } from "pixi.js";
-import { Vector, Direction } from "../../engine/physics";
 import KeyListener from "../../engine/interaction/key-listener";
 import StabAttack from "./stab-attack";
+import PIXIEntity from "../../engine/pixi/pixi-entity";
+import Vector from "../../engine/core/vector";
+import Direction from "../../engine/core/direction";
 
-export default class Warrior extends Actor {
+const TEXTURES_FILE = "public/imgs/warrior.json";
 
-  static assets = ["public/imgs/warrior.json"];
-  static size = new Vector(16, 35);
-  static isWallBound = true;
-  static isGravityBound = true;
-  static isFriendly = true;
+export default class Warrior extends PIXIEntity {
+
+  static assets = [TEXTURES_FILE];
+
+  get size() { return new Vector(16, 35); }
+  get isGravityBound() { return true; }
+  get isWallBound() { return true; }
 
   static get _textures() {
-    const textures = loader.resources["public/imgs/warrior.json"].textures;
-    if (!textures) throw "Can't find textures for Warrior";
+    const textures = loader.resources[TEXTURES_FILE].textures;
+    if (!textures) throw "Can't find textures for Warrior!!";
     return textures;
   }
+
   static get _runTextures() { return [
     Warrior._textures["run_1.png"],
     Warrior._textures["run_2.png"],
     Warrior._textures["run_3.png"],
     Warrior._textures["run_2.png"],
   ]; }
+
   static get _stabTextures() { return [
     Warrior._textures["stab_1.png"],
     Warrior._textures["stab_2.png"],
@@ -78,12 +83,12 @@ export default class Warrior extends Actor {
 
   afterTick() {
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
-      this.applyForce(this._runForce);
+      this.push(this._runForce);
 
       this._isOnGround = true;
     } else {
-      if (Math.abs(this.bounds.velocity.x) < 2) {
-        this.applyForce(this._runForce.scaled(0.333));
+      if (Math.abs(this.velocity.x) < 2) {
+        this.push(this._runForce.scaled(0.333));
       }
 
       this._isOnGround = false;
@@ -116,7 +121,7 @@ export default class Warrior extends Actor {
   _jump() {
     if (this._isStabbing) return;
 
-    if (this._isOnGround) this.applyForce(new Vector(0, -7));
+    if (this._isOnGround) this.push(new Vector(0, -7));
   }
 
   stab() {
@@ -130,7 +135,13 @@ export default class Warrior extends Actor {
     this.sprite.onComplete = () => {
       this._isStabbing = false;
 
-      this.addActor(new StabAttack(new Vector(this.sprite.scale.x === 1 ? this.bounds.position.x + 24 : this.bounds.position.x - 24, this.bounds.position.y + 2)));
+      const stabAttack = new StabAttack(
+        new Vector(
+          this.sprite.scale.x === 1 ? this.position.x + 24 : this.position.x - 24,
+          this.position.y + 2,
+        ),
+      );
+      this.addEntityToSystem(stabAttack);
 
       this.sprite.textures = Warrior._runTextures;
       this.sprite.loop = true;

@@ -3,6 +3,7 @@ import { Application, Sprite, settings, RenderTexture, loader } from "pixi.js";
 import Entity from "../core/entity";
 import UIElement from "./ui-element";
 import scaleToWindow from "../misc/scale-to-window";
+import PIXIEntity from "./pixi-entity";
 
 export default abstract class PIXISystem extends System {
 
@@ -78,6 +79,23 @@ export default abstract class PIXISystem extends System {
   }
 
   /* --- overrides -- */
+  addEntity(entity: Entity) {
+    super.addEntity(entity);
+
+    if (entity instanceof PIXIEntity) {
+      this._app.stage.addChild(entity.sprite);
+    }
+  }
+
+  removeEntityAt(i: number) {
+    const entity = this.entities[i];
+    if (entity instanceof PIXIEntity) {
+      this._app.stage.removeChild(entity.sprite);
+    }
+
+    super.removeEntityAt(i);
+  }
+
   onTick() {
     super.onTick();
 

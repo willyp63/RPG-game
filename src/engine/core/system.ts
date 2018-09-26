@@ -19,6 +19,10 @@ export default abstract class System {
     this.entities.push(entity);
   }
 
+  protected removeEntityAt(i: number) {
+    this.entities.splice(i, 1);
+  }
+
   protected onTick() {
     requestAnimationFrame(this.onTick.bind(this));
 
@@ -26,6 +30,7 @@ export default abstract class System {
     this._checkForCollisions();
     this._killSquishedEntities();
     this._applyGravity();
+    this.entities.forEach(entity => entity.afterTick());
     this._removeDeadEntities();
     this._addNewEntities();
   }
@@ -54,23 +59,28 @@ export default abstract class System {
   }
 
   _applyGravity() {
-    this.entities.forEach(entity => entity.push(this.gravityForce));
+    this.entities.forEach(entity => {
+      if (entity.isGravityBound) {
+        entity.push(this.gravityForce);
+      }
+    });
   }
 
   _removeDeadEntities() {
     for (let i = 0; i < this.entities.length; i++) {
-      if (this.entities[i].isDead) this.entities.splice(i--, 1);
+      if (this.entities[i].isDead) {
+        this.removeEntityAt(i--);
+      }
     }
   }
 
   _addNewEntities() {
-    let entitiesToAdd: Array<Entity> = [];
-    this.entities.forEach(entity => {
-      if (entity.entitiesToAdd.length){
-        entitiesToAdd = entitiesToAdd.concat(entity.entitiesToAdd);
-        entity.entitiesToAdd = [];
+    const currentNumEntities = this.entities.length;
+    for (let i = 0; i < currentNumEntities; i++) {
+      if (this.entities[i].entitiesToAdd.length){
+        this.entities[i].entitiesToAdd.forEach(entity => this.addEntity(entity));
+        this.entities[i].entitiesToAdd = [];
       }
-    });
-    this.entities = this.entities.concat(entitiesToAdd);
+    }
   }
 }

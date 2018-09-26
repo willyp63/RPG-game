@@ -1,6 +1,6 @@
-import { UIElement } from "../../engine/stage";
 import { Container, Sprite, Graphics } from "pixi.js";
-import { Vector } from "../../engine/physics";
+import UIElement from "../../engine/pixi/ui-element";
+import Vector from "../../engine/core/vector";
 
 export default class PowerBar extends UIElement {
 
