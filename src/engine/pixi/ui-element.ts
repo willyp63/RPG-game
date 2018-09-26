@@ -1,5 +1,5 @@
-import { Vector } from "../physics";
 import { Sprite } from "pixi.js";
+import Vector from "../core/vector";
 
 export default class UIElement {
 
