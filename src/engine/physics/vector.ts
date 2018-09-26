@@ -1,4 +1,5 @@
 export default class Vector {
+
   constructor(
     public _x: number,
     public _y: number,
@@ -6,6 +7,7 @@ export default class Vector {
 
   get x() { return this._x; }
   get y() { return this._y; }
+
   get length() { return Math.sqrt(Math.pow(this._x, 2) + Math.pow(this._y, 2)); }
 
   plus(otherVector: Vector) {
@@ -28,12 +30,14 @@ export default class Vector {
     return this.x * scaleVector.x + this.y * scaleVector.y;
   }
 
-  capped(maxVector: Vector | number) {
-    if (typeof maxVector === 'number') {
-      maxVector = new Vector(maxVector, maxVector);
+  capped(capVector: Vector | number) {
+    if (typeof capVector === 'number') {
+      capVector = new Vector(capVector, capVector);
     }
 
-    return new Vector(Math.min(this.x, maxVector.x), Math.min(this.y, maxVector.y));
+    const newX = this.x > 0 ? Math.min(this.x, capVector.x) : Math.max(this.x, -capVector.x);
+    const newY = this.y > 0 ? Math.min(this.y, capVector.y) : Math.max(this.y, -capVector.y);
+    return new Vector(newX, newY);
   }
 
   withNewX(newX: number) {
