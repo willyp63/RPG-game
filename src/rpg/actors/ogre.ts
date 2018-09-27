@@ -12,6 +12,7 @@ export default class Ogre extends PIXIEntity {
 
   static assets = [TEXTURES_FILE];
 
+  get type() { return EntityType.Unfriendly; }
   get size() { return new Vector(44, 96); }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
@@ -79,7 +80,7 @@ export default class Ogre extends PIXIEntity {
   onCollision(otherEntity: Entity, collision: Collision) {
     super.onCollision(otherEntity, collision);
 
-    if (otherEntity.type === EntityType.Friendly) {
+    if (collision.hit && otherEntity.type === EntityType.Friendly) {
       this._swipeAttack();
     }
   }

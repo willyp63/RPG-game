@@ -52,15 +52,15 @@ export default class TestArea extends PIXISystem {
     this.addEntity(new Wall(new Vector(812, 0), new Vector(32, 224)));
 
     // // Slime
-    // for (let i = 0; i < 24; i++) {
-    //   const dx = Math.random() * 600;
-    //   this.addEntity(new Slime(new Vector(1475 + dx, 60)));
-    // }
+    for (let i = 0; i < 4; i++) {
+      const dx = Math.random() * 600;
+      this.addEntity(new Slime(new Vector(1475 + dx, 60)));
+    }
 
     // Ogre
     this.addEntity(new Ogre(new Vector(2000, 50)));
 
-    this.addEntity(new OscillatingWall(new Vector(1068, 192), new Vector(96, 16), new Vector(1, 0), 150));
+    this.addEntity(new OscillatingWall(new Vector(1068, 192), new Vector(96, 16), new Vector(1, 0), 200));
     this.addEntity(new OscillatingWall(new Vector(1468, 182), new Vector(96, 16), new Vector(0, -1), 70));
     
     // UI

@@ -4,6 +4,7 @@ import StabAttack from "./stab-attack";
 import PIXIEntity from "../../engine/pixi/pixi-entity";
 import Vector from "../../engine/core/vector";
 import Direction from "../../engine/core/direction";
+import EntityType from "../../engine/core/entity-type";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
 
@@ -11,6 +12,7 @@ export default class Warrior extends PIXIEntity {
 
   static assets = [TEXTURES_FILE];
 
+  get type() { return EntityType.Friendly; }
   get size() { return new Vector(16, 35); }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
@@ -95,6 +97,7 @@ export default class Warrior extends PIXIEntity {
 
       this._isOnGround = false;
     }
+
   }
 
   _goLeft() {
@@ -134,16 +137,20 @@ export default class Warrior extends PIXIEntity {
 
     this.sprite.textures = Warrior._stabTextures;
     this.sprite.loop = false;
-    this.sprite.onComplete = () => {
-      this._isStabbing = false;
-
+    this.sprite.onFrameChange = () => {
       const stabAttack = new StabAttack(
         new Vector(
           this.sprite.scale.x === 1 ? this.position.x + 24 : this.position.x - 24,
           this.position.y + 2,
         ),
+        this,
       );
       this.addEntityToSystem(stabAttack);
+
+      this.sprite.onFrameChange = () => {};
+    };
+    this.sprite.onComplete = () => {
+      this._isStabbing = false;
 
       this.sprite.textures = Warrior._runTextures;
       this.sprite.loop = true;

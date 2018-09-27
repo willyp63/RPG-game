@@ -9,6 +9,7 @@ import WallReceder from "./wall-receder";
 const DEFAULT_WEIGHT = 1;
 const DEFAULT_MAX_VELOCITY = 16;
 const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
+const DEFAULT_ELASTICITY = 0.2;
 
 export default abstract class Entity {
 
@@ -17,7 +18,7 @@ export default abstract class Entity {
   get shape() { return Shape.Rect; }
   get weight() { return DEFAULT_WEIGHT; }
   get frictionCoefficient() { return DEFAULT_FRICTION_COEFFICIENT; }
-  get elasticity() { return 0.5; }
+  get elasticity() { return DEFAULT_ELASTICITY; }
   get maxVelocity() { return DEFAULT_MAX_VELOCITY; }
   get isWall() { return false; }
   get isWallBound() { return false; }
@@ -79,11 +80,9 @@ export default abstract class Entity {
           WallReceder.recedeEntityFromRectWallCollision(otherEntity, this, collision.withOppositeDirection());
         }
 
-        // friction
+        // floor friction
         if (collision.direction === Direction.Up || collision.direction === Direction.Down) {
           otherEntity.push(new Vector((this.velocity.x - otherEntity.velocity.x) * this.frictionCoefficient, 0));
-        } else if (collision.direction === Direction.Left || collision.direction === Direction.Right) {
-          otherEntity.push(new Vector(0, (this.velocity.y - otherEntity.velocity.y) * this.frictionCoefficient));
         }
 
         // bounce off walls
@@ -95,7 +94,7 @@ export default abstract class Entity {
         } else if (collision.direction === Direction.Down) {
           otherEntity.velocity = otherEntity.velocity.withNewY(Math.max(this.velocity.y, otherEntity.velocity.y * -combinedElasticity));
         } else if (collision.direction === Direction.Left) {
-          otherEntity.velocity = otherEntity.velocity.withNewY(Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
+          otherEntity.velocity = otherEntity.velocity.withNewX(Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
         }
 
         // track touching walls

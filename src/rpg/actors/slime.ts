@@ -12,7 +12,9 @@ export default class Slime extends PIXIEntity {
 
   static assets = [TEXTURES_FILE];
 
+  get type() { return EntityType.Unfriendly; }
   get size() { return new Vector(22, 16); }
+  get elasticity() { return 1; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 
@@ -65,26 +67,27 @@ export default class Slime extends PIXIEntity {
   onCollision(otherEntity: Entity, collision: Collision) {
     super.onCollision(otherEntity, collision);
 
-    if (!this._recharging && otherEntity.type === EntityType.Friendly) {
+    if (collision.hit) {
+      if (!this._recharging && otherEntity.type === EntityType.Friendly) {
 
-      let attackForce = otherEntity.position.minus(this.position).toUnitVector().scaled(new Vector(4, 1));
-      if (attackForce.x === 0) attackForce = attackForce.withNewX(2);
-      else if (attackForce.x < 2) attackForce = attackForce.x > 0 ? attackForce.withNewX(2) : attackForce.withNewX(-2);
-      otherEntity.push(attackForce);
-
-      this._recharging = true;
-      setTimeout(() => this._recharging = false, 250);
+        if (this.position.x < otherEntity.position.x) {
+          otherEntity.push(new Vector(2, -1));
+        } else {
+          otherEntity.push(new Vector(-2, -1));
+        }
+  
+        this._recharging = true;
+        setTimeout(() => this._recharging = false, 100);
+      }
     }
   }
 
   _turnRight() {
-    this.velocity = this.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(0.05, 0);
     this.sprite.scale.x = 1;
   }
 
   _turnLeft() {
-    this.velocity = this.velocity.scaled(new Vector(0, 1));
     this._crawlForce = new Vector(-0.05, 0);
     this.sprite.scale.x = -1;
   }
