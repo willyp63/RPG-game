@@ -7,9 +7,9 @@ import EntityType from "../../../engine/core/entity-type";
 import TextureHelper from "../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
-const ANIMATION_SPEED = 0.1;
-const RUN_FORCE_X = 0.25;
-const SPRINT_FORCE_X = 0.4;
+const ANIMATION_SPEED = 0.08;
+const RUN_FORCE_X = 0.22;
+const SPRINT_FORCE_X = 0.36;
 
 export default class Warrior extends AnimatedPIXIEntity {
 

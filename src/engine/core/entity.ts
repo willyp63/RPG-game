@@ -8,7 +8,7 @@ import WallReceder from "./wall-receder";
 const DEFAULT_WEIGHT = 1;
 const DEFAULT_MAX_VELOCITY = 16;
 const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
-const DEFAULT_ELASTICITY = 0.2;
+const DEFAULT_ELASTICITY = 0.1;
 
 export default abstract class Entity {
 
