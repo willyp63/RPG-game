@@ -73,8 +73,8 @@ export default class CollisionDetector {
 
     const isOutsideGridAlignedSides =
       (cornerPointToTest.y > ramp.position.y + rampHalfSize.y) ||
-      (ramp.shape === Shape.DeclineRamp && cornerPointToTest.x < ramp.position.x - rampHalfSize.x) ||
-      (ramp.shape === Shape.InclineRamp && cornerPointToTest.x > ramp.position.x + rampHalfSize.x);
+      (ramp.shape === Shape.DeclineRamp && cornerPointToTest.x < ramp.position.x - rampHalfSize.x - 1) ||
+      (ramp.shape === Shape.InclineRamp && cornerPointToTest.x > ramp.position.x + rampHalfSize.x + 1);
     if (isOutsideGridAlignedSides) return new Collision(false);
 
     const rampSlope = getRampSlope(ramp);
