@@ -2,7 +2,7 @@ import Entity from "./entity";
 import Collision from "./collision";
 import Direction from "./direction";
 import Vector from "./vector";
-import Shape from "./shape";
+import Shape, { getRampSlope, isRamp } from "./shape";
 
 export default class CollisionDetector {
 
@@ -10,17 +10,13 @@ export default class CollisionDetector {
     e1: Entity,
     e2: Entity,
   ): Collision {
-    if (CollisionDetector.isRamp(e1)) {
+    if (isRamp(e1)) {
       return this._rectHitsRamp(e2, e1).withOppositeDirection();
-    } else if (CollisionDetector.isRamp(e2)) {
+    } else if (isRamp(e2)) {
       return this._rectHitsRamp(e1, e2);
     } else {
       return this._rectHitsRect(e1, e2);
     }
-  }
-
-  static isRamp(entity: Entity) {
-    return [Shape.InclineRamp, Shape.DeclineRamp].includes(entity.shape);
   }
 
   /* --- private --- */
@@ -81,8 +77,7 @@ export default class CollisionDetector {
       (ramp.shape === Shape.InclineRamp && cornerPointToTest.x > ramp.position.x + rampHalfSize.x);
     if (isOutsideGridAlignedSides) return new Collision(false);
 
-    let rampSlope = ramp.size.y / ramp.size.x;
-    if (ramp.shape === Shape.InclineRamp) rampSlope *= -1;
+    const rampSlope = getRampSlope(ramp);
 
     // (https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line)
     const a = rampSlope;

@@ -76,7 +76,7 @@ export default class Ogre extends AnimatedPIXIEntity {
       if (isFacingOtherEntity) {
         const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
 
-        if (distanceToOtherEntity < 96) {
+        if (distanceToOtherEntity < 80) {
           this._swipeAttack();
         }
       }

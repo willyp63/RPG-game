@@ -120,7 +120,10 @@ export default class Warrior extends AnimatedPIXIEntity {
 
   _jump() {
     if (this._isStabbing) return;
-    if (this._isOnGround) this.push(new Vector(0, -7));
+    if (this._isOnGround) {
+      this.push(new Vector(0, -7));
+      this.velocity = this.velocity.withNewY(0);
+    }
   }
 
   stab() {

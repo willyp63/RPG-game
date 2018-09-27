@@ -1,9 +1,8 @@
 import Vector from "./vector";
 import EntityType from "./entity-type";
-import Shape from "./shape";
+import Shape, { isRamp, getRampSlope } from "./shape";
 import Direction, { oppositeDirection } from "./direction";
 import Collision from "./collision";
-import CollisionDetector from "./collision-detector";
 import WallReceder from "./wall-receder";
 
 const DEFAULT_WEIGHT = 1;
@@ -74,7 +73,7 @@ export default abstract class Entity {
       if (this.isWall && otherEntity.isWallBound) {
 
         // recede from walls
-        if (CollisionDetector.isRamp(this)) {
+        if (isRamp(this)) {
           WallReceder.recedeEntityFromRampWallCollision(otherEntity, this);
         } else {
           WallReceder.recedeEntityFromRectWallCollision(otherEntity, this, collision.withOppositeDirection());
@@ -95,6 +94,22 @@ export default abstract class Entity {
           otherEntity.velocity = otherEntity.velocity.withNewY(Math.max(this.velocity.y, otherEntity.velocity.y * -combinedElasticity));
         } else if (collision.direction === Direction.Left) {
           otherEntity.velocity = otherEntity.velocity.withNewX(Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
+        }
+
+        // stick to floor when going down ramps/elevators
+        if (collision.direction === Direction.Up) {
+          if (otherEntity.velocity.y > -1) {
+            const isOtherEntityGoingDownElevator = this.velocity.y > 0;
+            const isOtherEntityGoingDownRamp = 
+              (this.shape === Shape.InclineRamp && otherEntity.velocity.x < 0) ||
+              (this.shape === Shape.DeclineRamp && otherEntity.velocity.x > 0);
+
+            if (isOtherEntityGoingDownElevator) {
+              otherEntity.velocity = otherEntity.velocity.withNewY(this.velocity.y);
+            } else if (isOtherEntityGoingDownRamp) {
+              otherEntity.velocity = otherEntity.velocity.withNewY(otherEntity.velocity.x * getRampSlope(this));
+            }
+          }
         }
 
         // track touching walls
