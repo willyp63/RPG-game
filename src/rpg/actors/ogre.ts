@@ -61,6 +61,8 @@ export default class Ogre extends PIXIEntity {
   }
 
   afterTick() {
+    super.afterTick();
+
     if (this.isTouchingWallsInAllDirections([Direction.Right])) {
       this._turnLeft();
     }

@@ -31,7 +31,6 @@ export default abstract class PIXIEntity extends Entity {
 
   /* --- private --- */
   _alignSprite() {
-    if (!this.isWall) console.log(this.position);
     this.sprite.x = this.position.x;
     this.sprite.y = this.position.y;
   }

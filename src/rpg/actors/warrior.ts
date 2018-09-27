@@ -82,6 +82,8 @@ export default class Warrior extends PIXIEntity {
   }
 
   afterTick() {
+    super.afterTick();
+
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
       this.push(this._runForce);
 

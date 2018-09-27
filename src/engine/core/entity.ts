@@ -76,7 +76,7 @@ export default abstract class Entity {
         if (CollisionDetector.isRamp(this)) {
           WallReceder.recedeEntityFromRampWallCollision(otherEntity, this);
         } else {
-          WallReceder.recedeEntityFromRectWallCollision(otherEntity, this, collision);
+          WallReceder.recedeEntityFromRectWallCollision(otherEntity, this, collision.withOppositeDirection());
         }
 
         // friction

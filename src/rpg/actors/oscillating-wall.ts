@@ -26,6 +26,8 @@ export default class OscillatingWall extends Wall {
   }
 
   afterTick() {
+    super.afterTick();
+
     this._tickCount++;
     if (this._tickCount >= this._halfOscillationPeriod) {
       this._turnAround();

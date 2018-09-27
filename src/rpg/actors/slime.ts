@@ -47,6 +47,8 @@ export default class Slime extends PIXIEntity {
   }
 
   afterTick() {
+    super.afterTick();
+
     if (this.isTouchingWallsInAllDirections([Direction.Right])) {
       this._turnLeft();
     }
