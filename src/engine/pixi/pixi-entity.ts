@@ -23,14 +23,15 @@ export default abstract class PIXIEntity extends Entity {
     this._alignSprite();
   }
 
-  onTick() {
-    super.onTick();
+  afterTick() {
+    super.afterTick();
 
     this._alignSprite();
   }
 
   /* --- private --- */
   _alignSprite() {
+    if (!this.isWall) console.log(this.position);
     this.sprite.x = this.position.x;
     this.sprite.y = this.position.y;
   }

@@ -36,8 +36,8 @@ export default class CollisionDetector {
     const positionDiff = e1.position.minus(e2.position);
 
     const hit =
-      Math.abs(positionDiff.x) <= combinedHalfSize.x &&
-      Math.abs(positionDiff.y) <= combinedHalfSize.y;
+      Math.abs(positionDiff.x) < combinedHalfSize.x &&
+      Math.abs(positionDiff.y) < combinedHalfSize.y;
 
     if (!hit) return new Collision(false);
 
