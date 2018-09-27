@@ -7,6 +7,9 @@ import EntityType from "../../../engine/core/entity-type";
 import TextureHelper from "../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
+const ANIMATION_SPEED = 0.1;
+const RUN_FORCE_X = 0.25;
+const SPRINT_FORCE_X = 0.4;
 
 export default class Warrior extends AnimatedPIXIEntity {
 
@@ -33,12 +36,13 @@ export default class Warrior extends AnimatedPIXIEntity {
   private _rightDown = false;
   private _isStabbing = false;
   private _isOnGround = false;
+  private _isSprinting = false;
   private _runForce = new Vector(0, 0);
 
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
 
-    this.sprite.animationSpeed = 0.1;
+    this.sprite.animationSpeed = ANIMATION_SPEED;
     this._stop();
 
     new KeyListener(37 /* left arrow */,
@@ -70,6 +74,25 @@ export default class Warrior extends AnimatedPIXIEntity {
     new KeyListener(65 /* `a` */,
       () => this.stab(),
     );
+
+    new KeyListener(83 /* `s` */,
+      () => {
+        this._isSprinting = true;
+        if (this._runForce.x > 0) {
+          this._goRight();
+        } else if (this._runForce.x < 0) {
+          this._goLeft();
+        }
+      },
+      () => {
+        this._isSprinting = false;
+        if (this._runForce.x > 0) {
+          this._goRight();
+        } else if (this._runForce.x < 0) {
+          this._goLeft();
+        }
+      },
+    );
   }
 
   afterTick() {
@@ -92,7 +115,8 @@ export default class Warrior extends AnimatedPIXIEntity {
   _goLeft() {
     if (this._isStabbing) return;
 
-    this._runForce = new Vector(-0.25, 0);
+    this._runForce = new Vector(this._isSprinting ? -SPRINT_FORCE_X : -RUN_FORCE_X, 0);
+    this.sprite.animationSpeed = this._isSprinting ? ANIMATION_SPEED * (SPRINT_FORCE_X / RUN_FORCE_X) : ANIMATION_SPEED;
     this.sprite.scale.x = -1;
     this.sprite.textures = Warrior._runTextures;
     this.sprite.loop = true;
@@ -102,7 +126,8 @@ export default class Warrior extends AnimatedPIXIEntity {
   _goRight() {
     if (this._isStabbing) return;
 
-    this._runForce = new Vector(0.25, 0);
+    this._runForce = new Vector(this._isSprinting ? SPRINT_FORCE_X : RUN_FORCE_X, 0);
+    this.sprite.animationSpeed = this._isSprinting ? ANIMATION_SPEED * (SPRINT_FORCE_X / RUN_FORCE_X) : ANIMATION_SPEED;
     this.sprite.scale.x = 1;
     this.sprite.textures = Warrior._runTextures;
     this.sprite.loop = true;
@@ -131,6 +156,7 @@ export default class Warrior extends AnimatedPIXIEntity {
     this._isStabbing = true;
 
     this._runForce = new Vector(0, 0);
+    this.sprite.animationSpeed = ANIMATION_SPEED;
     this.sprite.textures = Warrior._stabTextures;
     this.sprite.loop = false;
     this.sprite.play();

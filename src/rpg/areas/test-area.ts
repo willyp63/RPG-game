@@ -46,8 +46,8 @@ export default class TestArea extends PIXISystem {
     this.addEntity(new Wall(new Vector(812, 222), new Vector(352, 32)));
     this.addEntity(new Wall(new Vector(812, 0), new Vector(32, 224)));
 
-    this.addEntity(new OscillatingWall(new Vector(1068, 192), new Vector(96, 16), new Vector(1, 0), 130));
-    this.addEntity(new OscillatingWall(new Vector(1468, 182), new Vector(96, 16), new Vector(0, -1), 70));
+    this.addEntity(new OscillatingWall(new Vector(1068, 192), new Vector(96, 16), new Vector(1, 0), 120));
+    this.addEntity(new OscillatingWall(new Vector(1468, 182), new Vector(96, 16), new Vector(0, -1), 60));
 
     // Warrior
     const warrior = new Warrior(new Vector(966, 300));
