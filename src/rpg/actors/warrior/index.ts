@@ -1,10 +1,10 @@
-import KeyListener from "../../engine/interaction/key-listener";
-import StabAttack from "./stab-attack";
-import AnimatedPIXIEntity from "../../engine/pixi/animated-pixi-entity";
-import Vector from "../../engine/core/vector";
-import Direction from "../../engine/core/direction";
-import EntityType from "../../engine/core/entity-type";
-import TextureHelper from "../../engine/pixi/texture-helper";
+import KeyListener from "../../../engine/interaction/key-listener";
+import StabAttack from "./attacks/stab-attack";
+import AnimatedPIXIEntity from "../../../engine/pixi/animated-pixi-entity";
+import Vector from "../../../engine/core/vector";
+import Direction from "../../../engine/core/direction";
+import EntityType from "../../../engine/core/entity-type";
+import TextureHelper from "../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
 

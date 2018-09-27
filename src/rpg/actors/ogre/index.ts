@@ -1,10 +1,11 @@
-import AnimatedPIXIEntity from "../../engine/pixi/animated-pixi-entity";
-import Vector from "../../engine/core/vector";
-import Direction from "../../engine/core/direction";
-import Entity from "../../engine/core/entity";
-import Collision from "../../engine/core/collision";
-import EntityType from "../../engine/core/entity-type";
-import TextureHelper from "../../engine/pixi/texture-helper";
+import AnimatedPIXIEntity from "../../../engine/pixi/animated-pixi-entity";
+import Vector from "../../../engine/core/vector";
+import Direction from "../../../engine/core/direction";
+import Entity from "../../../engine/core/entity";
+import Collision from "../../../engine/core/collision";
+import EntityType from "../../../engine/core/entity-type";
+import TextureHelper from "../../../engine/pixi/texture-helper";
+import SwipeAttack from "./attacks/swipe-attack";
 
 const TEXTURES_FILE = "public/imgs/ogre.json";
 const RUN_SPEED = 0.1;
@@ -86,6 +87,8 @@ export default class Ogre extends AnimatedPIXIEntity {
     this._runForce = new Vector(RUN_SPEED, 0);
     this.sprite.scale.x = 1;
     this.sprite.animationSpeed = RUN_ANIMATION_SPEED;
+    this.sprite.textures = Ogre._runTextures;
+    this.sprite.gotoAndPlay(1);
     this._isFacingLeft = false;
   }
 
@@ -93,6 +96,8 @@ export default class Ogre extends AnimatedPIXIEntity {
     this._runForce = new Vector(-RUN_SPEED, 0);
     this.sprite.scale.x = -1;
     this.sprite.animationSpeed = RUN_ANIMATION_SPEED;
+    this.sprite.textures = Ogre._runTextures;
+    this.sprite.gotoAndPlay(1);
     this._isFacingLeft = true;
   }
 
@@ -107,17 +112,32 @@ export default class Ogre extends AnimatedPIXIEntity {
     this.sprite.animationSpeed = SWIPE_ATTACK_ANIMATION_SPEED;
     this.sprite.textures = Ogre._swipeAttackTextures;
     this.sprite.loop = true;
+
+    this.sprite.onFrameChange = () => {
+      if ([1, 3].includes(this.sprite.currentFrame)) {
+        this.addEntityToSystem(new SwipeAttack(
+          new Vector(
+            this._isFacingLeft ? this.position.x - 48 : this.position.x + 48,
+            this.position.y + 16,
+          ),
+          this,
+        ));
+      }
+    };
+
     this.sprite.onLoop = () => {
       currentNumAttacks++;
 
       if (currentNumAttacks < numAttacks) return;
 
+      this.sprite.onLoop = () => {};
+      this.sprite.onFrameChange = () => {};
+      this._isAttacking = false;
+
       if (this._isFacingLeft) this._runLeft();
       else this._runRight();
-
-      this.sprite.onLoop = () => {};
-      this._isAttacking = false;
     };
+
     this.sprite.gotoAndPlay(0);
   }
 
