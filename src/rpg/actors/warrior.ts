@@ -1,38 +1,32 @@
-import { loader, extras } from "pixi.js";
 import KeyListener from "../../engine/interaction/key-listener";
 import StabAttack from "./stab-attack";
-import PIXIEntity from "../../engine/pixi/pixi-entity";
+import AnimatedPIXIEntity from "../../engine/pixi/animated-pixi-entity";
 import Vector from "../../engine/core/vector";
 import Direction from "../../engine/core/direction";
 import EntityType from "../../engine/core/entity-type";
+import TextureHelper from "../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
 
-export default class Warrior extends PIXIEntity {
-
-  static assets = [TEXTURES_FILE];
+export default class Warrior extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Friendly; }
   get size() { return new Vector(16, 35); }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 
-  static get _textures() {
-    const textures = loader.resources[TEXTURES_FILE].textures;
-    if (!textures) throw "Can't find textures for Warrior!!";
-    return textures;
-  }
+  static assets = [TEXTURES_FILE];
 
   static get _runTextures() { return [
-    Warrior._textures["run_1.png"],
-    Warrior._textures["run_2.png"],
-    Warrior._textures["run_3.png"],
-    Warrior._textures["run_2.png"],
+    TextureHelper.get(TEXTURES_FILE, "run_1.png"),
+    TextureHelper.get(TEXTURES_FILE, "run_2.png"),
+    TextureHelper.get(TEXTURES_FILE, "run_3.png"),
+    TextureHelper.get(TEXTURES_FILE, "run_2.png"),
   ]; }
 
   static get _stabTextures() { return [
-    Warrior._textures["stab_1.png"],
-    Warrior._textures["stab_2.png"],
+    TextureHelper.get(TEXTURES_FILE, "stab_1.png"),
+    TextureHelper.get(TEXTURES_FILE, "stab_2.png"),
   ]; }
 
   private _leftDown = false;
@@ -41,16 +35,11 @@ export default class Warrior extends PIXIEntity {
   private _isOnGround = false;
   private _runForce = new Vector(0, 0);
 
-  get sprite() { return <extras.AnimatedSprite>this._sprite; }
-
   constructor(position: Vector) {
-    super(
-      new extras.AnimatedSprite(Warrior._runTextures),
-      position,
-    );
+    super(position, Warrior._runTextures);
 
     this.sprite.animationSpeed = 0.1;
-    this.sprite.gotoAndStop(1);
+    this._stop();
 
     new KeyListener(37 /* left arrow */,
       () => {
@@ -105,6 +94,8 @@ export default class Warrior extends PIXIEntity {
 
     this._runForce = new Vector(-0.25, 0);
     this.sprite.scale.x = -1;
+    this.sprite.textures = Warrior._runTextures;
+    this.sprite.loop = true;
     this.sprite.gotoAndPlay(0);
   }
 
@@ -113,6 +104,8 @@ export default class Warrior extends PIXIEntity {
 
     this._runForce = new Vector(0.25, 0);
     this.sprite.scale.x = 1;
+    this.sprite.textures = Warrior._runTextures;
+    this.sprite.loop = true;
     this.sprite.gotoAndPlay(0);
   }
 
@@ -120,12 +113,13 @@ export default class Warrior extends PIXIEntity {
     if (this._isStabbing) return;
 
     this._runForce = new Vector(0, 0);
+    this.sprite.textures = Warrior._runTextures;
+    this.sprite.loop = true;
     this.sprite.gotoAndStop(1);
   }
 
   _jump() {
     if (this._isStabbing) return;
-
     if (this._isOnGround) this.push(new Vector(0, -7));
   }
 
@@ -134,28 +128,25 @@ export default class Warrior extends PIXIEntity {
     this._isStabbing = true;
 
     this._runForce = new Vector(0, 0);
-
     this.sprite.textures = Warrior._stabTextures;
     this.sprite.loop = false;
+    this.sprite.play();
+
     this.sprite.onFrameChange = () => {
-      const stabAttack = new StabAttack(
+      this.addEntityToSystem(new StabAttack(
         new Vector(
           this.sprite.scale.x === 1 ? this.position.x + 24 : this.position.x - 24,
           this.position.y + 2,
         ),
         this,
-      );
-      this.addEntityToSystem(stabAttack);
+      ));
 
       this.sprite.onFrameChange = () => {};
     };
+
     this.sprite.onComplete = () => {
       this._isStabbing = false;
-
-      this.sprite.textures = Warrior._runTextures;
-      this.sprite.loop = true;
-      this.sprite.onComplete = () => {};
-
+      
       if (this._rightDown) {
         this._goRight();
       } else if (this._leftDown) {
@@ -163,8 +154,9 @@ export default class Warrior extends PIXIEntity {
       } else {
         this._stop();
       }
+
+      this.sprite.onComplete = () => {};
     };
-    this.sprite.play();
   }
 
 }

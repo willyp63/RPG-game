@@ -1,16 +1,14 @@
-import { loader, extras } from "pixi.js";
-import PIXIEntity from "../../engine/pixi/pixi-entity";
+import AnimatedPIXIEntity from "../../engine/pixi/animated-pixi-entity";
 import Vector from "../../engine/core/vector";
 import Direction from "../../engine/core/direction";
 import Entity from "../../engine/core/entity";
 import Collision from "../../engine/core/collision";
 import EntityType from "../../engine/core/entity-type";
+import TextureHelper from "../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = "public/imgs/slime.json";
 
-export default class Slime extends PIXIEntity {
-
-  static assets = [TEXTURES_FILE];
+export default class Slime extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Unfriendly; }
   get size() { return new Vector(22, 16); }
@@ -18,28 +16,19 @@ export default class Slime extends PIXIEntity {
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 
-  static get _textures() {
-    const textures = loader.resources[TEXTURES_FILE].textures;
-    if (!textures) throw "Can't find textures for Slime!!";
-    return textures;
-  }
+  static assets = [TEXTURES_FILE];
 
   static get _slimeTextures() { return [
-    Slime._textures["slime_1.png"],
-    Slime._textures["slime_2.png"],
-    Slime._textures["slime_3.png"],
+    TextureHelper.get(TEXTURES_FILE, "slime_1.png"),
+    TextureHelper.get(TEXTURES_FILE, "slime_2.png"),
+    TextureHelper.get(TEXTURES_FILE, "slime_3.png"),
   ]; }
 
   private _crawlForce: Vector;
   private _recharging: boolean = false;
 
-  get sprite() { return <extras.AnimatedSprite>this._sprite; }
-
   constructor(position: Vector) {
-    super(
-      new extras.AnimatedSprite(Slime._slimeTextures),
-      position,
-    );
+    super(position, Slime._slimeTextures);
 
     this.sprite.animationSpeed = 0.1;
     this.sprite.gotoAndPlay(0);
