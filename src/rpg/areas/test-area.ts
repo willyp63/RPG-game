@@ -35,7 +35,7 @@ export default class TestArea extends PIXISystem {
     super.onInit();
 
     // Walls
-    this.addEntity(new Wall(new Vector(300, 351), new Vector(864, 32)));
+    this.addEntity(new Wall(new Vector(300, 351), new Vector(1056, 32)));
     this.addEntity(new Wall(new Vector(300, 201), new Vector(12, 150)));
     this.addEntity(new Wall(new Vector(416, 201), new Vector(12, 90)));
 
