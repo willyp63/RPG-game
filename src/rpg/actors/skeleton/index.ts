@@ -71,7 +71,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
       if (isFacingOtherEntity) {
         const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
 
-        if (distanceToOtherEntity < 48) {
+        if (distanceToOtherEntity < 24) {
           this._attack();
         }
       }
