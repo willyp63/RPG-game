@@ -1,17 +1,17 @@
 import Entity from "../../../../engine/core/entity";
 import EntityType from "../../../../engine/core/entity-type";
 import Vector from "../../../../engine/core/vector";
-import Ogre from "..";
 import Collision from "../../../../engine/core/collision";
+import Skeleton from "..";
 
-export default class SwipeAttack extends Entity {
+export default class SkeletonAttack extends Entity {
 
   get type() { return EntityType.Unfriendly; }
-  get size() { return new Vector(36, 36); }
+  get size() { return new Vector(16, 16); }
 
   constructor(
     position: Vector,
-    private _ogre: Ogre,
+    private _skeleton: Skeleton,
   ) {
     super(position);
   }
@@ -24,10 +24,10 @@ export default class SwipeAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Friendly) {
-      if (this._ogre.position.x < otherEntity.position.x) {
-        otherEntity.push(new Vector(8, -3));
+      if (this._skeleton.position.x < otherEntity.position.x) {
+        otherEntity.push(new Vector(4, -2));
       } else {
-        otherEntity.push(new Vector(-8, -3));
+        otherEntity.push(new Vector(-4, -2));
       }
     }
   }

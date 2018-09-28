@@ -1,0 +1,56 @@
+{"frames": {
+
+"skeleton__attack-1.png":
+{
+	"frame": {"x":0,"y":0,"w":30,"h":35},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":35},
+	"sourceSize": {"w":30,"h":35}
+},
+"skeleton__attack-2.png":
+{
+	"frame": {"x":30,"y":0,"w":30,"h":35},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":30,"h":35},
+	"sourceSize": {"w":30,"h":35}
+},
+"skeleton__walk-1.png":
+{
+	"frame": {"x":60,"y":0,"w":18,"h":35},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":35},
+	"sourceSize": {"w":18,"h":35}
+},
+"skeleton__walk-2.png":
+{
+	"frame": {"x":78,"y":0,"w":18,"h":35},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":35},
+	"sourceSize": {"w":18,"h":35}
+},
+"skeleton__walk-3.png":
+{
+	"frame": {"x":96,"y":0,"w":18,"h":35},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":35},
+	"sourceSize": {"w":18,"h":35}
+}},
+"animations": {
+	"skeleton__attack": ["skeleton__attack-1.png","skeleton__attack-2.png"],
+	"skeleton__walk": ["skeleton__walk-1.png","skeleton__walk-2.png","skeleton__walk-3.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "skeleton.png",
+	"format": "RGBA8888",
+	"size": {"w":114,"h":35},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:f38f0da4a0532d776a0521cc728b5b74:9a5947309c544575813c4abdf0622e4d:d250a93a37aebe3125719817b45d8e4d$"
+}
+}

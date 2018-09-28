@@ -9,6 +9,7 @@ import Ogre from "../actors/ogre";
 import Vector from "../../engine/core/vector";
 import RampWall from "../actors/ramp-wall";
 import Shape from "../../engine/core/shape";
+import Skeleton from "../actors/skeleton";
 
 export default class TestArea extends PIXISystem {
 
@@ -24,6 +25,7 @@ export default class TestArea extends PIXISystem {
       OscillatingWall.assets,
       AbilityButton.assets,
       Ogre.assets,
+      Skeleton.assets,
     );
   }
 
@@ -55,9 +57,15 @@ export default class TestArea extends PIXISystem {
     this.followEntity(warrior);
 
     // Slimes
-    for (let i = 0; i < 4; i++) {
+    // for (let i = 0; i < 4; i++) {
+    //   const dx = Math.random() * 360;
+    //   this.addEntity(new Slime(new Vector(440 + dx, 200)));
+    // }
+
+    // Skeletons
+    for (let i = 0; i < 8; i++) {
       const dx = Math.random() * 360;
-      this.addEntity(new Slime(new Vector(440 + dx, 200)));
+      this.addEntity(new Skeleton(new Vector(440 + dx, 200)));
     }
 
     // Ogres
