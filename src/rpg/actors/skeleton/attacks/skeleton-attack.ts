@@ -4,10 +4,13 @@ import Vector from "../../../../engine/core/vector";
 import Collision from "../../../../engine/core/collision";
 import Skeleton from "..";
 
+const SIZE = 16;
+const ATTACK_FORCE = new Vector(4, -2)
+
 export default class SkeletonAttack extends Entity {
 
   get type() { return EntityType.Unfriendly; }
-  get size() { return new Vector(16, 16); }
+  get size() { return new Vector(SIZE, SIZE); }
 
   constructor(
     position: Vector,
@@ -24,11 +27,7 @@ export default class SkeletonAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Friendly) {
-      if (this._skeleton.position.x < otherEntity.position.x) {
-        otherEntity.push(new Vector(4, -2));
-      } else {
-        otherEntity.push(new Vector(-4, -2));
-      }
+      otherEntity.push(ATTACK_FORCE.flippedHorizontally(this._skeleton.position.x > otherEntity.position.x));
     }
   }
 

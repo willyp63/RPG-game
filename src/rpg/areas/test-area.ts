@@ -1,26 +1,24 @@
 import PIXISystem from "../../engine/pixi/pixi-system";
 import Warrior from "../actors/warrior";
-import Wall from "../actors/wall";
-import Slime from "../actors/slime";
+import Wall from "../actors/walls/wall";
 import PowerBar from "../ui-elements/power-bar";
-import OscillatingWall from "../actors/oscillating-wall";
+import OscillatingWall from "../actors/walls/oscillating-wall";
 import AbilityButton from "../ui-elements/ability-button";
 import Ogre from "../actors/ogre";
 import Vector from "../../engine/core/vector";
-import RampWall from "../actors/ramp-wall";
+import RampWall from "../actors/walls/ramp-wall";
 import Shape from "../../engine/core/shape";
 import Skeleton from "../actors/skeleton";
 
 export default class TestArea extends PIXISystem {
 
-  get width() { return 455; };
-  get height() { return 256; };
+  get width() { return 512; };
+  get height() { return 288; };
 
   get assets() {
     return (<Array<string>>[]).concat(
       Warrior.assets,
       Wall.assets,
-      Slime.assets,
       PowerBar.assets,
       OscillatingWall.assets,
       AbilityButton.assets,
@@ -55,12 +53,6 @@ export default class TestArea extends PIXISystem {
     const warrior = new Warrior(new Vector(966, 300));
     this.addEntity(warrior);
     this.followEntity(warrior);
-
-    // Slimes
-    // for (let i = 0; i < 4; i++) {
-    //   const dx = Math.random() * 360;
-    //   this.addEntity(new Slime(new Vector(440 + dx, 200)));
-    // }
 
     // Skeletons
     for (let i = 0; i < 8; i++) {

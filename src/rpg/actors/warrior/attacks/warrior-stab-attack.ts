@@ -4,10 +4,13 @@ import Collision from "../../../../engine/core/collision";
 import EntityType from "../../../../engine/core/entity-type";
 import Warrior from "..";
 
-export default class StabAttack extends Entity {
+const SIZE = 12;
+const ATTACK_FORCE = new Vector(6, -2);
+
+export default class WarriorStabAttack extends Entity {
 
   get type() { return EntityType.Friendly; }
-  get size() { return new Vector(12, 12); }
+  get size() { return new Vector(SIZE, SIZE); }
 
   constructor(
     position: Vector,
@@ -24,11 +27,7 @@ export default class StabAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Unfriendly) {
-      if (this._warrior.position.x < otherEntity.position.x) {
-        otherEntity.push(new Vector(6, -2));
-      } else {
-        otherEntity.push(new Vector(-6, -2));
-      }
+      otherEntity.push(ATTACK_FORCE.flippedHorizontally(this._warrior.position.x > otherEntity.position.x));
     }
   }
 

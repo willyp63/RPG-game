@@ -1,6 +1,6 @@
 import Wall from "./wall";
-import Shape from "../../engine/core/shape";
-import Vector from "../../engine/core/vector";
+import Shape from "../../../engine/core/shape";
+import Vector from "../../../engine/core/vector";
 
 export default class RampWall extends Wall {
 

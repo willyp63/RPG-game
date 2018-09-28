@@ -1,6 +1,6 @@
 import { RenderTexture, Sprite } from "pixi.js";
-import PIXIEntity from "../../engine/pixi/pixi-entity";
-import Vector from "../../engine/core/vector";
+import PIXIEntity from "../../../engine/pixi/pixi-entity";
+import Vector from "../../../engine/core/vector";
 
 export default class Wall extends PIXIEntity {
 

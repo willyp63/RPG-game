@@ -1,6 +1,6 @@
 import Wall from "./wall";
 import { Sprite, loader } from "pixi.js";
-import Vector from "../../engine/core/vector";
+import Vector from "../../../engine/core/vector";
 
 const TEXTURES_FILE = 'public/imgs/wood-plank.jpg';
 

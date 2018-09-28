@@ -1,20 +1,25 @@
 import KeyListener from "../../../engine/interaction/key-listener";
-import StabAttack from "./attacks/stab-attack";
+import WarriorStabAttack from "./attacks/warrior-stab-attack";
 import AnimatedPIXIEntity from "../../../engine/pixi/animated-pixi-entity";
 import Vector from "../../../engine/core/vector";
 import Direction from "../../../engine/core/direction";
 import EntityType from "../../../engine/core/entity-type";
 import TextureHelper from "../../../engine/pixi/texture-helper";
+import PIXIAnimation from "../../../engine/pixi/pixi-animation";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
 const ANIMATION_SPEED = 0.08;
-const RUN_FORCE_X = 0.22;
-const SPRINT_FORCE_X = 0.36;
+
+const SIZE = new Vector(16, 35);
+const RUN_FORCE = new Vector(0.22, 0);
+const SPRINT_FORCE = new Vector(0.36, 0);
+const JUMP_FORCE = new Vector(0, -7);
+const STAB_POSITION = new Vector(24, 2);
 
 export default class Warrior extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Friendly; }
-  get size() { return new Vector(16, 35); }
+  get size() { return SIZE; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 
@@ -37,13 +42,11 @@ export default class Warrior extends AnimatedPIXIEntity {
   private _isStabbing = false;
   private _isOnGround = false;
   private _isSprinting = false;
+  private _isFacingLeft = false;
   private _runForce = new Vector(0, 0);
 
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
-
-    this.sprite.animationSpeed = ANIMATION_SPEED;
-    this._stop();
 
     new KeyListener(37 /* left arrow */,
       () => {
@@ -93,99 +96,97 @@ export default class Warrior extends AnimatedPIXIEntity {
         }
       },
     );
+
+    this._stop();
   }
 
   afterTick() {
     super.afterTick();
 
-    if (this.isTouchingWallsInAllDirections([Direction.Down])) {
+    this._isOnGround = this.isTouchingWallsInAllDirections([Direction.Down]);
+    if (this._isOnGround) {
       this.push(this._runForce);
-
-      this._isOnGround = true;
-    } else {
-      if (Math.abs(this.velocity.x) < 2) {
-        this.push(this._runForce.scaled(0.333));
-      }
-
-      this._isOnGround = false;
     }
-
   }
 
   _goLeft() {
     if (this._isStabbing) return;
 
-    this._runForce = new Vector(this._isSprinting ? -SPRINT_FORCE_X : -RUN_FORCE_X, 0);
-    this.sprite.animationSpeed = this._isSprinting ? ANIMATION_SPEED * (SPRINT_FORCE_X / RUN_FORCE_X) : ANIMATION_SPEED;
-    this.sprite.scale.x = -1;
-    this.sprite.textures = Warrior._runTextures;
-    this.sprite.loop = true;
-    this.sprite.gotoAndPlay(0);
+    this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
+    this._runForce = this._runForce.flippedHorizontally();
+    this._isFacingLeft = true;
+
+    this.animation =
+      new PIXIAnimation(Warrior._runTextures)
+        .speed(this._isSprinting ? ANIMATION_SPEED * SPRINT_FORCE.x / RUN_FORCE.x : ANIMATION_SPEED)
+        .flippedHorizontally();
   }
 
   _goRight() {
     if (this._isStabbing) return;
 
-    this._runForce = new Vector(this._isSprinting ? SPRINT_FORCE_X : RUN_FORCE_X, 0);
-    this.sprite.animationSpeed = this._isSprinting ? ANIMATION_SPEED * (SPRINT_FORCE_X / RUN_FORCE_X) : ANIMATION_SPEED;
-    this.sprite.scale.x = 1;
-    this.sprite.textures = Warrior._runTextures;
-    this.sprite.loop = true;
-    this.sprite.gotoAndPlay(0);
+    this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
+    this._isFacingLeft = false;
+
+    this.animation =
+      new PIXIAnimation(Warrior._runTextures)
+      .speed(this._isSprinting ? ANIMATION_SPEED * SPRINT_FORCE.x / RUN_FORCE.x : ANIMATION_SPEED);
   }
 
   _stop() {
     if (this._isStabbing) return;
 
     this._runForce = new Vector(0, 0);
-    this.sprite.textures = Warrior._runTextures;
-    this.sprite.loop = true;
-    this.sprite.gotoAndStop(1);
+
+    this.animation =
+      new PIXIAnimation(Warrior._runTextures)
+        .speed(ANIMATION_SPEED)
+        .flippedHorizontally(this._isFacingLeft)
+        .stopOn(1);
   }
 
   _jump() {
     if (this._isStabbing) return;
+
     if (this._isOnGround) {
-      this.push(new Vector(0, -7));
       this.velocity = this.velocity.withNewY(0);
+      this.push(JUMP_FORCE);
     }
   }
 
   stab() {
     if (this._isStabbing) return;
-    this._isStabbing = true;
 
     this._runForce = new Vector(0, 0);
-    this.sprite.animationSpeed = ANIMATION_SPEED;
-    this.sprite.textures = Warrior._stabTextures;
-    this.sprite.loop = false;
-    this.sprite.play();
+    this._isStabbing = true;
 
-    this.sprite.onFrameChange = () => {
-      this.addEntityToSystem(new StabAttack(
-        new Vector(
-          this.sprite.scale.x === 1 ? this.position.x + 24 : this.position.x - 24,
-          this.position.y + 2,
-        ),
+    this.animation =
+      new PIXIAnimation(Warrior._stabTextures)
+        .speed(ANIMATION_SPEED)
+        .flippedHorizontally(this._isFacingLeft)
+        .onFrameChange(this._onStabFrameChange.bind(this))
+        .onLoop(this._onStabComplete.bind(this));
+  }
+
+  _onStabFrameChange(currentFrame: number) {
+    if (currentFrame === 1) {
+      this.addEntityToSystem(new WarriorStabAttack(
+        this.position.plus(STAB_POSITION.flippedHorizontally(this._isFacingLeft)),
         this,
       ));
+    }
+  }
 
-      this.sprite.onFrameChange = () => {};
-    };
-
-    this.sprite.onComplete = () => {
-      this._isStabbing = false;
+  _onStabComplete() {
+    this._isStabbing = false;
       
-      if (this._rightDown) {
-        this._goRight();
-      } else if (this._leftDown) {
-        this._goLeft();
-      } else {
-        this._stop();
-      }
-
-      this.sprite.onComplete = () => {};
-    };
+    if (this._rightDown) {
+      this._goRight();
+    } else if (this._leftDown) {
+      this._goLeft();
+    } else {
+      this._stop();
+    }
   }
 
 }

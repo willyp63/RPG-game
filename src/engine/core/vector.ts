@@ -51,4 +51,9 @@ export default class Vector {
   toUnitVector() {
     return new Vector(this._x / this.length, this._y / this.length);
   }
+
+  flippedHorizontally(isFlipped = true) {
+    return this.scaled(new Vector(isFlipped ? -1 : 1, 1));
+  }
+
 }
