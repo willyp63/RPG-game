@@ -22,11 +22,11 @@ export default abstract class AnimatedPIXIEntity extends PIXIEntity {
       animation.isFlippedHorizontally = this.isFacingLeft;
     }
 
+    this.sprite.onFrameChange = () => animation.frameChangeFunc(this.sprite.currentFrame);
+    this.sprite.onLoop = animation.loopFunc;
     this.sprite.textures = animation.textures;
     this.sprite.animationSpeed = animation.animationSpeed;
     this.sprite.loop = animation.isLooping;
-    this.sprite.onFrameChange = () => animation.frameChangeFunc(this.sprite.currentFrame);
-    this.sprite.onLoop = animation.loopFunc;
     this.sprite.scale.x = animation.isFlippedHorizontally ? -1 : 1;
 
     if (this._healthBar) {

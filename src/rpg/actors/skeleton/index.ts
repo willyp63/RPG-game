@@ -18,7 +18,8 @@ const SIZE = new Vector(15, 33);
 const ALERT_DISTANCE = 120;
 const ATTACK_ALERT_DISTANCE = 24;
 const ATTACK_POSITION = new Vector(12, 0);
-const MAX_HEALTH = 20;
+const MAX_HEALTH = 30;
+const REVIVE_TIME = 8000;
 
 export default class Skeleton extends AnimatedPIXIEntity {
 
@@ -121,7 +122,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
       new PIXIAnimation(Skeleton._dieTextures)
         .stopOn(2);
 
-    setTimeout(this._revive.bind(this), 4000);
+    setTimeout(this._revive.bind(this), REVIVE_TIME);
   }
 
   _revive() {

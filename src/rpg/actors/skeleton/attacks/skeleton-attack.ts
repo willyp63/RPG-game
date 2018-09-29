@@ -6,7 +6,7 @@ import Skeleton from "..";
 
 const SIZE = 16;
 const ATTACK_FORCE = new Vector(4, -2);
-const ATTACK_DAMAGE = 5;
+const ATTACK_DAMAGE = 10;
 
 export default class SkeletonAttack extends Entity {
 

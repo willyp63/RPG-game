@@ -55,7 +55,7 @@ export default class TestArea extends PIXISystem {
     this.followEntity(warrior);
 
     // Skeletons
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 5; i++) {
       const dx = Math.random() * 360;
       this.addEntity(new Skeleton(new Vector(440 + dx, 200)));
     }

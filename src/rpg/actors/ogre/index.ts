@@ -10,15 +10,20 @@ import PIXIAnimation from "../../../engine/pixi/pixi-animation";
 
 const TEXTURES_FILE = "public/imgs/ogre.json";
 const RUN_ANIMATION_SPEED = 0.1;
-const SWIPE_ATTACK_ANIMATION_SPEED = 0.0666;
+const SWIPE_ATTACK_ANIMATION_SPEED = 0.04;
 
 const RUN_FORCE = new Vector(0.1, 0);
 const SWIPE_ATTACK_POSITION = new Vector(48, 16);
-const MAX_NUM_SWIPE_ATTACKS = 2;
+const SWIPE_ATTACK_RUN_FORCE_SCALE = 0.5;
+const SWIPE_ATTACK_ENERGY_COST = 35;
+const MAX_NUM_SWIPE_ATTACKS = 3;
 const SWIPE_ATTACK_ALERT_DISTANCE = 80;
+const ALERT_DISTANCE = 120;
 const SIZE = new Vector(44, 92);
 const WEIGHT = 4;
-const MAX_HEALTH = 200;
+const MAX_HEALTH = 120;
+const MAX_ENERGY = 100;
+const ENERGY_REGEN = 0.15;
 
 export default class Ogre extends AnimatedPIXIEntity {
 
@@ -50,6 +55,7 @@ export default class Ogre extends AnimatedPIXIEntity {
   private _isAttacking = false;
   private _numSwipeAttacks = 0;
   private _currentNumSwipeAttacks = 0;
+  private _energy = MAX_ENERGY;
 
   constructor(position: Vector) {
     super(position, Ogre._runTextures);
@@ -71,6 +77,8 @@ export default class Ogre extends AnimatedPIXIEntity {
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
       this.push(this._runForce);
     }
+
+    if (this._energy < MAX_ENERGY) this._energy += ENERGY_REGEN;
   }
 
   onCollision(otherEntity: Entity, collision: Collision) {
@@ -78,22 +86,23 @@ export default class Ogre extends AnimatedPIXIEntity {
 
     if (otherEntity.type === EntityType.Friendly) {
 
-      // is facing other entity
+      const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
       const isFacingOtherEntity =
         (this.isFacingLeft && otherEntity.position.x < this.position.x) ||
         (!this.isFacingLeft && otherEntity.position.x > this.position.x);
-      if (isFacingOtherEntity) {
 
-        // is close enough to attack
-        const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
-        if (distanceToOtherEntity < SWIPE_ATTACK_ALERT_DISTANCE) {
-          this._swipeAttack();
-        }
+      if (isFacingOtherEntity && distanceToOtherEntity < SWIPE_ATTACK_ALERT_DISTANCE) {
+        this._swipeAttack();
+      } else if (!isFacingOtherEntity && distanceToOtherEntity < ALERT_DISTANCE) {
+        if (this.isFacingLeft) this._runRight();
+        else this._runLeft();
       }
     }
   }
 
   _runRight() {
+    if (this._isAttacking) return;
+
     this._runForce = RUN_FORCE;
     this._isAttacking = false;
 
@@ -104,6 +113,8 @@ export default class Ogre extends AnimatedPIXIEntity {
   }
 
   _runLeft() {
+    if (this._isAttacking) return;
+
     this._runForce = RUN_FORCE.flippedHorizontally();
     this._isAttacking = false;
 
@@ -114,37 +125,39 @@ export default class Ogre extends AnimatedPIXIEntity {
   }
 
   _swipeAttack() {
-    if (this._isAttacking) return;
-    
-    this._runForce = new Vector(0, 0);
-    this._isAttacking = true;
+    if (this._isAttacking || this._energy < SWIPE_ATTACK_ENERGY_COST) return;
 
     this._numSwipeAttacks = Math.ceil(Math.random() * MAX_NUM_SWIPE_ATTACKS);
     this._currentNumSwipeAttacks = 0;
+    
+    this._runForce = this._runForce.scaled(SWIPE_ATTACK_RUN_FORCE_SCALE);
+    this._isAttacking = true;
 
     this.animation =
       new PIXIAnimation(Ogre._swipeAttackTextures)
         .speed(SWIPE_ATTACK_ANIMATION_SPEED)
-        .onFrameChange(this._onSwipeAttackFrameChange.bind(this))
-        .onLoop(this._onSwipeAttackComplete.bind(this));
+        .onFrameChange(this._onSwipeAttackFrameChange.bind(this));
   }
 
   _onSwipeAttackFrameChange(currentFrame: number) {
     if ([1, 3].includes(currentFrame)) {
+      // end of attack
       this.addEntityToSystem(new OgreSwipeAttack(
         this.position.plus(SWIPE_ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
         this,
       ));
+    } else {
+      // start of attack
+      this._currentNumSwipeAttacks++;
+      if (this._currentNumSwipeAttacks < this._numSwipeAttacks && this._energy >= SWIPE_ATTACK_ENERGY_COST) {
+        this._energy -= SWIPE_ATTACK_ENERGY_COST;
+      } else {
+        this._isAttacking = false;
+  
+        if (this.isFacingLeft) this._runLeft();
+        else this._runRight();
+      }
     }
   }
-  
-  _onSwipeAttackComplete() {
-    this._currentNumSwipeAttacks++;
-    if (this._currentNumSwipeAttacks < this._numSwipeAttacks) return;
 
-    this._isAttacking = false;
-
-    if (this.isFacingLeft) this._runLeft();
-    else this._runRight();
-  }
 }

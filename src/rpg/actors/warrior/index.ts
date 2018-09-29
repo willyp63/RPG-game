@@ -15,7 +15,7 @@ const RUN_FORCE = new Vector(0.22, 0);
 const SPRINT_FORCE = new Vector(0.36, 0);
 const JUMP_FORCE = new Vector(0, -7);
 const STAB_POSITION = new Vector(24, 2);
-const MAX_HEALTH = 100;
+const MAX_HEALTH = 200;
 
 export default class Warrior extends AnimatedPIXIEntity {
 

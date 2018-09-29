@@ -6,7 +6,7 @@ import Warrior from "..";
 
 const SIZE = 12;
 const ATTACK_FORCE = new Vector(6, -2);
-const ATTACK_DAMAGE = 10;
+const ATTACK_DAMAGE = 20;
 
 export default class WarriorStabAttack extends Entity {
 
