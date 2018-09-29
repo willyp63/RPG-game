@@ -1,8 +1,24 @@
 {"frames": {
 
+"roll_1.png":
+{
+	"frame": {"x":0,"y":0,"w":29,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
+	"sourceSize": {"w":29,"h":42}
+},
+"roll_2.png":
+{
+	"frame": {"x":29,"y":0,"w":29,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
+	"sourceSize": {"w":29,"h":42}
+},
 "run_1.png":
 {
-	"frame": {"x":0,"y":0,"w":25,"h":35},
+	"frame": {"x":58,"y":0,"w":25,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":35},
@@ -10,7 +26,7 @@
 },
 "run_2.png":
 {
-	"frame": {"x":25,"y":0,"w":25,"h":35},
+	"frame": {"x":83,"y":0,"w":25,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":35},
@@ -18,7 +34,7 @@
 },
 "run_3.png":
 {
-	"frame": {"x":50,"y":0,"w":25,"h":35},
+	"frame": {"x":0,"y":42,"w":25,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":35},
@@ -26,7 +42,7 @@
 },
 "stab_1.png":
 {
-	"frame": {"x":75,"y":0,"w":51,"h":35},
+	"frame": {"x":25,"y":42,"w":51,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":51,"h":35},
@@ -34,13 +50,14 @@
 },
 "stab_2.png":
 {
-	"frame": {"x":126,"y":0,"w":51,"h":35},
+	"frame": {"x":76,"y":42,"w":51,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":51,"h":35},
 	"sourceSize": {"w":51,"h":35}
 }},
 "animations": {
+	"roll": ["roll_1.png","roll_2.png"],
 	"run": ["run_1.png","run_2.png","run_3.png"],
 	"stab": ["stab_1.png","stab_2.png"]
 },
@@ -49,8 +66,8 @@
 	"version": "1.0",
 	"image": "warrior.png",
 	"format": "RGBA8888",
-	"size": {"w":177,"h":35},
+	"size": {"w":127,"h":77},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:66b782ffe799fed8dea0cd98129b51ea:f4d56c35d977ef9d1be66ff180b89da4:380ec401ba9cf63cd4c0319d938fb695$"
+	"smartupdate": "$TexturePacker:SmartUpdate:211e7bd49a7a5f4a2b6f53c9404c74a2:1be66712ebe1254edf7e1fc3c8ed1fd5:380ec401ba9cf63cd4c0319d938fb695$"
 }
 }

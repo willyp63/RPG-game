@@ -9,6 +9,7 @@ import PIXIAnimation from "../../../engine/pixi/pixi-animation";
 
 const TEXTURES_FILE = "public/imgs/warrior.json";
 const ANIMATION_SPEED = 0.08;
+const ROLL_ANIMATION_SPEED = 0.133;
 
 const SIZE = new Vector(15, 33);
 const RUN_FORCE = new Vector(0.22, 0);
@@ -18,6 +19,13 @@ const SPRINT_FORCE = new Vector(0.3, 0);
 const JUMP_FORCE = new Vector(0, -6.5);
 const STAB_POSITION = new Vector(24, 2);
 const MAX_HEALTH = 200;
+const ROLL_FORCE = new Vector(9, 0);
+
+enum WarriorState {
+  Nuetral,
+  Rolling,
+  Stabbing,
+};
 
 export default class Warrior extends AnimatedPIXIEntity {
 
@@ -41,12 +49,17 @@ export default class Warrior extends AnimatedPIXIEntity {
     TextureHelper.get(TEXTURES_FILE, "stab_2.png"),
   ]; }
 
+  static get _rollTexture() { return [
+    TextureHelper.get(TEXTURES_FILE, "roll_1.png"),
+    TextureHelper.get(TEXTURES_FILE, "roll_2.png"),
+  ]; }
+
   private _leftDown = false;
   private _rightDown = false;
-  private _isStabbing = false;
   private _isOnGround = false;
   private _isSprinting = false;
   private _runForce = new Vector(0, 0);
+  private _state = WarriorState.Nuetral;
 
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
@@ -81,7 +94,7 @@ export default class Warrior extends AnimatedPIXIEntity {
       () => this.stab(),
     );
 
-    new KeyListener(83 /* `s` */,
+    new KeyListener(90 /* `z` */,
       () => {
         this._isSprinting = true;
         if (this._runForce.x > 0) {
@@ -100,6 +113,10 @@ export default class Warrior extends AnimatedPIXIEntity {
       },
     );
 
+    new KeyListener(88 /* `x` */,
+      () => this._roll(),
+    );
+
     this._stop();
   }
 
@@ -115,7 +132,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   }
 
   _goLeft() {
-    if (this._isStabbing) return;
+    if (this._state !== WarriorState.Nuetral) return;
 
     this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
     this._runForce = this._runForce.flippedHorizontally();
@@ -127,7 +144,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   }
 
   _goRight() {
-    if (this._isStabbing) return;
+    if (this._state !== WarriorState.Nuetral) return;
 
     this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
 
@@ -138,7 +155,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   }
 
   _stop() {
-    if (this._isStabbing) return;
+    if (this._state !== WarriorState.Nuetral) return;
 
     this._runForce = new Vector(0, 0);
 
@@ -149,19 +166,17 @@ export default class Warrior extends AnimatedPIXIEntity {
   }
 
   _jump() {
-    if (this._isStabbing) return;
+    if (this._state !== WarriorState.Nuetral || !this._isOnGround) return;
 
-    if (this._isOnGround) {
-      this.velocity = this.velocity.withNewY(0);
-      this.push(JUMP_FORCE);
-    }
+    this.velocity = this.velocity.withNewY(0);
+    this.push(JUMP_FORCE);
   }
 
   stab() {
-    if (this._isStabbing) return;
+    if (this._state !== WarriorState.Nuetral) return;
 
     this._runForce = new Vector(0, 0);
-    this._isStabbing = true;
+    this._state = WarriorState.Stabbing;
 
     this.animation =
       new PIXIAnimation(Warrior._stabTextures)
@@ -180,7 +195,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   }
 
   _onStabComplete() {
-    this._isStabbing = false;
+    this._state = WarriorState.Nuetral;
       
     if (this._rightDown) {
       this._goRight();
@@ -189,6 +204,19 @@ export default class Warrior extends AnimatedPIXIEntity {
     } else {
       this._stop();
     }
+  }
+
+  _roll() {
+    if (this._state !== WarriorState.Nuetral || !this._isOnGround) return;
+
+    this._runForce = new Vector(0, 0);
+    this._state = WarriorState.Rolling;
+    this.push(ROLL_FORCE.flippedHorizontally(this.isFacingLeft));
+
+    this.animation =
+      new PIXIAnimation(Warrior._rollTexture)
+        .speed(ROLL_ANIMATION_SPEED)
+        .onLoop(this._onStabComplete.bind(this));
   }
 
 }
