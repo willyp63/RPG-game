@@ -23,7 +23,7 @@ const SIZE = new Vector(44, 92);
 const WEIGHT = 4;
 const MAX_HEALTH = 120;
 const MAX_ENERGY = 100;
-const ENERGY_REGEN = 0.15;
+const ENERGY_REGEN = 0.35;
 
 export default class Ogre extends AnimatedPIXIEntity {
 
