@@ -4,7 +4,7 @@ import Vector from "../../../../engine/core/vector";
 import Ogre from "..";
 import Collision from "../../../../engine/core/collision";
 
-const SIZE = 36;
+const SIZE = 32;
 const ATTACK_FORCE = new Vector(8, -3);
 const ATTACK_DAMAGE = 30;
 

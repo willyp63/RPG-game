@@ -75,9 +75,35 @@ export default class CastleArea extends PIXISystem {
     this.addEntity(new Wall(new Vector(800, 0), new Vector(1248, 32)));
     this.addEntity(new Wall(new Vector(2048, 0), new Vector(32, 640)));
 
+    /* --- OGRES ---  */
+
+    // second floor
+    this.addEntity(new Ogre(new Vector(900, 450)));
+    this.addEntity(new Ogre(new Vector(1700, 450)));
+
+    // third floor
+    this.addEntity(new Ogre(new Vector(1000, 288)));
+    this.addEntity(new Ogre(new Vector(1400, 288)));
+    this.addEntity(new Ogre(new Vector(1800, 288)));
+
+    /* --- SKELETONS ---  */
+
+    // tower on the left
+    this.addEntity(new Skeleton(new Vector(300, 600)));
+    this.addEntity(new Skeleton(new Vector(340, 600)));
+
+    // first floor
+    for (let i = 0; i < 8; i++) {
+      this.addEntity(new Skeleton(new Vector(830 + Math.floor(Math.random() * 1000), 580)));
+    }
+
+    // third floor
+    for (let i = 0; i < 8; i++) {
+      this.addEntity(new Skeleton(new Vector(980 + Math.floor(Math.random() * 850), 280)));
+    }
     
     /* --- WARRIOR ---  */
-    const warrior = new Warrior(new Vector(1844, 540));
+    const warrior = new Warrior(new Vector(425, 540));
     this.addEntity(warrior);
     this.followEntity(warrior);
   }
