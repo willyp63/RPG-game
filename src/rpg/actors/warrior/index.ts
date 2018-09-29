@@ -49,8 +49,6 @@ export default class Warrior extends AnimatedPIXIEntity {
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
 
-    if (this._healthBar) this._healthBar.alpha = 0;
-
     new KeyListener(37 /* left arrow */,
       () => {
         this._goLeft();

@@ -3,10 +3,11 @@ import { Sprite, loader } from "pixi.js";
 import Vector from "../../../engine/core/vector";
 
 const TEXTURES_FILE = 'public/imgs/wood-plank.jpg';
+const SM_TEXTURES_FILE = 'public/imgs/wood-plank-sm.jpg';
 
 export default class OscillatingWall extends Wall {
 
-  static assets = [TEXTURES_FILE];
+  static assets = [TEXTURES_FILE, SM_TEXTURES_FILE];
 
   private _tickCount = 0;
 
@@ -23,6 +24,10 @@ export default class OscillatingWall extends Wall {
     );
 
     this.velocity = velocity;
+
+    if (size.x < 96) {
+      this._sprite.texture = loader.resources[SM_TEXTURES_FILE].texture;
+    }
   }
 
   afterTick() {
