@@ -11,17 +11,18 @@ import PIXIAnimation from "../../../engine/pixi/pixi-animation";
 const TEXTURES_FILE = "public/imgs/skeleton.json";
 const WALK_ANIMATION_SPEED = 0.1;
 const ATTACK_ANIMATION_SPEED = 0.167;
+const DIE_ANIMATION_SPEED = 0.1;
 
 const WALK_FORCE = new Vector(0.05, 0);
-const SIZE = new Vector(15, 35);
+const SIZE = new Vector(15, 33);
 const ALERT_DISTANCE = 120;
 const ATTACK_ALERT_DISTANCE = 24;
 const ATTACK_POSITION = new Vector(12, 0);
-const MAX_HEALTH = 40;
+const MAX_HEALTH = 20;
 
 export default class Skeleton extends AnimatedPIXIEntity {
 
-  get type() { return EntityType.Unfriendly; }
+  get type() { return this._isDead ? EntityType.Neutral : EntityType.Unfriendly; }
   get size() { return SIZE; }
   get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
@@ -33,6 +34,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-1.png"),
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-2.png"),
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-3.png"),
+    TextureHelper.get(TEXTURES_FILE, "skeleton__walk-2.png"),
   ]; }
 
   static get _attackTextures() { return [
@@ -40,8 +42,21 @@ export default class Skeleton extends AnimatedPIXIEntity {
     TextureHelper.get(TEXTURES_FILE, "skeleton__attack-2.png"),
   ]; }
 
+  static get _dieTextures() { return [
+    TextureHelper.get(TEXTURES_FILE, "skeleton__die-1.png"),
+    TextureHelper.get(TEXTURES_FILE, "skeleton__die-2.png"),
+    TextureHelper.get(TEXTURES_FILE, "skeleton__die-3.png"),
+  ]; }
+
+  static get _reviveTextures() { return [
+    TextureHelper.get(TEXTURES_FILE, "skeleton__die-2.png"),
+    TextureHelper.get(TEXTURES_FILE, "skeleton__die-1.png"),
+    TextureHelper.get(TEXTURES_FILE, "skeleton__walk-2.png"),
+  ]; }
+
   private _walkForce = WALK_FORCE;
   private _isAttacking = false;
+  private _isDead = false;
 
   constructor(position: Vector) {
     super(position, Skeleton._walkTextures);
@@ -51,6 +66,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
 
   afterTick() {
     super.afterTick();
+
+    if (this._isDead) return;
 
     if (this.isTouchingWallsInAllDirections([Direction.Right])) {
       this._walkLeft();
@@ -68,6 +85,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
   onCollision(otherEntity: Entity, collision: Collision) {
     super.onCollision(otherEntity, collision);
 
+    if (this._isDead) return;
+
     if (otherEntity.type === EntityType.Friendly) {
 
       const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
@@ -82,6 +101,43 @@ export default class Skeleton extends AnimatedPIXIEntity {
         else this._walkLeft();
       }
     }
+  }
+
+  kill() {
+    this._walkForce = new Vector(0, 0);
+    this._isAttacking = false;
+    this._isDead = true;
+
+    this.animation =
+      new PIXIAnimation(Skeleton._dieTextures)
+        .speed(DIE_ANIMATION_SPEED)
+        .onLoop(this._onDieAnimationComplete.bind(this));
+  }
+
+  _onDieAnimationComplete() {
+    if (this._healthBar) this._healthBar.alpha = 0;
+
+    this.animation =
+      new PIXIAnimation(Skeleton._dieTextures)
+        .stopOn(2);
+
+    setTimeout(this._revive.bind(this), 4000);
+  }
+
+  _revive() {
+    this.animation =
+      new PIXIAnimation(Skeleton._reviveTextures)
+        .speed(DIE_ANIMATION_SPEED)
+        .onLoop(this._onReviveAnimationComplete.bind(this));
+  }
+
+  _onReviveAnimationComplete() {
+    this._isDead = false;
+    this.heal(this.maxHealth);
+    if (this._healthBar) this._healthBar.alpha = 1;
+
+    if (this.isFacingLeft) this._walkLeft();
+    else this._walkRight();
   }
 
   _walkRight() {
@@ -117,6 +173,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
   }
 
   _onAttackComplete() {
+    if (this._isDead) return;
+
     this.addEntityToSystem(new SkeletonAttack(
       this.position.plus(ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
       this,

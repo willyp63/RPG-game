@@ -31,7 +31,7 @@ export default abstract class System {
     this._killSquishedEntities();
     this._applyGravity();
     this.entities.forEach(entity => entity.afterTick());
-    this._removeDeadEntities();
+    this._removeEntities();
     this._addNewEntities();
   }
 
@@ -66,9 +66,9 @@ export default abstract class System {
     });
   }
 
-  _removeDeadEntities() {
+  _removeEntities() {
     for (let i = 0; i < this.entities.length; i++) {
-      if (this.entities[i].isDead) {
+      if (this.entities[i].canRemoveFromSystem) {
         this.removeEntityAt(i--);
       }
     }

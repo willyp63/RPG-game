@@ -10,7 +10,7 @@ import PIXIAnimation from "../../../engine/pixi/pixi-animation";
 const TEXTURES_FILE = "public/imgs/warrior.json";
 const ANIMATION_SPEED = 0.08;
 
-const SIZE = new Vector(16, 35);
+const SIZE = new Vector(15, 33);
 const RUN_FORCE = new Vector(0.22, 0);
 const SPRINT_FORCE = new Vector(0.36, 0);
 const JUMP_FORCE = new Vector(0, -7);

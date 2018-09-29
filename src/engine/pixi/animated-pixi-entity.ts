@@ -36,7 +36,7 @@ export default abstract class AnimatedPIXIEntity extends PIXIEntity {
     if (animation.stopOnFrameIndex >= 0) {
       this.sprite.gotoAndStop(animation.stopOnFrameIndex);
     } else {
-      this.sprite.play();
+      this.sprite.gotoAndPlay(0);
     }
 
     this._animation = animation;

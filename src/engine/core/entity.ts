@@ -28,7 +28,7 @@ export default abstract class Entity {
   public acceleration = new Vector(0, 0);
 
   public health = this.maxHealth;
-  public isDead = false;
+  public canRemoveFromSystem = false;
   public entitiesToAdd: Array<Entity> = [];
   public touchingWallInDirection: {
     [Direction.Up]?: Entity,
@@ -49,7 +49,7 @@ export default abstract class Entity {
   public damage(damageAmount: number) {
     this.health = Math.max(0, this.health - damageAmount);
     
-    if (this.health === 0) this.isDead = true;
+    if (this.health === 0) this.kill();
   }
 
   public heal(healAmount: number) {
@@ -57,7 +57,7 @@ export default abstract class Entity {
   }
 
   public kill() {
-    this.isDead = true;
+    this.canRemoveFromSystem = true;
   }
 
   public isTouchingWallInAnyDirection(directions: Array<Direction>): boolean {

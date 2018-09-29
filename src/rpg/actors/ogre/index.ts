@@ -16,7 +16,7 @@ const RUN_FORCE = new Vector(0.1, 0);
 const SWIPE_ATTACK_POSITION = new Vector(48, 16);
 const MAX_NUM_SWIPE_ATTACKS = 2;
 const SWIPE_ATTACK_ALERT_DISTANCE = 80;
-const SIZE = new Vector(44, 96);
+const SIZE = new Vector(44, 92);
 const WEIGHT = 4;
 const MAX_HEALTH = 200;
 
