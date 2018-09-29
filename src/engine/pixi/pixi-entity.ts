@@ -3,6 +3,8 @@ import Vector from "../core/vector";
 import Entity from "../core/entity";
 import { HealthBar } from "./health-bar";
 
+const HEALTH_BAR_Y_POSITION_PERCENT =  0.667;
+
 export default abstract class PIXIEntity extends Entity {
 
   static assets: Array<string> = [];
@@ -10,7 +12,7 @@ export default abstract class PIXIEntity extends Entity {
   get sprite() { return this._sprite; }
   protected _sprite: Sprite;
 
-  private _healthBar?: HealthBar;
+  protected _healthBar?: HealthBar;
 
   constructor(
     sprite: Sprite | Function,
@@ -23,14 +25,11 @@ export default abstract class PIXIEntity extends Entity {
     // all sprites are anchored at their center
     this.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
 
-    // wait for subclass to set width/height..
-    setTimeout(() => {
-      // add health-bar
-      if (this.maxHealth) {
-        this._healthBar = new HealthBar(new Vector(0, -this.size.y * .667), this.maxHealth);
-        this.sprite.addChild(this._healthBar);
-      }
-    }, 0);
+    // add health-bar
+    if (this.maxHealth) {
+      this._healthBar = new HealthBar(new Vector(0, -this.size.y * HEALTH_BAR_Y_POSITION_PERCENT), this.maxHealth);
+      this.sprite.addChild(this._healthBar);
+    }
 
     this._alignSprite();
   }

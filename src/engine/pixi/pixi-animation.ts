@@ -10,7 +10,7 @@ export default class PIXIAnimation {
   public isLooping = true;
   public frameChangeFunc: FrameChangeFunction = () => {};
   public loopFunc = () => {};
-  public isFlippedHorizontally = false;
+  public isFlippedHorizontally?: boolean = undefined;
   public stopOnFrameIndex = -1;
 
   constructor(public textures: Array<Texture>) { }

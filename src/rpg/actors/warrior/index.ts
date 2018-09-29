@@ -44,11 +44,12 @@ export default class Warrior extends AnimatedPIXIEntity {
   private _isStabbing = false;
   private _isOnGround = false;
   private _isSprinting = false;
-  private _isFacingLeft = false;
   private _runForce = new Vector(0, 0);
 
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
+
+    if (this._healthBar) this._healthBar.alpha = 0;
 
     new KeyListener(37 /* left arrow */,
       () => {
@@ -116,7 +117,6 @@ export default class Warrior extends AnimatedPIXIEntity {
 
     this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
     this._runForce = this._runForce.flippedHorizontally();
-    this._isFacingLeft = true;
 
     this.animation =
       new PIXIAnimation(Warrior._runTextures)
@@ -128,11 +128,11 @@ export default class Warrior extends AnimatedPIXIEntity {
     if (this._isStabbing) return;
 
     this._runForce = this._isSprinting ? SPRINT_FORCE : RUN_FORCE;
-    this._isFacingLeft = false;
 
     this.animation =
       new PIXIAnimation(Warrior._runTextures)
-      .speed(this._isSprinting ? ANIMATION_SPEED * SPRINT_FORCE.x / RUN_FORCE.x : ANIMATION_SPEED);
+      .speed(this._isSprinting ? ANIMATION_SPEED * SPRINT_FORCE.x / RUN_FORCE.x : ANIMATION_SPEED)
+      .flippedHorizontally(false);
   }
 
   _stop() {
@@ -143,7 +143,6 @@ export default class Warrior extends AnimatedPIXIEntity {
     this.animation =
       new PIXIAnimation(Warrior._runTextures)
         .speed(ANIMATION_SPEED)
-        .flippedHorizontally(this._isFacingLeft)
         .stopOn(1);
   }
 
@@ -165,7 +164,6 @@ export default class Warrior extends AnimatedPIXIEntity {
     this.animation =
       new PIXIAnimation(Warrior._stabTextures)
         .speed(ANIMATION_SPEED)
-        .flippedHorizontally(this._isFacingLeft)
         .onFrameChange(this._onStabFrameChange.bind(this))
         .onLoop(this._onStabComplete.bind(this));
   }
@@ -173,7 +171,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   _onStabFrameChange(currentFrame: number) {
     if (currentFrame === 1) {
       this.addEntityToSystem(new WarriorStabAttack(
-        this.position.plus(STAB_POSITION.flippedHorizontally(this._isFacingLeft)),
+        this.position.plus(STAB_POSITION.flippedHorizontally(this.isFacingLeft)),
         this,
       ));
     }

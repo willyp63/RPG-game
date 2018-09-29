@@ -48,7 +48,6 @@ export default class Ogre extends AnimatedPIXIEntity {
 
   private _runForce = RUN_FORCE;
   private _isAttacking = false;
-  private _isFacingLeft = false;
   private _numSwipeAttacks = 0;
   private _currentNumSwipeAttacks = 0;
 
@@ -81,8 +80,8 @@ export default class Ogre extends AnimatedPIXIEntity {
 
       // is facing other entity
       const isFacingOtherEntity =
-        (this._isFacingLeft && otherEntity.position.x < this.position.x) ||
-        (!this._isFacingLeft && otherEntity.position.x > this.position.x);
+        (this.isFacingLeft && otherEntity.position.x < this.position.x) ||
+        (!this.isFacingLeft && otherEntity.position.x > this.position.x);
       if (isFacingOtherEntity) {
 
         // is close enough to attack
@@ -96,17 +95,16 @@ export default class Ogre extends AnimatedPIXIEntity {
 
   _runRight() {
     this._runForce = RUN_FORCE;
-    this._isFacingLeft = false;
     this._isAttacking = false;
 
     this.animation =
       new PIXIAnimation(Ogre._runTextures)
-        .speed(RUN_ANIMATION_SPEED);
+        .speed(RUN_ANIMATION_SPEED)
+        .flippedHorizontally(false);
   }
 
   _runLeft() {
     this._runForce = RUN_FORCE.flippedHorizontally();
-    this._isFacingLeft = true;
     this._isAttacking = false;
 
     this.animation =
@@ -127,7 +125,6 @@ export default class Ogre extends AnimatedPIXIEntity {
     this.animation =
       new PIXIAnimation(Ogre._swipeAttackTextures)
         .speed(SWIPE_ATTACK_ANIMATION_SPEED)
-        .flippedHorizontally(this._isFacingLeft)
         .onFrameChange(this._onSwipeAttackFrameChange.bind(this))
         .onLoop(this._onSwipeAttackComplete.bind(this));
   }
@@ -135,7 +132,7 @@ export default class Ogre extends AnimatedPIXIEntity {
   _onSwipeAttackFrameChange(currentFrame: number) {
     if ([1, 3].includes(currentFrame)) {
       this.addEntityToSystem(new OgreSwipeAttack(
-        this.position.plus(SWIPE_ATTACK_POSITION.flippedHorizontally(this._isFacingLeft)),
+        this.position.plus(SWIPE_ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
         this,
       ));
     }
@@ -147,7 +144,7 @@ export default class Ogre extends AnimatedPIXIEntity {
 
     this._isAttacking = false;
 
-    if (this._isFacingLeft) this._runLeft();
+    if (this.isFacingLeft) this._runLeft();
     else this._runRight();
   }
 }

@@ -41,7 +41,6 @@ export default class Skeleton extends AnimatedPIXIEntity {
   ]; }
 
   private _walkForce = WALK_FORCE;
-  private _isFacingLeft = false;
   private _isAttacking = false;
 
   constructor(position: Vector) {
@@ -73,13 +72,13 @@ export default class Skeleton extends AnimatedPIXIEntity {
 
       const distanceToOtherEntity = this.position.minus(otherEntity.position).length;
       const isFacingOtherEntity =
-        (this._isFacingLeft && otherEntity.position.x < this.position.x) ||
-        (!this._isFacingLeft && otherEntity.position.x > this.position.x);
+        (this.isFacingLeft && otherEntity.position.x < this.position.x) ||
+        (!this.isFacingLeft && otherEntity.position.x > this.position.x);
 
       if (isFacingOtherEntity && distanceToOtherEntity < ATTACK_ALERT_DISTANCE) {
         this._attack();
       } else if (!isFacingOtherEntity && distanceToOtherEntity < ALERT_DISTANCE) {
-        if (this._isFacingLeft) this._walkRight();
+        if (this.isFacingLeft) this._walkRight();
         else this._walkLeft();
       }
     }
@@ -87,17 +86,16 @@ export default class Skeleton extends AnimatedPIXIEntity {
 
   _walkRight() {
     this._walkForce = WALK_FORCE;
-    this._isFacingLeft = false;
     this._isAttacking = false;
 
     this.animation =
       new PIXIAnimation(Skeleton._walkTextures)
-        .speed(WALK_ANIMATION_SPEED);
+        .speed(WALK_ANIMATION_SPEED)
+        .flippedHorizontally(false);
   }
 
   _walkLeft() {
     this._walkForce = WALK_FORCE.flippedHorizontally();
-    this._isFacingLeft = true;
     this._isAttacking = false;
 
     this.animation =
@@ -115,19 +113,18 @@ export default class Skeleton extends AnimatedPIXIEntity {
     this.animation =
       new PIXIAnimation(Skeleton._attackTextures)
         .speed(ATTACK_ANIMATION_SPEED)
-        .flippedHorizontally(this._isFacingLeft)
         .onLoop(this._onAttackComplete.bind(this));
   }
 
   _onAttackComplete() {
     this.addEntityToSystem(new SkeletonAttack(
-      this.position.plus(ATTACK_POSITION.flippedHorizontally(this._isFacingLeft)),
+      this.position.plus(ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
       this,
     ));
 
     this._isAttacking = false;
 
-    if (this._isFacingLeft) this._walkLeft();
+    if (this.isFacingLeft) this._walkLeft();
     else this._walkRight();
   }
 
