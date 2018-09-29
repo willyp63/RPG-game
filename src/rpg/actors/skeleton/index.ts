@@ -17,11 +17,13 @@ const SIZE = new Vector(15, 35);
 const ALERT_DISTANCE = 120;
 const ATTACK_ALERT_DISTANCE = 24;
 const ATTACK_POSITION = new Vector(12, 0);
+const MAX_HEALTH = 40;
 
 export default class Skeleton extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Unfriendly; }
   get size() { return SIZE; }
+  get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 

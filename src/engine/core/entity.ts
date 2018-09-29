@@ -16,6 +16,7 @@ export default abstract class Entity {
   get size() { return new Vector(0, 0); }
   get shape() { return Shape.Rect; }
   get weight() { return DEFAULT_WEIGHT; }
+  get maxHealth() { return 0; }
   get frictionCoefficient() { return DEFAULT_FRICTION_COEFFICIENT; }
   get elasticity() { return DEFAULT_ELASTICITY; }
   get maxVelocity() { return DEFAULT_MAX_VELOCITY; }
@@ -26,6 +27,7 @@ export default abstract class Entity {
   public velocity = new Vector(0, 0);
   public acceleration = new Vector(0, 0);
 
+  public health = this.maxHealth;
   public isDead = false;
   public entitiesToAdd: Array<Entity> = [];
   public touchingWallInDirection: {
@@ -42,6 +44,16 @@ export default abstract class Entity {
   /* --- public --- */
   public push(force: Vector) {
     this.acceleration = this.acceleration.plus(force.scaled(1 / this.weight));
+  }
+
+  public damage(damageAmount: number) {
+    this.health = Math.max(0, this.health - damageAmount);
+    
+    if (this.health === 0) this.isDead = true;
+  }
+
+  public heal(healAmount: number) {
+    this.health = Math.min(this.maxHealth, this.health + healAmount);
   }
 
   public kill() {

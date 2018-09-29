@@ -15,11 +15,13 @@ const RUN_FORCE = new Vector(0.22, 0);
 const SPRINT_FORCE = new Vector(0.36, 0);
 const JUMP_FORCE = new Vector(0, -7);
 const STAB_POSITION = new Vector(24, 2);
+const MAX_HEALTH = 100;
 
 export default class Warrior extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Friendly; }
   get size() { return SIZE; }
+  get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 

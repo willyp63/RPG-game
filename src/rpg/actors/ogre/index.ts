@@ -18,12 +18,14 @@ const MAX_NUM_SWIPE_ATTACKS = 2;
 const SWIPE_ATTACK_ALERT_DISTANCE = 80;
 const SIZE = new Vector(44, 96);
 const WEIGHT = 4;
+const MAX_HEALTH = 200;
 
 export default class Ogre extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Unfriendly; }
   get size() { return SIZE; }
   get weight() { return WEIGHT; }
+  get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
   get isWall() { return true; }

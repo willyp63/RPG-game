@@ -6,6 +6,7 @@ import Collision from "../../../../engine/core/collision";
 
 const SIZE = 36;
 const ATTACK_FORCE = new Vector(8, -3);
+const ATTACK_DAMAGE = 20;
 
 export default class OgreSwipeAttack extends Entity {
 
@@ -27,6 +28,7 @@ export default class OgreSwipeAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Friendly) {
+      otherEntity.damage(ATTACK_DAMAGE);
       otherEntity.push(ATTACK_FORCE.flippedHorizontally(this._ogre.position.x > otherEntity.position.x));
     }
   }

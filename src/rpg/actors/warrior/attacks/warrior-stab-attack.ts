@@ -6,6 +6,7 @@ import Warrior from "..";
 
 const SIZE = 12;
 const ATTACK_FORCE = new Vector(6, -2);
+const ATTACK_DAMAGE = 10;
 
 export default class WarriorStabAttack extends Entity {
 
@@ -27,6 +28,7 @@ export default class WarriorStabAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Unfriendly) {
+      otherEntity.damage(ATTACK_DAMAGE);
       otherEntity.push(ATTACK_FORCE.flippedHorizontally(this._warrior.position.x > otherEntity.position.x));
     }
   }

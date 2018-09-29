@@ -5,7 +5,8 @@ import Collision from "../../../../engine/core/collision";
 import Skeleton from "..";
 
 const SIZE = 16;
-const ATTACK_FORCE = new Vector(4, -2)
+const ATTACK_FORCE = new Vector(4, -2);
+const ATTACK_DAMAGE = 5;
 
 export default class SkeletonAttack extends Entity {
 
@@ -27,6 +28,7 @@ export default class SkeletonAttack extends Entity {
     super.onCollision(otherEntity, collision);
 
     if (collision.hit && otherEntity.type === EntityType.Friendly) {
+      otherEntity.damage(ATTACK_DAMAGE);
       otherEntity.push(ATTACK_FORCE.flippedHorizontally(this._skeleton.position.x > otherEntity.position.x));
     }
   }
