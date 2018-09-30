@@ -27,7 +27,7 @@ export default abstract class Entity {
   public velocity = new Vector(0, 0);
   public acceleration = new Vector(0, 0);
 
-  public health = this.maxHealth;
+  public health = 0;
   public canRemoveFromSystem = false;
   public entitiesToAdd: Array<Entity> = [];
   public touchingWallInDirection: {
@@ -39,7 +39,12 @@ export default abstract class Entity {
 
   constructor(
     public position: Vector,
-  ) { }
+  ) {
+    // wait for child constructor to run
+    setTimeout(() => {
+      this.health = this.maxHealth;
+    }, 0);
+  }
 
   /* --- public --- */
   public push(force: Vector) {

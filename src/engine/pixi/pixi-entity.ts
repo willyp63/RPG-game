@@ -29,11 +29,14 @@ export default abstract class PIXIEntity extends Entity {
     this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
     this._container.addChild(this._sprite);
 
-    // add health-bar
-    if (this.maxHealth) {
-      this._healthBar = new HealthBar(new Vector(0, -this.size.y * HEALTH_BAR_Y_POSITION_PERCENT), this.maxHealth);
-      this._container.addChild(this._healthBar);
-    }
+    // wait for child constructor to run
+    setTimeout(() => {
+      // add health-bar
+      if (this.maxHealth) {
+        this._healthBar = new HealthBar(new Vector(0, -this.size.y * HEALTH_BAR_Y_POSITION_PERCENT), this.maxHealth);
+        this._container.addChild(this._healthBar);
+      }
+    }, 0);
 
     this._alignSprite();
   }

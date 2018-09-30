@@ -4,7 +4,6 @@ import Vector from "../../../engine/core/vector";
 import TextureHelper from "../../../engine/pixi/texture-helper";
 import Direction from "../../../engine/core/direction";
 import PIXIAnimation from "../../../engine/pixi/pixi-animation";
-import { HEALTH_BAR_Y_POSITION_PERCENT } from "../../../engine/pixi/pixi-entity";
 
 const TEXTURES_FILE = 'public/imgs/slime.json';
 const ANIMATION_SPEED = 0.14;
@@ -13,6 +12,8 @@ const SIZE = new Vector(20, 14);
 const WEIGHT = 1;
 const MAX_HEALTH = 30;
 const CRAWL_FORCE = new Vector(0.08, 0);
+const SPAWN_OFFSET = new Vector(2, -2);
+const SPWAN_FORCE = new Vector(0.5, -1.5);
 
 export enum SlimeSize {
   Small,
@@ -26,9 +27,9 @@ export default class Slime extends AnimatedPIXIEntity {
   get isWallBound() { return true; }
   get isWall() { return this._size === SlimeSize.Large; }
 
-  get weight() { return WEIGHT * Slime._getScaleForSlimeSize(this._size); }
-  get size() { return SIZE.scaled(Slime._getScaleForSlimeSize(this._size)); }
-  get maxHealth() { return MAX_HEALTH * Slime._getScaleForSlimeSize(this._size); }
+  get weight() { return WEIGHT * this._scale; }
+  get size() { return SIZE.scaled(this._scale); }
+  get maxHealth() { return MAX_HEALTH * this._scale; }
 
   static assets = [TEXTURES_FILE];
 
@@ -40,16 +41,13 @@ export default class Slime extends AnimatedPIXIEntity {
   ]; }
 
   private _crawlForce = CRAWL_FORCE;
+  private _scale: number;
 
   constructor(position: Vector, private _size: SlimeSize) {
     super(position, Slime._crawlTextures);
 
-    this._sprite.scale.x = this._sprite.scale.y = Slime._getScaleForSlimeSize(_size);
-    if (this._healthBar) {
-      this._healthBar.position.y = this.size.y * -HEALTH_BAR_Y_POSITION_PERCENT;
-      this._healthBar.maxHealth = this.maxHealth;
-      this.heal(this.maxHealth);
-    }
+    this._scale = Slime._getScaleForSlimeSize(_size);
+    this._sprite.scale.x = this._sprite.scale.y = this._scale;
 
     Math.random() < 0.5 ? this._crawlLeft() : this._crawlRight();
   }
@@ -74,29 +72,37 @@ export default class Slime extends AnimatedPIXIEntity {
     super.kill();
 
     if (this._size === SlimeSize.Large) {
-      this.addEntityToSystem(new Slime(this.position.plus(new Vector(-8, 0)), SlimeSize.Medium));
-      this.addEntityToSystem(new Slime(this.position.plus(new Vector(8, 0)), SlimeSize.Medium));
+      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale)), SlimeSize.Medium);
+      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale).flippedHorizontally()), SlimeSize.Medium);
+      spawn1.push(SPWAN_FORCE.scaled(this._scale));
+      spawn2.push(SPWAN_FORCE.scaled(this._scale).flippedHorizontally());
+      this.addEntityToSystem(spawn1);
+      this.addEntityToSystem(spawn2);
     } else if (this._size === SlimeSize.Medium) {
-      this.addEntityToSystem(new Slime(this.position.plus(new Vector(-4, 0)), SlimeSize.Small));
-      this.addEntityToSystem(new Slime(this.position.plus(new Vector(4, 0)), SlimeSize.Small));
+      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale)), SlimeSize.Small);
+      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale).flippedHorizontally()), SlimeSize.Small);
+      spawn1.push(SPWAN_FORCE.scaled(this._scale));
+      spawn2.push(SPWAN_FORCE.scaled(this._scale).flippedHorizontally());
+      this.addEntityToSystem(spawn1);
+      this.addEntityToSystem(spawn2);
     }
   }
 
   _crawlLeft() {
-    this._crawlForce = CRAWL_FORCE.scaled(1 / Slime._getScaleForSlimeSize(this._size)).flippedHorizontally();
+    this._crawlForce = CRAWL_FORCE.scaled(1 / this._scale).flippedHorizontally();
 
     this.animation =
       new PIXIAnimation(Slime._crawlTextures)
-        .speed(ANIMATION_SPEED / Slime._getScaleForSlimeSize(this._size))
+        .speed(ANIMATION_SPEED / this._scale)
         .flippedHorizontally();
   }
 
   _crawlRight() {
-    this._crawlForce = CRAWL_FORCE.scaled(1 / Slime._getScaleForSlimeSize(this._size));
+    this._crawlForce = CRAWL_FORCE.scaled(1 / this._scale);
 
     this.animation =
       new PIXIAnimation(Slime._crawlTextures)
-        .speed(ANIMATION_SPEED / Slime._getScaleForSlimeSize(this._size))
+        .speed(ANIMATION_SPEED / this._scale)
         .flippedHorizontally(false);
   }
 
