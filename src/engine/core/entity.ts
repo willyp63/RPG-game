@@ -10,8 +10,6 @@ const DEFAULT_MAX_VELOCITY = 16;
 const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
 const DEFAULT_ELASTICITY = 0.1;
 
-const SOLID_ELASTICITY = 1.333;
-
 export default abstract class Entity {
 
   get type() { return EntityType.Neutral; }
@@ -140,7 +138,14 @@ export default abstract class Entity {
       // solid physics
       if (this.isSolid && otherEntity.isSolidBound) {
 
-        otherEntity.push(otherEntity.position.minus(this.position).toUnitVector().scaled(SOLID_ELASTICITY));
+        const thisHalfSize = this.size.scaled(0.5);
+        const otherHalfSize = otherEntity.size.scaled(0.5);
+        const combinedHalfSize = thisHalfSize.plus(otherHalfSize);
+        const positionDiff = otherEntity.position.minus(this.position);
+
+        const penetration = combinedHalfSize.length / (combinedHalfSize.length - positionDiff.length);
+        let solidForce = positionDiff.toUnitVector().scaled(penetration).scaled(this.elasticity + otherEntity.elasticity);
+        otherEntity.push(solidForce);
       }
 
     }

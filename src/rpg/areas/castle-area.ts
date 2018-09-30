@@ -90,11 +90,6 @@ export default class CastleArea extends PIXISystem {
 
     /* --- SKELETONS ---  */
 
-    // first floor
-    for (let i = 0; i < 4; i++) {
-      this.addEntity(new Skeleton(new Vector(830 + Math.floor(Math.random() * 1000), 580)));
-    }
-
     // third floor
     for (let i = 0; i < 4; i++) {
       this.addEntity(new Skeleton(new Vector(980 + Math.floor(Math.random() * 850), 280)));
@@ -102,10 +97,12 @@ export default class CastleArea extends PIXISystem {
 
     /* --- SLIMES ---  */
     
-    // tower on the left
-    this.addEntity(new Slime(new Vector(300, 600), SlimeSize.Small));
-    this.addEntity(new Slime(new Vector(340, 600), SlimeSize.Medium));
-    this.addEntity(new Slime(new Vector(740, 600), SlimeSize.Large));
+    // first floor
+    for (let i = 0; i < 4; i++) {
+      let size = SlimeSize.Large;
+      if (Math.random() < 0.5) size = SlimeSize.Medium;
+      this.addEntity(new Slime(new Vector(540 + Math.floor(Math.random() * 1200), 580), size));
+    }
 
     /* --- WARRIOR ---  */
     const warrior = new Warrior(new Vector(425, 540));
