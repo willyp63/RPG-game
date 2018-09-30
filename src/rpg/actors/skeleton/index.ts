@@ -28,6 +28,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
   get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
+  get isSolidBound() { return true; }
 
   static assets = [TEXTURES_FILE];
 

@@ -34,6 +34,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
+  get isSolidBound() { return this._state !== WarriorState.Rolling; }
 
   static assets = [TEXTURES_FILE];
 

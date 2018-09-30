@@ -33,7 +33,8 @@ export default class Ogre extends AnimatedPIXIEntity {
   get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
-  get isWall() { return true; }
+  get isSolidBound() { return true; }
+  get isSolid() { return true; }
 
   static assets = [TEXTURES_FILE];
 

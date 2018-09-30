@@ -10,6 +10,8 @@ const DEFAULT_MAX_VELOCITY = 16;
 const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
 const DEFAULT_ELASTICITY = 0.1;
 
+const SOLID_ELASTICITY = 1.333;
+
 export default abstract class Entity {
 
   get type() { return EntityType.Neutral; }
@@ -21,7 +23,9 @@ export default abstract class Entity {
   get elasticity() { return DEFAULT_ELASTICITY; }
   get maxVelocity() { return DEFAULT_MAX_VELOCITY; }
   get isWall() { return false; }
+  get isSolid() { return false; }
   get isWallBound() { return false; }
+  get isSolidBound() { return false; }
   get isGravityBound() { return false; }
 
   public velocity = new Vector(0, 0);
@@ -132,6 +136,13 @@ export default abstract class Entity {
         // track touching walls
         otherEntity.touchingWallInDirection[oppositeDirection(collision.direction)] = this;
       }
+
+      // solid physics
+      if (this.isSolid && otherEntity.isSolidBound) {
+
+        otherEntity.push(otherEntity.position.minus(this.position).toUnitVector().scaled(SOLID_ELASTICITY));
+      }
+
     }
   }
 

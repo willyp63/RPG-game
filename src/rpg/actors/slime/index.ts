@@ -25,7 +25,8 @@ export default class Slime extends AnimatedPIXIEntity {
   get type() { return EntityType.Unfriendly; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
-  get isWall() { return this._size === SlimeSize.Large; }
+  get isSolidBound() { return true; }
+  get isSolid() { return this._size !== SlimeSize.Small; }
 
   get weight() { return WEIGHT * this._scale; }
   get size() { return SIZE.scaled(this._scale); }
