@@ -1,13 +1,16 @@
-import { Sprite, ObservablePoint } from "pixi.js";
+import { Sprite, ObservablePoint, Container } from "pixi.js";
 import Vector from "../core/vector";
 import Entity from "../core/entity";
 import { HealthBar } from "./health-bar";
 
-const HEALTH_BAR_Y_POSITION_PERCENT =  0.667;
+export const HEALTH_BAR_Y_POSITION_PERCENT =  0.667;
 
 export default abstract class PIXIEntity extends Entity {
 
   static assets: Array<string> = [];
+
+  get container() { return this._container; }
+  protected _container: Container;
 
   get sprite() { return this._sprite; }
   protected _sprite: Sprite;
@@ -20,15 +23,16 @@ export default abstract class PIXIEntity extends Entity {
   ) {
     super(position);
 
-    this._sprite = typeof sprite === 'function' ? sprite() : sprite;
+    this._container = new Container();
 
-    // all sprites are anchored at their center
-    this.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    this._sprite = typeof sprite === 'function' ? sprite() : sprite;
+    this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    this._container.addChild(this._sprite);
 
     // add health-bar
     if (this.maxHealth) {
       this._healthBar = new HealthBar(new Vector(0, -this.size.y * HEALTH_BAR_Y_POSITION_PERCENT), this.maxHealth);
-      this.sprite.addChild(this._healthBar);
+      this._container.addChild(this._healthBar);
     }
 
     this._alignSprite();
@@ -54,8 +58,8 @@ export default abstract class PIXIEntity extends Entity {
 
   /* --- private --- */
   _alignSprite() {
-    this.sprite.x = this.position.x;
-    this.sprite.y = this.position.y;
+    this.container.x = this.position.x;
+    this.container.y = this.position.y;
   }
 
   _updateHealthBar() {

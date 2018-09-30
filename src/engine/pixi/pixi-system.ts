@@ -83,14 +83,14 @@ export default abstract class PIXISystem extends System {
     super.addEntity(entity);
 
     if (entity instanceof PIXIEntity) {
-      this._app.stage.addChild(entity.sprite);
+      this._app.stage.addChild(entity.container);
     }
   }
 
   removeEntityAt(i: number) {
     const entity = this.entities[i];
     if (entity instanceof PIXIEntity) {
-      this._app.stage.removeChild(entity.sprite);
+      this._app.stage.removeChild(entity.container);
     }
 
     super.removeEntityAt(i);

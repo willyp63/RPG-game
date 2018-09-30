@@ -7,17 +7,17 @@ const BORDER_WIDTH = 1;
 
 export class HealthBar extends Graphics {
 
-  constructor(position: Vector, private _maxHealth: number) {
+  constructor(position: Vector, public maxHealth: number) {
     super();
 
     this.x = position.x;
     this.y = position.y;
 
-    this.setHealth(this._maxHealth);
+    this.setHealth(this.maxHealth);
   }
 
   setHealth(health: number) {
-    const percent = health / this._maxHealth;
+    const percent = health / this.maxHealth;
 
     this.beginFill(0x000000);
     this.drawRect(WIDTH / -2 - BORDER_WIDTH, HEIGHT / -2 - BORDER_WIDTH, WIDTH + BORDER_WIDTH * 2, HEIGHT + BORDER_WIDTH * 2);

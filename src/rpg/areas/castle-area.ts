@@ -9,6 +9,7 @@ import Vector from "../../engine/core/vector";
 import Skeleton from "../actors/skeleton";
 import RampWall from "../actors/walls/ramp-wall";
 import Shape from "../../engine/core/shape";
+import Slime, { SlimeSize } from "../actors/slime";
 
 export default class CastleArea extends PIXISystem {
 
@@ -24,6 +25,7 @@ export default class CastleArea extends PIXISystem {
       AbilityButton.assets,
       Ogre.assets,
       Skeleton.assets,
+      Slime.assets,
     );
   }
 
@@ -88,20 +90,23 @@ export default class CastleArea extends PIXISystem {
 
     /* --- SKELETONS ---  */
 
-    // tower on the left
-    this.addEntity(new Skeleton(new Vector(300, 600)));
-    this.addEntity(new Skeleton(new Vector(340, 600)));
-
     // first floor
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 4; i++) {
       this.addEntity(new Skeleton(new Vector(830 + Math.floor(Math.random() * 1000), 580)));
     }
 
     // third floor
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 4; i++) {
       this.addEntity(new Skeleton(new Vector(980 + Math.floor(Math.random() * 850), 280)));
     }
+
+    /* --- SLIMES ---  */
     
+    // tower on the left
+    this.addEntity(new Slime(new Vector(300, 600), SlimeSize.Small));
+    this.addEntity(new Slime(new Vector(340, 600), SlimeSize.Medium));
+    this.addEntity(new Slime(new Vector(740, 600), SlimeSize.Large));
+
     /* --- WARRIOR ---  */
     const warrior = new Warrior(new Vector(425, 540));
     this.addEntity(warrior);

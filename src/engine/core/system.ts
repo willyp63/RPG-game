@@ -31,8 +31,8 @@ export default abstract class System {
     this._killSquishedEntities();
     this._applyGravity();
     this.entities.forEach(entity => entity.afterTick());
-    this._removeEntities();
     this._addNewEntities();
+    this._removeEntities();
   }
 
   _checkForCollisions() {
