@@ -90,6 +90,11 @@ export default class CastleArea extends PIXISystem {
 
     /* --- SKELETONS ---  */
 
+    // first floor
+    for (let i = 0; i < 4; i++) {
+      this.addEntity(new Skeleton(new Vector(740 + Math.floor(Math.random() * 1000), 580)));
+    }
+
     // third floor
     for (let i = 0; i < 4; i++) {
       this.addEntity(new Skeleton(new Vector(980 + Math.floor(Math.random() * 850), 280)));
