@@ -56,14 +56,17 @@ export default class Skeleton extends AnimatedPIXIEntity {
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-2.png"),
   ]; }
 
-  private _walkForce = WALK_FORCE;
+  private _walkForce = new Vector(0, 0);
   private _isAttacking = false;
-  private _isDead = false;
 
-  constructor(position: Vector) {
+  constructor(position: Vector, private _isDead = false) {
     super(position, Skeleton._walkTextures);
 
-    Math.random() < 0.5 ? this._walkLeft() : this._walkRight();
+    if (_isDead) {
+      setTimeout(this._onDieAnimationComplete.bind(this), 0);
+    } else {
+      Math.random() < 0.5 ? this._walkLeft() : this._walkRight();
+    }
   }
 
   afterTick() {

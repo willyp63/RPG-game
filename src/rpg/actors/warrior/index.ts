@@ -12,6 +12,7 @@ const ANIMATION_SPEED = 0.08;
 const ROLL_ANIMATION_SPEED = 0.133;
 
 const SIZE = new Vector(15, 33);
+const ROLLING_SIZE = new Vector(15, 21);
 const RUN_FORCE = new Vector(0.22, 0);
 const MID_AIR_RUN_SCALE = 0.133;
 const MID_AIR_RUN_MAX_VELOCITY = 1;
@@ -30,11 +31,17 @@ enum WarriorState {
 export default class Warrior extends AnimatedPIXIEntity {
 
   get type() { return EntityType.Friendly; }
-  get size() { return SIZE; }
+  get size() { return this._state === WarriorState.Rolling ? ROLLING_SIZE : SIZE; }
   get maxHealth() { return MAX_HEALTH; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
   get isSolidBound() { return this._state !== WarriorState.Rolling; }
+
+  get cameraPosition() {
+    return this._state === WarriorState.Rolling
+      ? this.position.minus(Warrior._rollPositionOffset)
+      : this.position;
+  }
 
   static assets = [TEXTURES_FILE];
 
@@ -212,12 +219,20 @@ export default class Warrior extends AnimatedPIXIEntity {
 
     this._runForce = new Vector(0, 0);
     this._state = WarriorState.Rolling;
+    this.position = this.position.plus(Warrior._rollPositionOffset);
     this.push(ROLL_FORCE.flippedHorizontally(this.isFacingLeft));
 
     this.animation =
       new PIXIAnimation(Warrior._rollTexture)
         .speed(ROLL_ANIMATION_SPEED)
-        .onLoop(this._onStabComplete.bind(this));
+        .onLoop(() => {
+          this.position = this.position.minus(Warrior._rollPositionOffset);
+          this._onStabComplete();
+        });
+  }
+
+  static get _rollPositionOffset() {
+    return SIZE.minus(ROLLING_SIZE).scaled(0.5);
   }
 
 }

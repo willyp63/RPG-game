@@ -1,3 +1,3 @@
-import CastleArea from "./areas/castle-area";
+import RuinsArea from "./areas/ruins-area";
 
-new CastleArea();
+new RuinsArea();

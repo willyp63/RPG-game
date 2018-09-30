@@ -13,8 +13,8 @@ import Slime, { SlimeSize } from "../actors/slime";
 
 export default class CastleArea extends PIXISystem {
 
-  get width() { return 512; };
-  get height() { return 288; };
+  protected get screenWidth() { return 512; };
+  protected get screenHeight() { return 288; };
 
   get assets() {
     return (<Array<string>>[]).concat(

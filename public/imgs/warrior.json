@@ -2,19 +2,19 @@
 
 "roll_1.png":
 {
-	"frame": {"x":0,"y":0,"w":29,"h":42},
+	"frame": {"x":0,"y":0,"w":29,"h":30},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
-	"sourceSize": {"w":29,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":30},
+	"sourceSize": {"w":29,"h":30}
 },
 "roll_2.png":
 {
-	"frame": {"x":29,"y":0,"w":29,"h":42},
+	"frame": {"x":29,"y":0,"w":29,"h":30},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":42},
-	"sourceSize": {"w":29,"h":42}
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":30},
+	"sourceSize": {"w":29,"h":30}
 },
 "run_1.png":
 {
@@ -34,7 +34,7 @@
 },
 "run_3.png":
 {
-	"frame": {"x":0,"y":42,"w":25,"h":35},
+	"frame": {"x":108,"y":0,"w":25,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":25,"h":35},
@@ -42,7 +42,7 @@
 },
 "stab_1.png":
 {
-	"frame": {"x":25,"y":42,"w":51,"h":35},
+	"frame": {"x":133,"y":0,"w":51,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":51,"h":35},
@@ -50,7 +50,7 @@
 },
 "stab_2.png":
 {
-	"frame": {"x":76,"y":42,"w":51,"h":35},
+	"frame": {"x":184,"y":0,"w":51,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":51,"h":35},
@@ -66,8 +66,8 @@
 	"version": "1.0",
 	"image": "warrior.png",
 	"format": "RGBA8888",
-	"size": {"w":127,"h":77},
+	"size": {"w":235,"h":35},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:211e7bd49a7a5f4a2b6f53c9404c74a2:1be66712ebe1254edf7e1fc3c8ed1fd5:380ec401ba9cf63cd4c0319d938fb695$"
+	"smartupdate": "$TexturePacker:SmartUpdate:685bf63b14f99d4a2c6f07fb5fb38ebb:6f0632c554fb000674aa830136cbedab:380ec401ba9cf63cd4c0319d938fb695$"
 }
 }

@@ -15,6 +15,8 @@ export default abstract class PIXIEntity extends Entity {
   get sprite() { return this._sprite; }
   protected _sprite: Sprite;
 
+  get cameraPosition() { return this.position; }
+
   protected _healthBar?: HealthBar;
 
   constructor(
