@@ -62,6 +62,10 @@
       "start": [90, 240]
     },
     {
+      "class": "SignPost",
+      "position": [436, 222]
+    },
+    {
       "class": "Skeleton",
       "position": [575, 240],
       "dead": true

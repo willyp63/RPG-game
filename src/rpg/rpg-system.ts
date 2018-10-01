@@ -8,6 +8,7 @@ import Vector from "../engine/core/vector";
 import Ogre from "./actors/ogre";
 import Slime from "./actors/slime";
 import RampWall from "./actors/walls/ramp-wall";
+import SignPost from "./actors/sign-post";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -26,6 +27,7 @@ export default class RPGSystem extends PIXISystem {
       Ogre.assets,
       Slime.assets,
       RampWall.assets,
+      SignPost.assets,
     );
   }
 
@@ -109,6 +111,12 @@ export default class RPGSystem extends PIXISystem {
                 new Slime(
                   new Vector(entity.position[0], entity.position[1]),
                   entity.size,
+                )
+              );
+            } else if (entity.class === 'SignPost') {
+              this.addEntity(
+                new SignPost(
+                  new Vector(entity.position[0], entity.position[1]),
                 )
               );
             }
