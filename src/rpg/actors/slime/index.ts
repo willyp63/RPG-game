@@ -14,6 +14,7 @@ const MAX_HEALTH = 30;
 const CRAWL_FORCE = new Vector(0.08, 0);
 const SPAWN_OFFSET = new Vector(2, -2);
 const SPWAN_FORCE = new Vector(0.5, -1.5);
+const ELASTICITY = 0.8;
 
 export enum SlimeSize {
   Small,
@@ -30,6 +31,7 @@ export default class Slime extends AnimatedPIXIEntity {
 
   get weight() { return WEIGHT * this._scale; }
   get size() { return SIZE.scaled(this._scale); }
+  get elasticity() { return ELASTICITY; }
   get maxHealth() { return MAX_HEALTH * this._scale; }
 
   static assets = [TEXTURES_FILE];

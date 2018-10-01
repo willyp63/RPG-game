@@ -34,7 +34,7 @@
       "class": "Door",
       "position": [40, 216],
       "size": [20, 40],
-      "area": "public/areas/ruins-2.json",
+      "area": "public/areas/ruins-3.json",
       "start": [1190, 240]
     },
     {

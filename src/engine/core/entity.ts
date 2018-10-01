@@ -144,7 +144,9 @@ export default abstract class Entity {
         const positionDiff = otherEntity.position.minus(this.position);
 
         const penetration = combinedHalfSize.length / (combinedHalfSize.length - positionDiff.length);
-        let solidForce = positionDiff.toUnitVector().scaled(penetration).scaled(this.elasticity + otherEntity.elasticity);
+        let solidForce = positionDiff.toUnitVector().scaled(penetration).scaled(this.elasticity + otherEntity.elasticity).scaled(new Vector(1.5, 0.1));
+        if (Math.abs(solidForce.x) > 4) solidForce = solidForce.withNewX(solidForce.x / Math.abs(solidForce.x) * 4);
+        console.log(solidForce);
         otherEntity.push(solidForce);
       }
 

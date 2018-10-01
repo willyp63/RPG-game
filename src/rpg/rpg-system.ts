@@ -6,6 +6,7 @@ import Door from "./actors/door";
 import getJson from "./util/get-json";
 import Vector from "../engine/core/vector";
 import Ogre from "./actors/ogre";
+import Slime from "./actors/slime";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -22,6 +23,7 @@ export default class RPGSystem extends PIXISystem {
       Skeleton.assets,
       Door.assets,
       Ogre.assets,
+      Slime.assets,
     );
   }
 
@@ -88,6 +90,13 @@ export default class RPGSystem extends PIXISystem {
               this.addEntity(
                 new Ogre(
                   new Vector(entity.position[0], entity.position[1]),
+                )
+              );
+            } else if (entity.class === 'Slime') {
+              this.addEntity(
+                new Slime(
+                  new Vector(entity.position[0], entity.position[1]),
+                  entity.size,
                 )
               );
             }

@@ -13,11 +13,10 @@ const ROLL_ANIMATION_SPEED = 0.133;
 
 const SIZE = new Vector(15, 33);
 const ROLLING_SIZE = new Vector(15, 21);
-const RUN_FORCE = new Vector(0.22, 0);
-const MID_AIR_RUN_SCALE = 0.133;
-const MID_AIR_RUN_MAX_VELOCITY = 1;
-const SPRINT_FORCE = new Vector(0.3, 0);
-const JUMP_FORCE = new Vector(0, -6.5);
+const RUN_FORCE = new Vector(0.24, 0);
+const MID_AIR_RUN_SCALE = 0.2;
+const SPRINT_FORCE = new Vector(0.32, 0);
+const JUMP_FORCE = new Vector(0, -7.5);
 const STAB_POSITION = new Vector(24, 2);
 const MAX_HEALTH = 200;
 const ROLL_FORCE = new Vector(9, 0);
@@ -141,7 +140,7 @@ export default class Warrior extends AnimatedPIXIEntity {
     this._isOnGround = this.isTouchingWallsInAllDirections([Direction.Down]);
     if (this._isOnGround) {
       this.push(this._runForce);
-    } else if (Math.abs(this.velocity.x) < MID_AIR_RUN_MAX_VELOCITY) {
+    } else {
       this.push(this._runForce.scaled(MID_AIR_RUN_SCALE));
     }
   }

@@ -8,6 +8,7 @@ export default abstract class System {
   protected get width() { return 0; };
   protected get height() { return 0; };
   protected get gravityForce() { return new Vector(0, 0.333); }
+  protected get frictionCoefficient() { return 0.0333; }
 
   protected entities: Array<Entity> = [];
 
@@ -30,6 +31,7 @@ export default abstract class System {
     this._checkForCollisions();
     this._killSquishedEntities();
     this._applyGravity();
+    this._applyFriction();
     this.entities.forEach(entity => entity.afterTick());
     this._addNewEntities();
     this._removeEntities();
@@ -63,6 +65,12 @@ export default abstract class System {
       if (entity.isGravityBound) {
         entity.push(this.gravityForce);
       }
+    });
+  }
+
+  _applyFriction() {
+    this.entities.forEach(entity => {
+      entity.push(entity.velocity.scaled(-this.frictionCoefficient));
     });
   }
 
