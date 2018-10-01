@@ -1,3 +1,4 @@
-import RuinsArea from "./areas/ruins-area";
+import RPGSystem from "./rpg-system";
+import Vector from "../engine/core/vector";
 
-new RuinsArea();
+new RPGSystem('public/areas/ruins-1.json', new Vector(190, 218));

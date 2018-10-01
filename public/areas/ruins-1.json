@@ -1,0 +1,53 @@
+{
+  "width": "640",
+  "height": "288",
+  "foreground": "public/imgs/ruins-1__foreground.png",
+  "background": "public/imgs/ruins-1__background.png",
+  "backdrop": "public/imgs/castle-backdrop.jpg",
+  "entities": [
+    {
+      "class": "Wall",
+      "position": [0, 256],
+      "size": [640, 32]
+    },
+    {
+      "class": "Wall",
+      "position": [16, 128],
+      "size": [16, 128]
+    },
+    {
+      "class": "Wall",
+      "position": [128, 128],
+      "size": [16, 102]
+    },
+    {
+      "class": "Wall",
+      "position": [32, 128],
+      "size": [96, 16]
+    },
+    {
+      "class": "Wall",
+      "position": [592, 106],
+      "size": [32, 150]
+    },
+    {
+      "class": "Door",
+      "position": [40, 216],
+      "size": [20, 40],
+      "area": "public/areas/ruins-2.json",
+      "start": [1190, 240]
+    },
+    {
+      "class": "Door",
+      "position": [540, 216],
+      "size": [20, 40],
+      "area": "public/areas/ruins-2.json",
+      "start": [90, 240]
+    },
+    {
+      "class": "Skeleton",
+      "position": [575, 240],
+      "dead": true
+    }
+  ]
+}

@@ -68,11 +68,12 @@ export default class Warrior extends AnimatedPIXIEntity {
   private _isSprinting = false;
   private _runForce = new Vector(0, 0);
   private _state = WarriorState.Nuetral;
+  private _keyListeners: Array<KeyListener> = [];
 
   constructor(position: Vector) {
     super(position, Warrior._runTextures);
 
-    new KeyListener(37 /* left arrow */,
+    this._keyListeners.push(new KeyListener(37 /* left arrow */,
       () => {
         this._goLeft();
         this._leftDown = true;
@@ -81,9 +82,9 @@ export default class Warrior extends AnimatedPIXIEntity {
         this._rightDown ? this._goRight() : this._stop();
         this._leftDown = false;
       },
-    );
+    ));
 
-    new KeyListener(39 /* right arrow */,
+    this._keyListeners.push(new KeyListener(39 /* right arrow */,
       () => {
         this._goRight();
         this._rightDown = true;
@@ -92,17 +93,21 @@ export default class Warrior extends AnimatedPIXIEntity {
         this._leftDown ? this._goLeft() : this._stop();
         this._rightDown = false;
       },
-    );
+    ));
 
-    new KeyListener(38 /* up arrow */,
+    this._keyListeners.push(new KeyListener(38 /* up arrow */,
       () => this._jump(),
-    );
+    ));
 
-    new KeyListener(65 /* `a` */,
+    this._keyListeners.push(new KeyListener(90 /* `z` */,
       () => this.stab(),
-    );
+    ));
 
-    new KeyListener(90 /* `z` */,
+    this._keyListeners.push(new KeyListener(88 /* `x` */,
+      () => this._roll(),
+    ));
+
+    this._keyListeners.push(new KeyListener(65 /* `a` */,
       () => {
         this._isSprinting = true;
         if (this._runForce.x > 0) {
@@ -119,13 +124,15 @@ export default class Warrior extends AnimatedPIXIEntity {
           this._goLeft();
         }
       },
-    );
-
-    new KeyListener(88 /* `x` */,
-      () => this._roll(),
-    );
+    ));
 
     this._stop();
+  }
+
+  kill() {
+    this._keyListeners.forEach(keyListener => keyListener.destroy());
+
+    super.kill();
   }
 
   afterTick() {

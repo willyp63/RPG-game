@@ -9,8 +9,16 @@ export default class KeyListener {
     this._onPress = onPress;
     this._onRelease = onRelease;
 
-    window.addEventListener('keydown', this._downHandler.bind(this), false);
-    window.addEventListener('keyup', this._upHandler.bind(this), false);
+    this._downHandler = this._downHandler.bind(this);
+    this._upHandler = this._upHandler.bind(this);
+
+    window.addEventListener('keydown', this._downHandler, false);
+    window.addEventListener('keyup', this._upHandler, false);
+  }
+
+  destroy() {
+    window.removeEventListener('keydown', this._downHandler);
+    window.removeEventListener('keyup', this._upHandler);
   }
 
   _downHandler(e: KeyboardEvent) {

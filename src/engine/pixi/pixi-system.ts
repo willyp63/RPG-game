@@ -1,7 +1,6 @@
 import System from "../core/system";
-import { Application, Sprite, settings, RenderTexture, loader } from "pixi.js";
+import { Application, Sprite, settings, loader } from "pixi.js";
 import Entity from "../core/entity";
-import UIElement from "./ui-element";
 import scaleToWindow from "../misc/scale-to-window";
 import PIXIEntity from "./pixi-entity";
 
@@ -17,8 +16,6 @@ export default abstract class PIXISystem extends System {
   private _app: Application;
   private _entityToFollow?: PIXIEntity;
   private _backdropSprite?: Sprite;
-  private _uiContainer: Sprite;
-  private _uiElements: Array<UIElement> = [];
 
   constructor() {
     super();
@@ -35,9 +32,6 @@ export default abstract class PIXISystem extends System {
       resolution: 3, // required for pixelated textures
     });
 
-    // UI container
-    this._uiContainer = new PIXI.Sprite(RenderTexture.create(this.screenWidth, this.screenHeight));
-
     // Add the canvas that Pixi automatically created for you to the HTML document
     const pixiAppContainer = document.body.querySelector('#pixi-app');
     if (!pixiAppContainer) throw 'Couldnt find pixi app container!!';
@@ -46,14 +40,20 @@ export default abstract class PIXISystem extends System {
     // Scale the canvse to fit the window
     scaleToWindow(this._app.renderer.view);
     window.addEventListener("resize", () => scaleToWindow(this._app.renderer.view));
+  }
 
-    // Start loading assets
+  protected load(addEntitiesHook: () => void) {
+
+    this.entities.forEach(entity => entity.kill());
+    this.entities = [];
+    this._app.stage.removeChildren();
+
     const assets =
       this.assets.concat([
         this.foregroundAsset,
         this.backgroundAsset,
         this.backdropAsset,
-      ]);
+      ]).filter(asset => !loader.resources[asset]);
 
     PIXI.loader
       .add(assets)
@@ -62,22 +62,14 @@ export default abstract class PIXISystem extends System {
         this._app.stage.addChild(this._backdropSprite);
         this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.backgroundAsset].texture));
 
-        this.onInit();
+        addEntitiesHook();
 
         this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.foregroundAsset].texture));
-        this._app.stage.addChild(this._uiContainer);
       });
   }
 
-  protected onInit() { }
-
   protected followEntity(entity: PIXIEntity) {
     this._entityToFollow = entity;
-  }
-
-  protected addUIElement(uiElement: UIElement) {
-    this._uiElements.push(uiElement);
-    this._uiContainer.addChild(uiElement.sprite);
   }
 
   /* --- overrides -- */
@@ -120,10 +112,6 @@ export default abstract class PIXISystem extends System {
         this._backdropSprite.x = stageX * -0.2;
         this._backdropSprite.y = stageY * -0.2;
       }
-
-      // make UI fixed
-      this._uiContainer.x = stageX * -1;
-      this._uiContainer.y = stageY * -1;
     }
   }
 }
