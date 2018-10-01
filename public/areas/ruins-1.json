@@ -63,7 +63,8 @@
     },
     {
       "class": "SignPost",
-      "position": [436, 222]
+      "position": [436, 222],
+      "message": "Use the `z` key to perform a basic attack."
     },
     {
       "class": "Skeleton",

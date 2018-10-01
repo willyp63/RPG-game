@@ -21,6 +21,49 @@
       "size": [32, 150]
     },
     {
+      "class": "Wall",
+      "position": [140, 204],
+      "size": [128, 16]
+    },
+    {
+      "class": "RampWall",
+      "position": [482, 239],
+      "size": [102, 17],
+      "shape": 1
+    },
+    {
+      "class": "Wall",
+      "position": [584, 239],
+      "size": [91, 17]
+    },
+    {
+      "class": "RampWall",
+      "position": [675, 225],
+      "size": [36, 14],
+      "shape": 1
+    },
+    {
+      "class": "RampWall",
+      "position": [714, 225],
+      "size": [110, 31],
+      "shape": 2
+    },
+    {
+      "class": "Wall",
+      "position": [712, 225],
+      "size": [2, 31]
+    },
+    {
+      "class": "Wall",
+      "position": [1136, 224],
+      "size": [96, 32]
+    },
+    {
+      "class": "SignPost",
+      "position": [204, 189],
+      "message": "Use the `x` key to roll. You can roll to avoid attacks, move past enemies, or move through\nsmall gaps in walls."
+    },
+    {
       "class": "Door",
       "position": [80, 216],
       "size": [20, 40],
@@ -29,11 +72,15 @@
     },
     {
       "class": "Ogre",
+      "position": [850, 200]
+    },
+    {
+      "class": "Skeleton",
       "position": [500, 200]
     },
     {
-      "class": "Ogre",
-      "position": [780, 200]
+      "class": "Skeleton",
+      "position": [900, 200]
     }
   ]
 }

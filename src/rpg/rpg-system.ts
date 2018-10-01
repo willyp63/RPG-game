@@ -9,9 +9,11 @@ import Ogre from "./actors/ogre";
 import Slime from "./actors/slime";
 import RampWall from "./actors/walls/ramp-wall";
 import SignPost from "./actors/sign-post";
+import MessageBox from "./ui/message-box";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
+const MESSAGE_BOX_HEIGHT = 64;
 
 export default class RPGSystem extends PIXISystem {
 
@@ -38,6 +40,7 @@ export default class RPGSystem extends PIXISystem {
   private _foregroundAsset = '';
   private _backgroundAsset = '';
   private _backdropAsset = '';
+  private _messageBox = new MessageBox(new Vector(0, 0), new Vector(SCREEN_WIDTH, MESSAGE_BOX_HEIGHT));
 
   get width() { return this._width; };
   get height() { return this._height; };
@@ -117,14 +120,24 @@ export default class RPGSystem extends PIXISystem {
               this.addEntity(
                 new SignPost(
                   new Vector(entity.position[0], entity.position[1]),
+                  () => {
+                    this._messageBox.showMessage(entity.message);
+                  },
+                  () => {
+                    this._messageBox.hide();
+                  },
                 )
               );
             }
           });
 
+          // add hero
           const hero = new Warrior(heroStart);
           this.addEntity(hero);
           this.followEntity(hero);
+
+          // add ui elements
+          this.addUIEntity(this._messageBox);
         });
       }
     });

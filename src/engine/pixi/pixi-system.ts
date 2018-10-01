@@ -3,6 +3,7 @@ import { Application, Sprite, settings, loader, Container, Text } from "pixi.js"
 import Entity from "../core/entity";
 import scaleToWindow from "../misc/scale-to-window";
 import PIXIEntity from "./pixi-entity";
+import UIEntity from "./ui-entity";
 
 export default abstract class PIXISystem extends System {
 
@@ -17,6 +18,7 @@ export default abstract class PIXISystem extends System {
   private _entityToFollow?: PIXIEntity;
   private _backdropSprite?: Sprite;
   private _entityContainer = new Container();
+  private _uiContainer = new Container();
   private _loadingGraphic = new Text('Loading...', {fontFamily : 'Arial', fontSize: 24, fill : 0xFFFFFF, align : 'center'});
 
   constructor() {
@@ -49,6 +51,7 @@ export default abstract class PIXISystem extends System {
     this.entities = [];
     this._app.stage.removeChildren();
     this._entityContainer.removeChildren();
+    this._uiContainer.removeChildren();
     
     this._app.stage.addChild(this._loadingGraphic);
   }
@@ -72,6 +75,7 @@ export default abstract class PIXISystem extends System {
         this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.backgroundAsset].texture));
         this._app.stage.addChild(this._entityContainer);
         this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.foregroundAsset].texture));
+        this._app.stage.addChild(this._uiContainer);
 
         addEntitiesHook();
       });
@@ -88,6 +92,10 @@ export default abstract class PIXISystem extends System {
     if (entity instanceof PIXIEntity) {
       this._entityContainer.addChild(entity.container);
     }
+  }
+
+  addUIEntity(entity: UIEntity) {
+    this._uiContainer.addChild(entity.sprite);
   }
 
   removeEntityAt(i: number) {
@@ -121,6 +129,10 @@ export default abstract class PIXISystem extends System {
         this._backdropSprite.x = stageX * -0.2;
         this._backdropSprite.y = stageY * -0.2;
       }
+
+      // keep UI fixed
+      this._uiContainer.x = stageX * -1;
+      this._uiContainer.y = stageY * -1;
     }
   }
 }

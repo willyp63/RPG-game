@@ -24,71 +24,11 @@
 				align-items: center;
 				justify-content: space-around;
 			}
-
-			#instructions {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-
-				background-color: #406a9c;
-				box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-			}
-
-			#instructions button {
-				position: absolute;
-				right: 12px;
-				top: 4px;
-
-				margin: 0;
-				padding: 0;
-				border: none;
-				outline: none;
-				background-color: transparent;
-
-				width: 48px;
-				height: 48px;
-
-				font-size: 36px;
-				color: white;
-
-				cursor: pointer;
-			}
-
-			#instructions li {
-				padding-bottom: 16px;
-
-				font-size: 18px;
-				font-weight: 600;
-				text-transform: uppercase;
-				color: white;
-			}
 		</style>
 	</head>
 
 	<body>
 		<div id="pixi-app"></div>
 		<script src="public/js/bundle.js"></script>
-
-		<script>
-			function closeInstructions() {
-				document.querySelector('#instructions').remove();
-				localStorage.setItem('closed-instructions', true);
-			}
-
-			if (localStorage.getItem('closed-instructions')) {
-				document.addEventListener("DOMContentLoaded", closeInstructions);
-			}
-		</script>
-
-		<div id="instructions">
-			<ul>
-				<li>left/right arrow key to move</li>
-				<li>up arrow key to jump</li>
-				<li>a key to attack</li>
-				<li>s key to sprint</li>
-			</ul>
-			<button onclick="closeInstructions()">x</button>
-		</div>
 	</body>
 </html>
