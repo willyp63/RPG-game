@@ -9,12 +9,12 @@ const TEXTURES_FILE = 'public/imgs/slime.json';
 const ANIMATION_SPEED = 0.14;
 
 const SIZE = new Vector(20, 14);
-const WEIGHT = 1;
+const WEIGHT = 2;
 const MAX_HEALTH = 30;
 const CRAWL_FORCE = new Vector(0.08, 0);
-const SPAWN_OFFSET = new Vector(2, -2);
+const SPAWN_OFFSET = new Vector(4, -4);
 const SPWAN_FORCE = new Vector(0.5, -1.5);
-const ELASTICITY = 0.8;
+const ELASTICITY = 1;
 
 export enum SlimeSize {
   Small,

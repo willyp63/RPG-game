@@ -1,5 +1,5 @@
 import System from "../core/system";
-import { Application, Sprite, settings, loader } from "pixi.js";
+import { Application, Sprite, settings, loader, Container } from "pixi.js";
 import Entity from "../core/entity";
 import scaleToWindow from "../misc/scale-to-window";
 import PIXIEntity from "./pixi-entity";
@@ -16,6 +16,7 @@ export default abstract class PIXISystem extends System {
   private _app: Application;
   private _entityToFollow?: PIXIEntity;
   private _backdropSprite?: Sprite;
+  private _entityContainer = new Container();
 
   constructor() {
     super();
@@ -47,6 +48,7 @@ export default abstract class PIXISystem extends System {
     this.entities.forEach(entity => entity.kill());
     this.entities = [];
     this._app.stage.removeChildren();
+    this._entityContainer.removeChildren();
 
     const assets =
       this.assets.concat([
@@ -61,10 +63,10 @@ export default abstract class PIXISystem extends System {
         this._backdropSprite = new PIXI.Sprite(loader.resources[this.backdropAsset].texture);
         this._app.stage.addChild(this._backdropSprite);
         this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.backgroundAsset].texture));
+        this._app.stage.addChild(this._entityContainer);
+        this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.foregroundAsset].texture));
 
         addEntitiesHook();
-
-        this._app.stage.addChild(new PIXI.Sprite(loader.resources[this.foregroundAsset].texture));
       });
   }
 
@@ -77,14 +79,14 @@ export default abstract class PIXISystem extends System {
     super.addEntity(entity);
 
     if (entity instanceof PIXIEntity) {
-      this._app.stage.addChild(entity.container);
+      this._entityContainer.addChild(entity.container);
     }
   }
 
   removeEntityAt(i: number) {
     const entity = this.entities[i];
     if (entity instanceof PIXIEntity) {
-      this._app.stage.removeChild(entity.container);
+      this._entityContainer.removeChild(entity.container);
     }
 
     super.removeEntityAt(i);
