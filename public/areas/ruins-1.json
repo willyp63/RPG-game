@@ -31,6 +31,23 @@
       "size": [32, 150]
     },
     {
+      "class": "RampWall",
+      "position": [336, 238],
+      "size": [77, 18],
+      "shape": 1
+    },
+    {
+      "class": "RampWall",
+      "position": [469, 238],
+      "size": [51, 18],
+      "shape": 2
+    },
+    {
+      "class": "Wall",
+      "position": [413, 238],
+      "size": [56, 18]
+    },
+    {
       "class": "Door",
       "position": [40, 216],
       "size": [20, 40],
@@ -47,6 +64,11 @@
     {
       "class": "Skeleton",
       "position": [575, 240],
+      "dead": true
+    },
+    {
+      "class": "Skeleton",
+      "position": [100, 240],
       "dead": true
     }
   ]

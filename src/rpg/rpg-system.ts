@@ -7,6 +7,7 @@ import getJson from "./util/get-json";
 import Vector from "../engine/core/vector";
 import Ogre from "./actors/ogre";
 import Slime from "./actors/slime";
+import RampWall from "./actors/walls/ramp-wall";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -24,6 +25,7 @@ export default class RPGSystem extends PIXISystem {
       Door.assets,
       Ogre.assets,
       Slime.assets,
+      RampWall.assets,
     );
   }
 
@@ -67,6 +69,14 @@ export default class RPGSystem extends PIXISystem {
                 new Wall(
                   new Vector(entity.position[0], entity.position[1]),
                   new Vector(entity.size[0], entity.size[1]),
+                )
+              );
+            } else if (entity.class === 'RampWall') {
+              this.addEntity(
+                new RampWall(
+                  new Vector(entity.position[0], entity.position[1]),
+                  new Vector(entity.size[0], entity.size[1]),
+                  entity.shape
                 )
               );
             } else if (entity.class === 'Door') {

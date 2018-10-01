@@ -29,10 +29,6 @@ export default abstract class AnimatedPIXIEntity extends PIXIEntity {
     this.sprite.loop = animation.isLooping;
     this.sprite.scale.x = animation.isFlippedHorizontally ? Math.abs(this.sprite.scale.x) * -1 : Math.abs(this.sprite.scale.x) * 1;
 
-    if (this._healthBar) {
-      this._healthBar.scale.x = animation.isFlippedHorizontally ? -1 : 1;
-    }
-
     if (animation.stopOnFrameIndex >= 0) {
       this.sprite.gotoAndStop(animation.stopOnFrameIndex);
     } else {
