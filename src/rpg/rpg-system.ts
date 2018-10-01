@@ -51,6 +51,8 @@ export default class RPGSystem extends PIXISystem {
 
   _loadArea(areaFile: string, heroStart: Vector) {
 
+    this.clearAreaAndShowLoadingScreen();
+
     getJson(areaFile, (err: any, data: any) => {
       if (err !== null) {
         console.log('Error loading area data', err);

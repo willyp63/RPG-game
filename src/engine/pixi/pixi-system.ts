@@ -1,5 +1,5 @@
 import System from "../core/system";
-import { Application, Sprite, settings, loader, Container } from "pixi.js";
+import { Application, Sprite, settings, loader, Container, Text } from "pixi.js";
 import Entity from "../core/entity";
 import scaleToWindow from "../misc/scale-to-window";
 import PIXIEntity from "./pixi-entity";
@@ -17,6 +17,7 @@ export default abstract class PIXISystem extends System {
   private _entityToFollow?: PIXIEntity;
   private _backdropSprite?: Sprite;
   private _entityContainer = new Container();
+  private _loadingGraphic = new Text('Loading...', {fontFamily : 'Arial', fontSize: 24, fill : 0xFFFFFF, align : 'center'});
 
   constructor() {
     super();
@@ -43,12 +44,18 @@ export default abstract class PIXISystem extends System {
     window.addEventListener("resize", () => scaleToWindow(this._app.renderer.view));
   }
 
-  protected load(addEntitiesHook: () => void) {
-
+  protected clearAreaAndShowLoadingScreen() {
     this.entities.forEach(entity => entity.kill());
     this.entities = [];
     this._app.stage.removeChildren();
     this._entityContainer.removeChildren();
+    
+    this._app.stage.addChild(this._loadingGraphic);
+  }
+
+  protected load(addEntitiesHook: () => void) {
+
+    this._app.stage.removeChild(this._loadingGraphic);
 
     const assets =
       this.assets.concat([
