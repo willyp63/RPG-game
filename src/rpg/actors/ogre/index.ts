@@ -24,6 +24,7 @@ const WEIGHT = 8;
 const MAX_HEALTH = 120;
 const MAX_ENERGY = 100;
 const ENERGY_REGEN = 0.35;
+const CHANGE_DIRECTION_RECHARGE_TICKS = 40;
 
 export default class Ogre extends AnimatedPIXIEntity {
 
@@ -57,6 +58,7 @@ export default class Ogre extends AnimatedPIXIEntity {
   private _numSwipeAttacks = 0;
   private _currentNumSwipeAttacks = 0;
   private _energy = MAX_ENERGY;
+  private _changeDirectionTicker = 0;
 
   constructor(position: Vector) {
     super(position, Ogre._runTextures);
@@ -80,6 +82,8 @@ export default class Ogre extends AnimatedPIXIEntity {
     }
 
     if (this._energy < MAX_ENERGY) this._energy += ENERGY_REGEN;
+
+    if (this._changeDirectionTicker > 0) this._changeDirectionTicker--;
   }
 
   onCollision(otherEntity: Entity, collision: Collision) {
@@ -95,8 +99,12 @@ export default class Ogre extends AnimatedPIXIEntity {
       if (isFacingOtherEntity && distanceToOtherEntity < SWIPE_ATTACK_ALERT_DISTANCE) {
         this._swipeAttack();
       } else if (!isFacingOtherEntity && distanceToOtherEntity < ALERT_DISTANCE) {
-        if (this.isFacingLeft) this._runRight();
-        else this._runLeft();
+        if (this._changeDirectionTicker <= 0) {
+          this._changeDirectionTicker = CHANGE_DIRECTION_RECHARGE_TICKS;
+          
+          if (this.isFacingLeft) this._runRight();
+          else this._runLeft();
+        }
       }
     }
   }

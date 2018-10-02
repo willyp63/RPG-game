@@ -20,6 +20,7 @@ const ATTACK_ALERT_DISTANCE = 24;
 const ATTACK_POSITION = new Vector(12, 0);
 const MAX_HEALTH = 30;
 const REVIVE_TIME = 8000;
+const CHANGE_DIRECTION_RECHARGE_TICKS = 40;
 
 export default class Skeleton extends AnimatedPIXIEntity {
 
@@ -58,6 +59,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
 
   private _walkForce = new Vector(0, 0);
   private _isAttacking = false;
+  private _changeDirectionTicker = 0;
 
   constructor(position: Vector, private _isDead = false) {
     super(position, Skeleton._walkTextures);
@@ -85,6 +87,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
     if (this.isTouchingWallsInAllDirections([Direction.Down])) {
       this.push(this._walkForce);
     }
+
+    if (this._changeDirectionTicker > 0) this._changeDirectionTicker--;
   }
 
   onCollision(otherEntity: Entity, collision: Collision) {
@@ -102,8 +106,12 @@ export default class Skeleton extends AnimatedPIXIEntity {
       if (isFacingOtherEntity && distanceToOtherEntity < ATTACK_ALERT_DISTANCE) {
         this._attack();
       } else if (!isFacingOtherEntity && distanceToOtherEntity < ALERT_DISTANCE) {
-        if (this.isFacingLeft) this._walkRight();
-        else this._walkLeft();
+        if (this._changeDirectionTicker <= 0) {
+          this._changeDirectionTicker = CHANGE_DIRECTION_RECHARGE_TICKS;
+
+          if (this.isFacingLeft) this._walkRight();
+          else this._walkLeft();
+        }
       }
     }
   }
