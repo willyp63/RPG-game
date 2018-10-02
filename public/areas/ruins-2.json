@@ -60,8 +60,13 @@
     },
     {
       "class": "SignPost",
-      "position": [204, 189],
-      "message": "Use the `x` key to roll.\nRolling can be useful for avoiding attacks."
+      "position": [238, 189],
+      "message": "Press `x` to roll.\nRolling can be useful for avoiding attacks, among other things..."
+    },
+    {
+      "class": "SignPost",
+      "position": [170, 189],
+      "message": "Press `z` to perform a basic attack."
     },
     {
       "class": "Door",
