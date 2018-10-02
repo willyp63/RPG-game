@@ -13,8 +13,8 @@ const ROLL_ANIMATION_SPEED = 0.133;
 
 const SIZE = new Vector(15, 33);
 const ROLLING_SIZE = new Vector(15, 21);
-const RUN_FORCE = new Vector(0.24, 0);
-const MID_AIR_RUN_SCALE = 0.2;
+const RUN_FORCE = new Vector(0.25, 0);
+const MID_AIR_RUN_SCALE = 0.3;
 const SPRINT_FORCE = new Vector(0.32, 0);
 const JUMP_FORCE = new Vector(0, -8);
 const STAB_POSITION = new Vector(24, 2);
@@ -35,6 +35,7 @@ export default class Warrior extends AnimatedPIXIEntity {
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
   get isSolidBound() { return this._state !== WarriorState.Rolling; }
+  get isFrictionBound() { return true; }
 
   get cameraPosition() {
     return this._state === WarriorState.Rolling

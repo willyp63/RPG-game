@@ -25,6 +25,7 @@ export default abstract class Entity {
   get isWallBound() { return false; }
   get isSolidBound() { return false; }
   get isGravityBound() { return false; }
+  get isFrictionBound() { return false; }
 
   public velocity = new Vector(0, 0);
   public acceleration = new Vector(0, 0);

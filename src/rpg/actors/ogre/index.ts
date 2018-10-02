@@ -36,6 +36,7 @@ export default class Ogre extends AnimatedPIXIEntity {
   get isWallBound() { return true; }
   get isSolidBound() { return true; }
   get isSolid() { return true; }
+  get isFrictionBound() { return true; }
 
   static assets = [TEXTURES_FILE];
 

@@ -10,6 +10,7 @@ import Slime from "./actors/slime";
 import RampWall from "./actors/walls/ramp-wall";
 import SignPost from "./actors/sign-post";
 import MessageBox from "./ui/message-box";
+import OscillatingWall from "./actors/walls/oscillating-wall";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -30,6 +31,7 @@ export default class RPGSystem extends PIXISystem {
       Slime.assets,
       RampWall.assets,
       SignPost.assets,
+      OscillatingWall.assets,
     );
   }
 
@@ -126,6 +128,15 @@ export default class RPGSystem extends PIXISystem {
                   () => {
                     this._messageBox.hide();
                   },
+                )
+              );
+            } else if (entity.class === 'OscillatingWall') {
+              this.addEntity(
+                new OscillatingWall(
+                  new Vector(entity.position[0], entity.position[1]),
+                  new Vector(entity.size[0], entity.size[1]),
+                  new Vector(entity.velocity[0], entity.velocity[1]),
+                  entity.period,
                 )
               );
             }

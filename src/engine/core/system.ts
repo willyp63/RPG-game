@@ -70,7 +70,9 @@ export default abstract class System {
 
   _applyFriction() {
     this.entities.forEach(entity => {
-      entity.push(entity.velocity.scaled(-this.frictionCoefficient));
+      if (entity.isFrictionBound) {
+        entity.push(entity.velocity.scaled(-this.frictionCoefficient));
+      }
     });
   }
 
