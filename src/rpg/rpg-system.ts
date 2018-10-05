@@ -1,5 +1,4 @@
 import PIXISystem from "../engine/pixi/pixi-system";
-import Warrior from "./actors/warrior";
 import Wall from "./actors/walls/wall";
 import Skeleton from "./actors/skeleton";
 import Door from "./actors/door";
@@ -11,6 +10,7 @@ import RampWall from "./actors/walls/ramp-wall";
 import SignPost from "./actors/sign-post";
 import MessageBox from "./ui/message-box";
 import OscillatingWall from "./actors/walls/oscillating-wall";
+import Hero from "./actors/hero/hero";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -23,7 +23,7 @@ export default class RPGSystem extends PIXISystem {
 
   get assets() {
     return (<Array<string>>[]).concat(
-      Warrior.assets,
+      Hero.assets,
       Wall.assets,
       Skeleton.assets,
       Door.assets,
@@ -143,7 +143,7 @@ export default class RPGSystem extends PIXISystem {
           });
 
           // add hero
-          const hero = new Warrior(heroStart);
+          const hero = new Hero(heroStart);
           this.addEntity(hero);
           this.followEntity(hero);
 

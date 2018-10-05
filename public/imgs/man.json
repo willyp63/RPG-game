@@ -1,0 +1,81 @@
+{"frames": {
+
+"man__jump.png":
+{
+	"frame": {"x":0,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+},
+"man__punch-1.png":
+{
+	"frame": {"x":21,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+},
+"man__punch-2.png":
+{
+	"frame": {"x":42,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+},
+"man__roll-1.png":
+{
+	"frame": {"x":63,"y":0,"w":27,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":30},
+	"sourceSize": {"w":27,"h":30}
+},
+"man__roll-2.png":
+{
+	"frame": {"x":90,"y":0,"w":27,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":27,"h":30},
+	"sourceSize": {"w":27,"h":30}
+},
+"man__run-1.png":
+{
+	"frame": {"x":117,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+},
+"man__run-2.png":
+{
+	"frame": {"x":138,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+},
+"man__run-3.png":
+{
+	"frame": {"x":159,"y":0,"w":21,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":30},
+	"sourceSize": {"w":21,"h":30}
+}},
+"animations": {
+	"man__punch": ["man__punch-1.png","man__punch-2.png"],
+	"man__roll": ["man__roll-1.png","man__roll-2.png"],
+	"man__run": ["man__run-1.png","man__run-2.png","man__run-3.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "man.png",
+	"format": "RGBA8888",
+	"size": {"w":180,"h":30},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:1dd2e955297728bf154f8f3e8bde28e6:1da6541a99be8893b9f346162e56197c:7cb16ae2a7812a83bde2d0f7d63f713f$"
+}
+}
