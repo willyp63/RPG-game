@@ -11,6 +11,8 @@ import SignPost from "./actors/sign-post";
 import MessageBox from "./ui/message-box";
 import OscillatingWall from "./actors/walls/oscillating-wall";
 import Hero from "./actors/hero/hero";
+import Helm from "./actors/hero/equipment/helm";
+import ChestPiece from "./actors/hero/equipment/chest-piece";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -32,6 +34,8 @@ export default class RPGSystem extends PIXISystem {
       RampWall.assets,
       SignPost.assets,
       OscillatingWall.assets,
+      Helm.assets,
+      ChestPiece.assets,
     );
   }
 

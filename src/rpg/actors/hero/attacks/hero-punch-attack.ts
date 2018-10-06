@@ -1,6 +1,6 @@
-import Attack from "../../../engine/core/attack";
-import Vector from "../../../engine/core/vector";
-import Hero from "./hero";
+import Attack from "../../../../engine/core/attack";
+import Vector from "../../../../engine/core/vector";
+import Hero from "../hero";
 
 const SIZE = 12;
 const ATTACK_FORCE = new Vector(6, -2);

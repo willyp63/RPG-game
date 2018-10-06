@@ -1,0 +1,28 @@
+{"frames": {
+
+"iron-chest-piece.png":
+{
+	"frame": {"x":0,"y":0,"w":8,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":13},
+	"sourceSize": {"w":8,"h":13}
+},
+"iron-chest-piece__upper-arm.png":
+{
+	"frame": {"x":0,"y":15,"w":7,"h":4},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":4},
+	"sourceSize": {"w":7,"h":4}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "chest-pieces.png",
+	"format": "RGBA8888",
+	"size": {"w":8,"h":19},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:fd52eb8e80604cd08a1d621863a82d8c:b5297a9a5c26112dd17272156bc1606a:a2e1c0c6a83a0ad1a6a6be75b62b7399$"
+}
+}
