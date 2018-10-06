@@ -9,6 +9,12 @@ export enum WeaponType {
   RubyStaff,
 };
 
+export enum AttackType {
+  Punch,
+  Slash,
+  Cast,
+};
+
 export default class Weapon {
 
   static assets = [TEXTURES_FILE];
@@ -30,7 +36,17 @@ export default class Weapon {
       default:
         return new Sprite();
     }
-    
+  }
+
+  public get attackType() {
+    switch(this._type) {
+      case WeaponType.IronSword:
+        return AttackType.Slash;
+      case WeaponType.RubyStaff:
+        return AttackType.Cast;
+      default:
+        return AttackType.Punch;
+    }
   }
 
   constructor(private _type: WeaponType) { }

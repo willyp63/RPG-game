@@ -2,11 +2,11 @@ import Attack from "../../../../engine/core/attack";
 import Vector from "../../../../engine/core/vector";
 import Hero from "../hero";
 
-const SIZE = 8;
-const ATTACK_FORCE = new Vector(3, -1);
-const ATTACK_DAMAGE = 5;
+const SIZE = 16;
+const ATTACK_FORCE = new Vector(6, -2);
+const ATTACK_DAMAGE = 20;
 
-export default class HeroPunchAttack extends Attack {
+export default class HeroSlashAttack extends Attack {
 
   constructor(
     position: Vector,
