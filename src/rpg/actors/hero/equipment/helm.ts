@@ -1,16 +1,32 @@
-import { Sprite, loader, ObservablePoint } from "pixi.js";
+import { Sprite } from "pixi.js";
+import TextureHelper from "../../../../engine/pixi/texture-helper";
 
-const TEXTURES_FILE = 'public/imgs/viking-helm.png';
+const TEXTURES_FILE = 'public/imgs/helms.json';
+
+export enum HelmType {
+  None,
+  Viking,
+  Wizard,
+};
 
 export default class Helm {
 
   static assets = [TEXTURES_FILE];
 
-  public sprite: Sprite;
+  private static get vikingTexture() { return TextureHelper.get(TEXTURES_FILE, "viking-helm.png"); }
+  private static get wizardTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-hood.png"); }
 
-  constructor() {
-    this.sprite = new Sprite(loader.resources[TEXTURES_FILE].texture);
-    this.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+  public getSprite() {
+    switch(this._type) {
+      case HelmType.Viking:
+        return new Sprite(Helm.vikingTexture);
+      case HelmType.Wizard:
+        return new Sprite(Helm.wizardTexture);
+      default:
+        return new Sprite();
+    }
   }
+
+  constructor(private _type: HelmType) { }
 
 }

@@ -15,14 +15,30 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
 	"sourceSize": {"w":5,"h":6}
+},
+"wizard-leg-guards__lower-leg.png":
+{
+	"frame": {"x":17,"y":0,"w":8,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":6},
+	"sourceSize": {"w":8,"h":6}
+},
+"wizard-leg-guards__upper-leg.png":
+{
+	"frame": {"x":27,"y":0,"w":5,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+	"sourceSize": {"w":5,"h":6}
 }},
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "leg-guards.png",
 	"format": "RGBA8888",
-	"size": {"w":15,"h":6},
+	"size": {"w":32,"h":6},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:7bc01e806801f923feb31c9725047362:4cf0fb94b90e8e74b2a5bb2c80662376:336084526b70e9a7614e95b984d1a54e$"
+	"smartupdate": "$TexturePacker:SmartUpdate:d771c0ed5faa30f5df6153ad1695e14a:1d1c2c237ab4b47c54be7c0ac9498665:336084526b70e9a7614e95b984d1a54e$"
 }
 }

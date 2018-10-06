@@ -5,12 +5,12 @@ import Direction from "../../../engine/core/direction";
 import EntityType from "../../../engine/core/entity-type";
 import PIXIEntity from "../../../engine/pixi/pixi-entity";
 import { Sprite, ObservablePoint } from "pixi.js";
-import Helm from "./equipment/helm";
-import ChestPiece from "./equipment/chest-piece";
+import Helm, { HelmType } from "./equipment/helm";
+import ChestPiece, { ChestPieceType } from "./equipment/chest-piece";
 import setTicksOut, { clearTicksOut } from "../../../engine/core/set-ticks-out";
 import HeroPunchAttack from "./attacks/hero-punch-attack";
-import LegGuards from "./equipment/leg-guards";
-import Weapon from "./equipment/weapon";
+import LegGuards, { LegGuardType } from "./equipment/leg-guards";
+import Weapon, { WeaponType } from "./equipment/weapon";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -131,14 +131,14 @@ export default class Hero extends PIXIEntity {
   private frontLowerLeg = new Sprite(Hero.lowerLegTexture);
 
   // armor
-  private helm = new Helm();
-  private chestPiece = new ChestPiece();
-  private legGuards = new LegGuards();
+  private helm = new Helm(HelmType.Wizard);
+  private chestPiece = new ChestPiece(ChestPieceType.Wizard);
+  private legGuards = new LegGuards(LegGuardType.Wizard);
 
   // weapons
-  private mainHandWeapon = new Weapon();
+  private mainHandWeapon = new Weapon(WeaponType.RubyStaff);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
-  private offHandWeapon = new Weapon();
+  private offHandWeapon = new Weapon(WeaponType.None);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
 
   private animationTicksOut?: Function;
@@ -275,8 +275,9 @@ export default class Hero extends PIXIEntity {
     this.frontLowerArm.addChild(this.mainHandWeaponSprite);
 
     // helm
-    this.helm.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
-    this.head.addChild(this.helm.sprite);
+    const helmSprite = this.helm.getSprite();
+    helmSprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    this.head.addChild(helmSprite);
   }
 
   private addKeyListeners() {
