@@ -9,6 +9,7 @@ import Helm from "./equipment/helm";
 import ChestPiece from "./equipment/chest-piece";
 import setTicksOut, { clearTicksOut } from "../../../engine/core/set-ticks-out";
 import HeroPunchAttack from "./attacks/hero-punch-attack";
+import LegGuards from "./equipment/leg-guards";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -128,6 +129,7 @@ export default class Hero extends PIXIEntity {
   // armor
   private helm = new Helm();
   private chestPiece = new ChestPiece();
+  private legGuards = new LegGuards();
 
   private animationTicksOut?: Function;
 
@@ -171,6 +173,14 @@ export default class Hero extends PIXIEntity {
     this.backLowerArm.anchor = LOWER_ARM_ANCHOR;
     this.backUpperArm.addChild(this.backLowerArm);
 
+    // chest piece arm
+    const backChestPieceUpperArmSprite = this.chestPiece.getUpperArmSprite();
+    const backChestPieceLowerArmSprite = this.chestPiece.getLowerArmSprite();
+    backChestPieceUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
+    backChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
+    this.backUpperArm.addChild(backChestPieceUpperArmSprite);
+    this.backLowerArm.addChild(backChestPieceLowerArmSprite);
+
     // back leg
     this.backUpperLeg.x = BACK_LEG_POSITION.x;
     this.backUpperLeg.y = BACK_LEG_POSITION.y;
@@ -181,11 +191,24 @@ export default class Hero extends PIXIEntity {
     this.backLowerLeg.anchor = LOWER_LEG_ANCHOR;
     this.backUpperLeg.addChild(this.backLowerLeg);
 
+    // leg guards
+    const backUpperLegGuardSprite = this.legGuards.getUpperLegSprite();
+    const backLowerLegGuardSprite = this.legGuards.getLowerLegSprite();
+    backUpperLegGuardSprite.anchor = UPPER_LEG_ANCHOR;
+    backLowerLegGuardSprite.anchor = LOWER_LEG_ANCHOR;
+    this.backUpperLeg.addChild(backUpperLegGuardSprite);
+    this.backLowerLeg.addChild(backLowerLegGuardSprite);
+
     // chest
     this.chest.x = CHEST_POSITION.x;
     this.chest.y = CHEST_POSITION.y;
     this.chest.anchor = CHEST_ANCHOR;
     this._sprite.addChild(this.chest);
+
+    // chest piece
+    const chestPieceSprite = this.chestPiece.getSprite();
+    chestPieceSprite.anchor = CHEST_ANCHOR;
+    this.chest.addChild(chestPieceSprite);
 
     // head
     this.head.x = HEAD_POSITION.x;
@@ -203,6 +226,14 @@ export default class Hero extends PIXIEntity {
     this.frontLowerLeg.anchor = LOWER_LEG_ANCHOR;
     this.frontUpperLeg.addChild(this.frontLowerLeg);
 
+    // leg guards
+    const frontUpperLegGuardSprite = this.legGuards.getUpperLegSprite();
+    const frontLowerLegGuardSprite = this.legGuards.getLowerLegSprite();
+    frontUpperLegGuardSprite.anchor = UPPER_LEG_ANCHOR;
+    frontLowerLegGuardSprite.anchor = LOWER_LEG_ANCHOR;
+    this.frontUpperLeg.addChild(frontUpperLegGuardSprite);
+    this.frontLowerLeg.addChild(frontLowerLegGuardSprite);
+
     // front arm
     this.frontUpperArm.x = FRONT_ARM_POSITION.x;
     this.frontUpperArm.y = FRONT_ARM_POSITION.y;
@@ -213,13 +244,17 @@ export default class Hero extends PIXIEntity {
     this.frontLowerArm.anchor = LOWER_ARM_ANCHOR;
     this.frontUpperArm.addChild(this.frontLowerArm);
 
+    // chest piece arm
+    const frontChestPieceUpperArmSprite = this.chestPiece.getUpperArmSprite();
+    const frontChestPieceLowerArmSprite = this.chestPiece.getLowerArmSprite();
+    frontChestPieceUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
+    frontChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
+    this.frontUpperArm.addChild(frontChestPieceUpperArmSprite);
+    this.frontLowerArm.addChild(frontChestPieceLowerArmSprite);
+
     // helm
     this.helm.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
     this.head.addChild(this.helm.sprite);
-
-    // chest piece
-    this.chestPiece.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
-    this.chest.addChild(this.chestPiece.sprite);
   }
 
   private addKeyListeners() {

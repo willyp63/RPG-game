@@ -1,0 +1,28 @@
+{"frames": {
+
+"iron-leg-guards__lower-leg.png":
+{
+	"frame": {"x":0,"y":0,"w":8,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":6},
+	"sourceSize": {"w":8,"h":6}
+},
+"iron-leg-guards__upper-leg.png":
+{
+	"frame": {"x":10,"y":0,"w":5,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+	"sourceSize": {"w":5,"h":6}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "leg-guards.png",
+	"format": "RGBA8888",
+	"size": {"w":15,"h":6},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:7bc01e806801f923feb31c9725047362:4cf0fb94b90e8e74b2a5bb2c80662376:336084526b70e9a7614e95b984d1a54e$"
+}
+}

@@ -13,6 +13,7 @@ import OscillatingWall from "./actors/walls/oscillating-wall";
 import Hero from "./actors/hero/hero";
 import Helm from "./actors/hero/equipment/helm";
 import ChestPiece from "./actors/hero/equipment/chest-piece";
+import LegGuards from "./actors/hero/equipment/leg-guards";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -36,6 +37,7 @@ export default class RPGSystem extends PIXISystem {
       OscillatingWall.assets,
       Helm.assets,
       ChestPiece.assets,
+      LegGuards.assets,
     );
   }
 
