@@ -10,6 +10,7 @@ import ChestPiece from "./equipment/chest-piece";
 import setTicksOut, { clearTicksOut } from "../../../engine/core/set-ticks-out";
 import HeroPunchAttack from "./attacks/hero-punch-attack";
 import LegGuards from "./equipment/leg-guards";
+import Weapon from "./equipment/weapon";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -45,6 +46,9 @@ const FRONT_ARM_POSITION = new Vector(-4, -4);
 const UPPER_ARM_ANCHOR = <ObservablePoint>{ x: 0, y: 0.5 };
 const LOWER_ARM_POSITION = new Vector(7, 0);
 const LOWER_ARM_ANCHOR = <ObservablePoint>{ x: 0, y: 0.5 };
+
+// Weapons
+const WEAPON_POSITION = new Vector(4, 0);
 
 const DEFAULT_ANIMATION_TICK_DELAY = 12;
 
@@ -131,6 +135,12 @@ export default class Hero extends PIXIEntity {
   private chestPiece = new ChestPiece();
   private legGuards = new LegGuards();
 
+  // weapons
+  private mainHandWeapon = new Weapon();
+  private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
+  private offHandWeapon = new Weapon();
+  private offHandWeaponSprite = this.offHandWeapon.getSprite();
+
   private animationTicksOut?: Function;
 
   constructor(position: Vector) {
@@ -180,6 +190,12 @@ export default class Hero extends PIXIEntity {
     backChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
     this.backUpperArm.addChild(backChestPieceUpperArmSprite);
     this.backLowerArm.addChild(backChestPieceLowerArmSprite);
+
+    // off hand weapon
+    this.offHandWeaponSprite = this.offHandWeapon.getSprite();
+    this.offHandWeaponSprite.x = WEAPON_POSITION.x;
+    this.offHandWeaponSprite.y = WEAPON_POSITION.y;
+    this.backLowerArm.addChild(this.offHandWeaponSprite);
 
     // back leg
     this.backUpperLeg.x = BACK_LEG_POSITION.x;
@@ -251,6 +267,12 @@ export default class Hero extends PIXIEntity {
     frontChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
     this.frontUpperArm.addChild(frontChestPieceUpperArmSprite);
     this.frontLowerArm.addChild(frontChestPieceLowerArmSprite);
+
+    // main hand weapon
+    this.mainHandWeaponSprite = this.mainHandWeapon.getSprite();
+    this.mainHandWeaponSprite.x = WEAPON_POSITION.x;
+    this.mainHandWeaponSprite.y = WEAPON_POSITION.y;
+    this.frontLowerArm.addChild(this.mainHandWeaponSprite);
 
     // helm
     this.helm.sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
@@ -401,8 +423,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Running1:
         this.frontUpperArm.rotation = Math.PI * 2 / 3;
         this.frontLowerArm.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI / 3;
         this.backLowerArm.rotation = Math.PI / -2;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = Math.PI / -3;
         this.frontLowerLeg.rotation = Math.PI / 3;
         this.backUpperLeg.rotation = Math.PI / 3;
@@ -413,8 +437,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Running3:
         this.frontUpperArm.rotation = Math.PI / 3;
         this.frontLowerArm.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI * 2 / 3;
         this.backLowerArm.rotation = Math.PI / -2;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = Math.PI / 3;
         this.frontLowerLeg.rotation = Math.PI / 3;
         this.backUpperLeg.rotation = Math.PI / -3;
@@ -424,8 +450,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Rolling1:
         this.frontUpperArm.rotation = Math.PI / 2;
         this.frontLowerArm.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI / 2;
         this.backLowerArm.rotation = Math.PI / -2;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = Math.PI * -2 / 3;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = Math.PI * -2 / 3;
@@ -435,8 +463,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Rolling2:
         this.frontUpperArm.rotation = Math.PI / 2;
         this.frontLowerArm.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI / 2;
         this.backLowerArm.rotation = Math.PI / -2;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = Math.PI * -2 / 3;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = Math.PI * -2 / 3;
@@ -446,8 +476,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Punching1:
         this.frontUpperArm.rotation = Math.PI * 2 / 3;
         this.frontLowerArm.rotation = Math.PI * -2 / 3;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI / 3;
         this.backLowerArm.rotation = Math.PI / -3;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = 0;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = 0;
@@ -457,8 +489,10 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Punching2:
         this.frontUpperArm.rotation = Math.PI / 9;
         this.frontLowerArm.rotation = Math.PI / -9;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI * 2 / 3;
         this.backLowerArm.rotation = Math.PI * -2 / 3;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = 0;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = 0;
@@ -470,8 +504,10 @@ export default class Hero extends PIXIEntity {
       default:
         this.frontUpperArm.rotation = Math.PI / 2;
         this.frontLowerArm.rotation = 0;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
         this.backUpperArm.rotation = Math.PI / 2;
         this.backLowerArm.rotation = 0;
+        this.offHandWeaponSprite.rotation = Math.PI / -2;
         this.frontUpperLeg.rotation = 0;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = 0;

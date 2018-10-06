@@ -1,0 +1,20 @@
+{"frames": {
+
+"iron-sword.png":
+{
+	"frame": {"x":0,"y":0,"w":29,"h":8},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":8},
+	"sourceSize": {"w":29,"h":8}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "weapons.png",
+	"format": "RGBA8888",
+	"size": {"w":29,"h":8},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:48fb8afaf7265f3c35423655b37ae586:8e644e78d5b9d9a8a8a03cea371508c8:ba48453f8b2235fdb166a51105f49255$"
+}
+}
