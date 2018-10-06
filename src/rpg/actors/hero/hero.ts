@@ -54,7 +54,8 @@ const MID_AIR_RUN_SCALE = 0.333;
 enum HeroState {
   Nuetral,
   Rolling,
-  Attacking,
+  AttackingMainHand,
+  AttackingOffHand,
 };
 
 enum HeroRunState {
@@ -73,8 +74,12 @@ enum HeroPose {
   Rolling2,
   Punching1,
   Punching2,
+  PunchingOffHand1,
+  PunchingOffHand2,
   Slashing1,
   Slashing2,
+  SlashingOffHand1,
+  SlashingOffHand2,
   Casting1,
   Casting2,
 }
@@ -132,14 +137,14 @@ export default class Hero extends PIXIEntity {
   private frontLowerLeg = new Sprite(Hero.lowerLegTexture);
 
   // armor
-  private helm = new Helm(HelmType.Viking);
-  private chestPiece = new ChestPiece(ChestPieceType.Wizard);
-  private legGuards = new LegGuards(LegGuardType.Wizard);
+  private helm = new Helm(HelmType.None);
+  private chestPiece = new ChestPiece(ChestPieceType.Iron);
+  private legGuards = new LegGuards(LegGuardType.Iron);
 
   // weapons
   private mainHandWeapon = new Weapon(WeaponType.IronSword);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
-  private offHandWeapon = new Weapon(WeaponType.None);
+  private offHandWeapon = new Weapon(WeaponType.RubyStaff);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
 
   private animationTicksOut?: Function;
@@ -296,12 +301,16 @@ export default class Hero extends PIXIEntity {
       () => this.jump(),
     ));
 
-    this.keyListeners.push(new KeyListener(88 /* `x` */,
+    this.keyListeners.push(new KeyListener(67 /* `c` */,
       () => this.roll(),
     ));
 
     this.keyListeners.push(new KeyListener(90 /* `z` */,
       () => this.attack(),
+    ));
+
+    this.keyListeners.push(new KeyListener(88 /* `x` */,
+      () => this.attack(true),
     ));
   }
 
@@ -400,42 +409,46 @@ export default class Hero extends PIXIEntity {
     this.continueRunning();
   }
 
-  private attack() {
+  private attack(isOffHand = false) {
     if (this.state !== HeroState.Nuetral) return;
 
     this.runForce = new Vector(0, 0);
-    this.state = HeroState.Attacking;
+    this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
 
-    switch(this.mainHandWeapon.attackType) {
+    switch(isOffHand ? this.offHandWeapon.attackType : this.mainHandWeapon.attackType) {
       case AttackType.Slash:
-        this.slash();
+        this.slash(isOffHand);
         break;
       case AttackType.Cast:
       case AttackType.Punch:
       default:
-        this.punch();
+        this.punch(isOffHand);
         break;
     }
   }
 
-  private slash() {
-    this.animatePoses([HeroPose.Slashing1, HeroPose.Slashing2], 1, this.onSlashFrameChange.bind(this), this.onAttackComplete.bind(this));
+  private slash(isOffHand: boolean) {
+    const poses = isOffHand ? [HeroPose.SlashingOffHand1, HeroPose.SlashingOffHand2] : [HeroPose.Slashing1, HeroPose.Slashing2];
+    this.animatePoses(poses, 1, this.onSlashFrameChange.bind(this), this.onAttackComplete.bind(this));
   }
 
-  private punch() {
-    this.animatePoses([HeroPose.Punching1, HeroPose.Punching2], 1, this.onPunchFrameChange.bind(this), this.onAttackComplete.bind(this));
+  private punch(isOffHand: boolean) {
+    const poses = isOffHand ? [HeroPose.PunchingOffHand1, HeroPose.PunchingOffHand2] : [HeroPose.Punching1, HeroPose.Punching2];
+    this.animatePoses(poses, 1, this.onPunchFrameChange.bind(this), this.onAttackComplete.bind(this));
   }
 
   private onPunchFrameChange(frameNum: number) {
-    if (frameNum === 1) this.addMainHandAttack();
+    if (frameNum === 1) this.addAttack();
   }
 
   private onSlashFrameChange(frameNum: number) {
-    if (frameNum === 1) this.addMainHandAttack();
+    if (frameNum === 1) this.addAttack();
   }
 
-  private addMainHandAttack() {
-    this.addEntityToSystem(this.mainHandWeapon.getAttack(this, this.isFacingLeft));
+  private addAttack() {
+    const isOffHand = this.state === HeroState.AttackingOffHand;
+    const weapon = isOffHand ? this.offHandWeapon : this.mainHandWeapon;
+    this.addEntityToSystem(weapon.getAttack(this, this.isFacingLeft));
   }
 
   private onAttackComplete() {
@@ -526,6 +539,32 @@ export default class Hero extends PIXIEntity {
         this.backLowerLeg.rotation = 0;
         this.sprite.rotation = 0;
         break;
+      case HeroPose.PunchingOffHand1:
+        this.frontUpperArm.rotation = Math.PI / 3;
+        this.frontLowerArm.rotation = Math.PI / -3;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.backUpperArm.rotation = Math.PI * 2 / 3;
+        this.backLowerArm.rotation = Math.PI * -2 / 3;
+        this.offHandWeaponSprite.rotation = Math.PI / -6;
+        this.frontUpperLeg.rotation = 0;
+        this.frontLowerLeg.rotation = 0;
+        this.backUpperLeg.rotation = 0;
+        this.backLowerLeg.rotation = 0;
+        this.sprite.rotation = 0;
+        break;
+      case HeroPose.PunchingOffHand2:
+        this.frontUpperArm.rotation = Math.PI * 2 / 3;
+        this.frontLowerArm.rotation = Math.PI * -2 / 3;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.backUpperArm.rotation = Math.PI / 9;
+        this.backLowerArm.rotation = Math.PI / -9;
+        this.offHandWeaponSprite.rotation = Math.PI / -6;
+        this.frontUpperLeg.rotation = 0;
+        this.frontLowerLeg.rotation = 0;
+        this.backUpperLeg.rotation = 0;
+        this.backLowerLeg.rotation = 0;
+        this.sprite.rotation = 0;
+        break;
       case HeroPose.Slashing1:
         this.frontUpperArm.rotation = 0;
         this.frontLowerArm.rotation = Math.PI / -2;
@@ -546,6 +585,32 @@ export default class Hero extends PIXIEntity {
         this.backUpperArm.rotation = Math.PI / 2;
         this.backLowerArm.rotation = 0;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
+        this.frontUpperLeg.rotation = 0;
+        this.frontLowerLeg.rotation = 0;
+        this.backUpperLeg.rotation = 0;
+        this.backLowerLeg.rotation = 0;
+        this.sprite.rotation = 0;
+        break;
+      case HeroPose.SlashingOffHand1:
+        this.frontUpperArm.rotation = Math.PI / 2;
+        this.frontLowerArm.rotation = 0;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.backUpperArm.rotation = 0;
+        this.backLowerArm.rotation = Math.PI / -2;
+        this.offHandWeaponSprite.rotation = Math.PI / -3;
+        this.frontUpperLeg.rotation = 0;
+        this.frontLowerLeg.rotation = 0;
+        this.backUpperLeg.rotation = 0;
+        this.backLowerLeg.rotation = 0;
+        this.sprite.rotation = 0;
+        break;
+      case HeroPose.SlashingOffHand2:
+        this.frontUpperArm.rotation = Math.PI / 2;
+        this.frontLowerArm.rotation = 0;
+        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.backUpperArm.rotation = Math.PI / 3;
+        this.backLowerArm.rotation = 0;
+        this.offHandWeaponSprite.rotation = Math.PI / -3;
         this.frontUpperLeg.rotation = 0;
         this.frontLowerLeg.rotation = 0;
         this.backUpperLeg.rotation = 0;
