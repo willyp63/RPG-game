@@ -7,11 +7,6 @@
   "entities": [
     {
       "class": "Wall",
-      "position": [0, 256],
-      "size": [1280, 32]
-    },
-    {
-      "class": "Wall",
       "position": [16, 106],
       "size": [32, 150]
     },
@@ -19,6 +14,11 @@
       "class": "Wall",
       "position": [1232, 106],
       "size": [32, 150]
+    },
+    {
+      "class": "Wall",
+      "position": [0, 256],
+      "size": [1280, 32]
     },
     {
       "class": "Door",

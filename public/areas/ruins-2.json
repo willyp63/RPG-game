@@ -7,11 +7,6 @@
   "entities": [
     {
       "class": "Wall",
-      "position": [0, 256],
-      "size": [1280, 32]
-    },
-    {
-      "class": "Wall",
       "position": [16, 106],
       "size": [32, 150]
     },
@@ -26,37 +21,14 @@
       "size": [128, 16]
     },
     {
-      "class": "RampWall",
-      "position": [482, 239],
-      "size": [102, 17],
-      "shape": 1
-    },
-    {
-      "class": "Wall",
-      "position": [584, 239],
-      "size": [91, 17]
-    },
-    {
-      "class": "RampWall",
-      "position": [675, 225],
-      "size": [36, 14],
-      "shape": 1
-    },
-    {
-      "class": "RampWall",
-      "position": [713, 225],
-      "size": [110, 31],
-      "shape": 2
-    },
-    {
-      "class": "Wall",
-      "position": [711, 225],
-      "size": [2, 31]
-    },
-    {
       "class": "Wall",
       "position": [1136, 224],
       "size": [96, 32]
+    },
+    {
+      "class": "Wall",
+      "position": [0, 256],
+      "size": [1280, 32]
     },
     {
       "class": "SignPost",

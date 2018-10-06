@@ -7,11 +7,6 @@
   "entities": [
     {
       "class": "Wall",
-      "position": [0, 256],
-      "size": [640, 32]
-    },
-    {
-      "class": "Wall",
       "position": [16, 128],
       "size": [16, 128]
     },
@@ -31,21 +26,9 @@
       "size": [32, 150]
     },
     {
-      "class": "RampWall",
-      "position": [336, 238],
-      "size": [77, 18],
-      "shape": 1
-    },
-    {
-      "class": "RampWall",
-      "position": [469, 238],
-      "size": [51, 18],
-      "shape": 2
-    },
-    {
       "class": "Wall",
-      "position": [413, 238],
-      "size": [56, 18]
+      "position": [0, 256],
+      "size": [640, 32]
     },
     {
       "class": "Door",
@@ -63,7 +46,7 @@
     },
     {
       "class": "SignPost",
-      "position": [436, 222],
+      "position": [436, 240],
       "message": "When next to a door, press the up arrow key to enter."
     },
     {
