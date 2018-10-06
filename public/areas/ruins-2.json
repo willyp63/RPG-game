@@ -33,12 +33,12 @@
     {
       "class": "SignPost",
       "position": [238, 189],
-      "message": "Press `x` to roll.\nRolling can be useful for avoiding attacks, among other things..."
+      "message": "Press `z` to attack with your main hand weapon."
     },
     {
       "class": "SignPost",
       "position": [170, 189],
-      "message": "Press `z` to perform a basic attack."
+      "message": "Press `x` to attack with your off hand weapon."
     },
     {
       "class": "Door",
