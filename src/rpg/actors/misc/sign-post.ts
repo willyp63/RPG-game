@@ -1,9 +1,8 @@
-import PIXIEntity from "../../engine/pixi/pixi-entity";
-import Vector from "../../engine/core/vector";
 import { Sprite, loader } from "pixi.js";
-import Entity from "../../engine/core/entity";
-import Collision from "../../engine/core/collision";
-import EntityType from "../../engine/core/entity-type";
+import Vector from "../../../engine/core/vector";
+import PIXIEntity from "../../../engine/pixi/pixi-entity";
+import Entity, { EntityType } from "../../../engine/core/entity";
+import Collision from "../../../engine/core/collision";
 
 const TEXTURE_FILE = "public/imgs/sign-post.png";
 const SIZE = new Vector(30, 32);

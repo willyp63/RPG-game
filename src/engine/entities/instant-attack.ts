@@ -1,9 +1,8 @@
-import Entity from './entity';
-import Vector from './vector';
-import EntityType from './entity-type';
-import Collision from './collision';
+import Entity, { EntityType } from '../core/entity';
+import Vector from '../core/vector';
+import Collision from '../core/collision';
 
-export default class Attack extends Entity {
+export default class InstantAttack extends Entity {
 
   get type() { return this._isFriendly ? EntityType.Friendly : EntityType.Unfriendly; }
   get size() { return this._size; }
@@ -28,6 +27,8 @@ export default class Attack extends Entity {
   }
 
   afterTick() {
+    super.afterTick();
+
     this.kill();
   }
 

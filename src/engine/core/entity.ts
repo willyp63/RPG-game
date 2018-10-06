@@ -1,20 +1,22 @@
 import Vector from "./vector";
-import EntityType from "./entity-type";
-import Shape, { isRamp, getRampSlope } from "./shape";
 import Direction, { oppositeDirection } from "./direction";
 import Collision from "./collision";
-import WallReceder from "./wall-receder";
 
 const DEFAULT_WEIGHT = 1;
 const DEFAULT_MAX_VELOCITY = 16;
 const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
 const DEFAULT_ELASTICITY = 0.1;
 
+export enum EntityType {
+  Friendly,
+  Unfriendly,
+  Neutral,
+};
+
 export default abstract class Entity {
 
   get type() { return EntityType.Neutral; }
   get size() { return new Vector(0, 0); }
-  get shape() { return Shape.Rect; }
   get weight() { return DEFAULT_WEIGHT; }
   get maxHealth() { return 0; }
   get frictionCoefficient() { return DEFAULT_FRICTION_COEFFICIENT; }
@@ -93,11 +95,7 @@ export default abstract class Entity {
       if (this.isWall && otherEntity.isWallBound) {
 
         // recede from walls
-        if (isRamp(this)) {
-          WallReceder.recedeEntityFromRampWallCollision(otherEntity, this);
-        } else {
-          WallReceder.recedeEntityFromRectWallCollision(otherEntity, this, collision.withOppositeDirection());
-        }
+        Collision.recede(otherEntity, this, collision.withOppositeDirection());
 
         // floor friction
         if (collision.direction === Direction.Up || collision.direction === Direction.Down) {
@@ -116,17 +114,9 @@ export default abstract class Entity {
           otherEntity.velocity = otherEntity.velocity.withNewX(Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
         }
 
-        // stick to floor when going down ramps/elevators
-        if (collision.direction === Direction.Up) {
-          if (otherEntity.velocity.y > -1) {
-            const isOtherEntityGoingDownElevator = this.velocity.y > 0;
-
-            if (isOtherEntityGoingDownElevator) {
-              otherEntity.velocity = otherEntity.velocity.withNewY(this.velocity.y);
-            } else if (isRamp(this)) {
-              otherEntity.velocity = otherEntity.velocity.withNewY(otherEntity.velocity.x * getRampSlope(this));
-            }
-          }
+        // stick to floor when going down elevators
+        if (collision.direction === Direction.Up && this.velocity.y > 0) {
+          otherEntity.velocity = otherEntity.velocity.withNewY(this.velocity.y);
         }
 
         // track touching walls

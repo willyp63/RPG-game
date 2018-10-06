@@ -1,6 +1,6 @@
 import { Sprite, ObservablePoint } from "pixi.js";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
-import Attack from "../../../../engine/core/attack";
+import InstantAttack from "../../../../engine/entities/instant-attack";
 import Vector from "../../../../engine/core/vector";
 import Entity from "../../../../engine/core/entity";
 import FireBall from "../attacks/fire-ball";
@@ -61,7 +61,7 @@ export default class Weapon {
           isFacingLeft,
         );
       case WeaponType.IronSword:
-        return new Attack(
+        return new InstantAttack(
           hero.position.plus((new Vector(16, 2)).flippedHorizontally(isFacingLeft)),
           hero,
           24,
@@ -70,7 +70,7 @@ export default class Weapon {
           true,
         );
       default:
-        return new Attack(
+        return new InstantAttack(
           hero.position.plus((new Vector(12, 2)).flippedHorizontally(isFacingLeft)),
           hero,
           8,

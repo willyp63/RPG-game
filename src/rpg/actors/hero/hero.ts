@@ -2,14 +2,14 @@ import Vector from "../../../engine/core/vector";
 import TextureHelper from "../../../engine/pixi/texture-helper";
 import KeyListener from "../../../engine/interaction/key-listener";
 import Direction from "../../../engine/core/direction";
-import EntityType from "../../../engine/core/entity-type";
 import PIXIEntity from "../../../engine/pixi/pixi-entity";
 import { Sprite, ObservablePoint } from "pixi.js";
 import Helm, { HelmType } from "./equipment/helm";
 import ChestPiece, { ChestPieceType } from "./equipment/chest-piece";
-import setTicksOut, { clearTicksOut } from "../../../engine/core/set-ticks-out";
+import setTicksOut, { clearTicksOut } from "../../../engine/util/set-ticks-out";
 import LegGuards, { LegGuardType } from "./equipment/leg-guards";
 import Weapon, { WeaponType, AttackType } from "./equipment/weapon";
+import { EntityType } from "../../../engine/core/entity";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -137,14 +137,14 @@ export default class Hero extends PIXIEntity {
   private frontLowerLeg = new Sprite(Hero.lowerLegTexture);
 
   // armor
-  private helm = new Helm(HelmType.None);
-  private chestPiece = new ChestPiece(ChestPieceType.Iron);
-  private legGuards = new LegGuards(LegGuardType.Iron);
+  private helm = new Helm(HelmType.Viking);
+  private chestPiece = new ChestPiece(ChestPieceType.Wizard);
+  private legGuards = new LegGuards(LegGuardType.Wizard);
 
   // weapons
-  private mainHandWeapon = new Weapon(WeaponType.IronSword);
+  private mainHandWeapon = new Weapon(WeaponType.RubyStaff);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
-  private offHandWeapon = new Weapon(WeaponType.RubyStaff);
+  private offHandWeapon = new Weapon(WeaponType.IronSword);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
 
   private animationTicksOut?: Function;

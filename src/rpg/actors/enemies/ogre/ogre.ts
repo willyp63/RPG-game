@@ -1,12 +1,11 @@
-import AnimatedPIXIEntity from "../../../engine/pixi/animated-pixi-entity";
-import Vector from "../../../engine/core/vector";
-import Direction from "../../../engine/core/direction";
-import Entity from "../../../engine/core/entity";
-import Collision from "../../../engine/core/collision";
-import EntityType from "../../../engine/core/entity-type";
-import TextureHelper from "../../../engine/pixi/texture-helper";
+import AnimatedPIXIEntity from "../../../../engine/pixi/animated-pixi-entity";
+import Vector from "../../../../engine/core/vector";
+import Direction from "../../../../engine/core/direction";
+import Entity, { EntityType } from "../../../../engine/core/entity";
+import Collision from "../../../../engine/core/collision";
+import TextureHelper from "../../../../engine/pixi/texture-helper";
 import OgreSwipeAttack from "./attacks/ogre-swipe-attack";
-import PIXIAnimation from "../../../engine/pixi/pixi-animation";
+import PIXIAnimation from "../../../../engine/pixi/pixi-animation";
 
 const TEXTURES_FILE = "public/imgs/ogre.json";
 const RUN_ANIMATION_SPEED = 0.1;

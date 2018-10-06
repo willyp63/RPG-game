@@ -1,8 +1,6 @@
-import Entity from "../../../../engine/core/entity";
-import EntityType from "../../../../engine/core/entity-type";
-import Vector from "../../../../engine/core/vector";
-import Ogre from "..";
-import Collision from "../../../../engine/core/collision";
+import Entity, { EntityType } from "../../../../../engine/core/entity";
+import Vector from "../../../../../engine/core/vector";
+import Collision from "../../../../../engine/core/collision";
 
 const SIZE = 32;
 const ATTACK_FORCE = new Vector(8, -3);
@@ -15,7 +13,7 @@ export default class OgreSwipeAttack extends Entity {
 
   constructor(
     position: Vector,
-    private _ogre: Ogre,
+    private _ogre: Entity,
   ) {
     super(position);
   }

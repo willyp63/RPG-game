@@ -1,10 +1,9 @@
-import Entity from "../../engine/core/entity";
-import Vector from "../../engine/core/vector";
-import Collision from "../../engine/core/collision";
-import EntityType from "../../engine/core/entity-type";
+import PIXIEntity from "../../../engine/pixi/pixi-entity";
 import { Graphics, RenderTexture } from "pixi.js";
-import PIXIEntity from "../../engine/pixi/pixi-entity";
-import KeyListener from "../../engine/interaction/key-listener";
+import KeyListener from "../../../engine/interaction/key-listener";
+import Vector from "../../../engine/core/vector";
+import Entity, { EntityType } from "../../../engine/core/entity";
+import Collision from "../../../engine/core/collision";
 
 const INDICATOR_Y_OFFSET = -20;
 const INDICATOR_SIZE = 6;

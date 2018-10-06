@@ -1,21 +1,20 @@
 import PIXISystem from "../engine/pixi/pixi-system";
-import Wall from "./actors/walls/wall";
-import Skeleton from "./actors/skeleton";
-import Door from "./actors/door";
 import getJson from "./util/get-json";
 import Vector from "../engine/core/vector";
-import Ogre from "./actors/ogre";
-import Slime from "./actors/slime";
-import RampWall from "./actors/walls/ramp-wall";
-import SignPost from "./actors/sign-post";
 import MessageBox from "./ui/message-box";
-import OscillatingWall from "./actors/walls/oscillating-wall";
 import Hero from "./actors/hero/hero";
 import Helm from "./actors/hero/equipment/helm";
 import ChestPiece from "./actors/hero/equipment/chest-piece";
 import LegGuards from "./actors/hero/equipment/leg-guards";
 import Weapon from "./actors/hero/equipment/weapon";
 import FireBall from "./actors/hero/attacks/fire-ball";
+import Skeleton from "./actors/enemies/skeleton/skeleton";
+import Ogre from "./actors/enemies/ogre/ogre";
+import Slime from "./actors/enemies/slime/slime";
+import SignPost from "./actors/misc/sign-post";
+import OscillatingWall from "./actors/misc/oscillating-wall";
+import Wall from "../engine/entities/wall";
+import Door from "./actors/misc/door";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -29,12 +28,9 @@ export default class RPGSystem extends PIXISystem {
   get assets() {
     return (<Array<string>>[]).concat(
       Hero.assets,
-      Wall.assets,
       Skeleton.assets,
-      Door.assets,
       Ogre.assets,
       Slime.assets,
-      RampWall.assets,
       SignPost.assets,
       OscillatingWall.assets,
       Helm.assets,
@@ -88,14 +84,6 @@ export default class RPGSystem extends PIXISystem {
                 new Wall(
                   new Vector(entity.position[0], entity.position[1]),
                   new Vector(entity.size[0], entity.size[1]),
-                )
-              );
-            } else if (entity.class === 'RampWall') {
-              this.addEntity(
-                new RampWall(
-                  new Vector(entity.position[0], entity.position[1]),
-                  new Vector(entity.size[0], entity.size[1]),
-                  entity.shape
                 )
               );
             } else if (entity.class === 'Door') {

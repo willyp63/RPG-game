@@ -1,8 +1,8 @@
 export default class Vector {
 
   constructor(
-    public _x: number,
-    public _y: number,
+    private _x: number,
+    private _y: number,
   ) { }
 
   get x() { return this._x; }

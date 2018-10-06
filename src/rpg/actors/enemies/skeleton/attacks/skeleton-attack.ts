@@ -1,8 +1,6 @@
-import Entity from "../../../../engine/core/entity";
-import EntityType from "../../../../engine/core/entity-type";
-import Vector from "../../../../engine/core/vector";
-import Collision from "../../../../engine/core/collision";
-import Skeleton from "..";
+import Entity, { EntityType } from "../../../../../engine/core/entity";
+import Vector from "../../../../../engine/core/vector";
+import Collision from "../../../../../engine/core/collision";
 
 const SIZE = 16;
 const ATTACK_FORCE = new Vector(4, -2);
@@ -15,7 +13,7 @@ export default class SkeletonAttack extends Entity {
 
   constructor(
     position: Vector,
-    private _skeleton: Skeleton,
+    private _skeleton: Entity,
   ) {
     super(position);
   }

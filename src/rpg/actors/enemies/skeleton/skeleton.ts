@@ -1,12 +1,11 @@
-import AnimatedPIXIEntity from "../../../engine/pixi/animated-pixi-entity";
-import Vector from "../../../engine/core/vector";
-import Direction from "../../../engine/core/direction";
-import EntityType from "../../../engine/core/entity-type";
-import TextureHelper from "../../../engine/pixi/texture-helper";
-import Entity from "../../../engine/core/entity";
-import Collision from "../../../engine/core/collision";
+import AnimatedPIXIEntity from "../../../../engine/pixi/animated-pixi-entity";
+import Vector from "../../../../engine/core/vector";
+import Direction from "../../../../engine/core/direction";
+import TextureHelper from "../../../../engine/pixi/texture-helper";
+import Entity, { EntityType } from "../../../../engine/core/entity";
+import Collision from "../../../../engine/core/collision";
 import SkeletonAttack from "./attacks/skeleton-attack";
-import PIXIAnimation from "../../../engine/pixi/pixi-animation";
+import PIXIAnimation from "../../../../engine/pixi/pixi-animation";
 
 const TEXTURES_FILE = "public/imgs/skeleton.json";
 const WALK_ANIMATION_SPEED = 0.1;

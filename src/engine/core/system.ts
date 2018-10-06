@@ -1,7 +1,7 @@
 import Entity from "./entity";
-import CollisionDetector from "./collision-detector";
 import Vector from "./vector";
 import Direction from "./direction";
+import Collision from "./collision";
 
 export default abstract class System {
 
@@ -42,7 +42,7 @@ export default abstract class System {
       for (let j = i + 1; j < this.entities.length; j++) {
         const entity1 = this.entities[i];
         const entity2 = this.entities[j];
-        const collision = CollisionDetector.detect(entity1, entity2);
+        const collision = Collision.detect(entity1, entity2);
 
         entity1.onCollision(entity2, collision);
         entity2.onCollision(entity1, collision.withOppositeDirection());

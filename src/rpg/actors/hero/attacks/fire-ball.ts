@@ -1,5 +1,4 @@
-import Entity from "../../../../engine/core/entity";
-import EntityType from "../../../../engine/core/entity-type";
+import Entity, { EntityType } from "../../../../engine/core/entity";
 import Vector from "../../../../engine/core/vector";
 import Collision from "../../../../engine/core/collision";
 import PIXIEntity from "../../../../engine/pixi/pixi-entity";

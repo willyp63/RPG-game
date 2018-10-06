@@ -15,32 +15,32 @@ export default class PIXIAnimation {
 
   constructor(public textures: Array<Texture>) { }
 
-  public speed(animationSpeed: number) {
+  speed(animationSpeed: number) {
     this.animationSpeed = animationSpeed;
     return this;
   }
 
-  public loop(isLooping: boolean) {
+  loop(isLooping: boolean) {
     this.isLooping = isLooping;
     return this;
   }
 
-  public onFrameChange(frameChangeFunc: FrameChangeFunction) {
+  onFrameChange(frameChangeFunc: FrameChangeFunction) {
     this.frameChangeFunc = frameChangeFunc;
     return this;
   }
 
-  public onLoop(loopFunc: () => void) {
+  onLoop(loopFunc: () => void) {
     this.loopFunc = loopFunc;
     return this;
   }
 
-  public flippedHorizontally(isFlippedHorizontally: boolean = true) {
+  flippedHorizontally(isFlippedHorizontally: boolean = true) {
     this.isFlippedHorizontally = isFlippedHorizontally;
     return this;
   }
 
-  public stopOn(stopOnFrameIndex: number) {
+  stopOn(stopOnFrameIndex: number) {
     this.stopOnFrameIndex = stopOnFrameIndex;
     return this;
   }
