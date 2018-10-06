@@ -15,6 +15,7 @@ import Helm from "./actors/hero/equipment/helm";
 import ChestPiece from "./actors/hero/equipment/chest-piece";
 import LegGuards from "./actors/hero/equipment/leg-guards";
 import Weapon from "./actors/hero/equipment/weapon";
+import FireBall from "./actors/hero/attacks/fire-ball";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -40,6 +41,7 @@ export default class RPGSystem extends PIXISystem {
       ChestPiece.assets,
       LegGuards.assets,
       Weapon.assets,
+      FireBall.assets,
     );
   }
 

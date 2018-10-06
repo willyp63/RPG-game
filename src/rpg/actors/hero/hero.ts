@@ -8,10 +8,8 @@ import { Sprite, ObservablePoint } from "pixi.js";
 import Helm, { HelmType } from "./equipment/helm";
 import ChestPiece, { ChestPieceType } from "./equipment/chest-piece";
 import setTicksOut, { clearTicksOut } from "../../../engine/core/set-ticks-out";
-import HeroPunchAttack from "./attacks/hero-punch-attack";
 import LegGuards, { LegGuardType } from "./equipment/leg-guards";
 import Weapon, { WeaponType, AttackType } from "./equipment/weapon";
-import HeroSlashAttack from "./attacks/hero-slash-attack";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -23,9 +21,6 @@ const MAX_HEALTH = 200;
 const RUN_FORCE = new Vector(0.25, 0);
 const JUMP_FORCE = new Vector(0, -8);
 const ROLL_FORCE = new Vector(12, 0);
-
-const PUNCH_ATTACK_POSITION = new Vector(12, 2);
-const SLASH_ATTACK_POSITION = new Vector(16, 2);
 
 // Chest
 const CHEST_POSITION = new Vector(0, -2);
@@ -80,6 +75,8 @@ enum HeroPose {
   Punching2,
   Slashing1,
   Slashing2,
+  Casting1,
+  Casting2,
 }
 
 export default class Hero extends PIXIEntity {
@@ -135,12 +132,12 @@ export default class Hero extends PIXIEntity {
   private frontLowerLeg = new Sprite(Hero.lowerLegTexture);
 
   // armor
-  private helm = new Helm(HelmType.Wizard);
+  private helm = new Helm(HelmType.Viking);
   private chestPiece = new ChestPiece(ChestPieceType.Wizard);
   private legGuards = new LegGuards(LegGuardType.Wizard);
 
   // weapons
-  private mainHandWeapon = new Weapon(WeaponType.RubyStaff);
+  private mainHandWeapon = new Weapon(WeaponType.IronSword);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
   private offHandWeapon = new Weapon(WeaponType.None);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
@@ -319,7 +316,7 @@ export default class Hero extends PIXIEntity {
     if (this.isJumping) {
       this.pose(HeroPose.Jumping, true);
     } else {
-      this.animatePoses([HeroPose.Running2, HeroPose.Running3, HeroPose.Running2, HeroPose.Running1], 1, true);
+      this.animatePoses([HeroPose.Running2, HeroPose.Running3, HeroPose.Running2, HeroPose.Running1], 1, undefined, undefined, true);
     }
   }
 
@@ -334,7 +331,7 @@ export default class Hero extends PIXIEntity {
     if (this.isJumping) {
       this.pose(HeroPose.Jumping, false);
     } else {
-      this.animatePoses([HeroPose.Running2, HeroPose.Running3, HeroPose.Running2, HeroPose.Running1], 1, false);
+      this.animatePoses([HeroPose.Running2, HeroPose.Running3, HeroPose.Running2, HeroPose.Running1], 1, undefined, undefined, false);
     }
   }
 
@@ -393,13 +390,14 @@ export default class Hero extends PIXIEntity {
     this.push(ROLL_FORCE.flippedHorizontally(this.isFacingLeft));
 
     this.isFacingLeft
-      ? this.animatePoses([HeroPose.Rolling2, HeroPose.Rolling1], 1)
-      : this.animatePoses([HeroPose.Rolling1, HeroPose.Rolling2], 1);
-    setTicksOut(() => {
-      this.state = HeroState.Nuetral;
-      this.position = this.position.minus(Hero.rollPositionOffset);
-      this.continueRunning();
-    }, DEFAULT_ANIMATION_TICK_DELAY * 2);
+      ? this.animatePoses([HeroPose.Rolling2, HeroPose.Rolling1], 1, undefined, this.onRollComplete.bind(this))
+      : this.animatePoses([HeroPose.Rolling1, HeroPose.Rolling2], 1, undefined, this.onRollComplete.bind(this));
+  }
+
+  private onRollComplete() {
+    this.state = HeroState.Nuetral;
+    this.position = this.position.minus(Hero.rollPositionOffset);
+    this.continueRunning();
   }
 
   private attack() {
@@ -409,10 +407,10 @@ export default class Hero extends PIXIEntity {
     this.state = HeroState.Attacking;
 
     switch(this.mainHandWeapon.attackType) {
-      case AttackType.Cast:
       case AttackType.Slash:
         this.slash();
         break;
+      case AttackType.Cast:
       case AttackType.Punch:
       default:
         this.punch();
@@ -421,31 +419,28 @@ export default class Hero extends PIXIEntity {
   }
 
   private slash() {
-    this.animatePoses([HeroPose.Slashing1, HeroPose.Slashing2], 1);
-    setTicksOut(() => {
-      this.addEntityToSystem(new HeroSlashAttack(
-        this.position.plus(SLASH_ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
-        this,
-      ));
-    }, DEFAULT_ANIMATION_TICK_DELAY);
-    setTicksOut(() => {
-      this.state = HeroState.Nuetral;
-      this.continueRunning();
-    }, DEFAULT_ANIMATION_TICK_DELAY * 2 - 1);
+    this.animatePoses([HeroPose.Slashing1, HeroPose.Slashing2], 1, this.onSlashFrameChange.bind(this), this.onAttackComplete.bind(this));
   }
 
   private punch() {
-    this.animatePoses([HeroPose.Punching1, HeroPose.Punching2], 1);
-    setTicksOut(() => {
-      this.addEntityToSystem(new HeroPunchAttack(
-        this.position.plus(PUNCH_ATTACK_POSITION.flippedHorizontally(this.isFacingLeft)),
-        this,
-      ));
-    }, DEFAULT_ANIMATION_TICK_DELAY);
-    setTicksOut(() => {
-      this.state = HeroState.Nuetral;
-      this.continueRunning();
-    }, DEFAULT_ANIMATION_TICK_DELAY * 2 - 1);
+    this.animatePoses([HeroPose.Punching1, HeroPose.Punching2], 1, this.onPunchFrameChange.bind(this), this.onAttackComplete.bind(this));
+  }
+
+  private onPunchFrameChange(frameNum: number) {
+    if (frameNum === 1) this.addMainHandAttack();
+  }
+
+  private onSlashFrameChange(frameNum: number) {
+    if (frameNum === 1) this.addMainHandAttack();
+  }
+
+  private addMainHandAttack() {
+    this.addEntityToSystem(this.mainHandWeapon.getAttack(this, this.isFacingLeft));
+  }
+
+  private onAttackComplete() {
+    this.state = HeroState.Nuetral;
+    this.continueRunning();
   }
 
   private pose(pose: HeroPose, flippedHorizontally?: boolean) {
@@ -508,7 +503,7 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Punching1:
         this.frontUpperArm.rotation = Math.PI * 2 / 3;
         this.frontLowerArm.rotation = Math.PI * -2 / 3;
-        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -6;
         this.backUpperArm.rotation = Math.PI / 3;
         this.backLowerArm.rotation = Math.PI / -3;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
@@ -521,7 +516,7 @@ export default class Hero extends PIXIEntity {
       case HeroPose.Punching2:
         this.frontUpperArm.rotation = Math.PI / 9;
         this.frontLowerArm.rotation = Math.PI / -9;
-        this.mainHandWeaponSprite.rotation = Math.PI / -2;
+        this.mainHandWeaponSprite.rotation = Math.PI / -6;
         this.backUpperArm.rotation = Math.PI * 2 / 3;
         this.backLowerArm.rotation = Math.PI * -2 / 3;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
@@ -575,19 +570,21 @@ export default class Hero extends PIXIEntity {
     }
   }
 
-  private animatePoses(poses: Array<HeroPose>, animationSpeed: number, flippedHorizontally?: boolean) {
+  private animatePoses(poses: Array<HeroPose>, animationSpeed: number, onFrameChange?: (frameNum: number) => void, onLoop?: () => void, flippedHorizontally?: boolean) {
     this.cancelAnimation();
-    this.animatePoseAtIndex(0, poses, animationSpeed, flippedHorizontally);
+    this.animatePoseAtIndex(0, poses, animationSpeed, onFrameChange, onLoop, flippedHorizontally);
   }
 
-  private animatePoseAtIndex(poseIndex: number, poses: Array<HeroPose>, animationSpeed: number, flippedHorizontally?: boolean) {
+  private animatePoseAtIndex(poseIndex: number, poses: Array<HeroPose>, animationSpeed: number, onFrameChange?: (frameNum: number) => void, onLoop?: () => void, flippedHorizontally?: boolean) {
     this.pose(poses[poseIndex], flippedHorizontally);
 
     let nextPoseIndex = poseIndex + 1;
     if (nextPoseIndex >= poses.length) nextPoseIndex = 0;
 
     this.animationTicksOut = setTicksOut(() => {
-      this.animatePoseAtIndex(nextPoseIndex, poses, animationSpeed, flippedHorizontally);
+      this.animatePoseAtIndex(nextPoseIndex, poses, animationSpeed,  onFrameChange, onLoop, flippedHorizontally);
+      if (onFrameChange) onFrameChange(nextPoseIndex);
+      if (nextPoseIndex === 0 && onLoop) onLoop();
     }, DEFAULT_ANIMATION_TICK_DELAY / animationSpeed);
   }
 

@@ -1,5 +1,9 @@
 import { Sprite, ObservablePoint } from "pixi.js";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
+import Attack from "../../../../engine/core/attack";
+import Vector from "../../../../engine/core/vector";
+import Entity from "../../../../engine/core/entity";
+import FireBall from "../attacks/fire-ball";
 
 const TEXTURES_FILE = 'public/imgs/weapons.json';
 
@@ -46,6 +50,34 @@ export default class Weapon {
         return AttackType.Cast;
       default:
         return AttackType.Punch;
+    }
+  }
+
+  public getAttack(hero: Entity, isFacingLeft: boolean) {
+    switch(this._type) {
+      case WeaponType.RubyStaff:
+        return new FireBall(
+          hero.position.plus((new Vector(16, 0)).flippedHorizontally(isFacingLeft)),
+          isFacingLeft,
+        );
+      case WeaponType.IronSword:
+        return new Attack(
+          hero.position.plus((new Vector(16, 0)).flippedHorizontally(isFacingLeft)),
+          hero,
+          16,
+          new Vector(6, -3),
+          20,
+          true,
+        );
+      default:
+        return new Attack(
+          hero.position.plus((new Vector(12, 0)).flippedHorizontally(isFacingLeft)),
+          hero,
+          8,
+          new Vector(2, -1),
+          5,
+          true,
+        );
     }
   }
 
