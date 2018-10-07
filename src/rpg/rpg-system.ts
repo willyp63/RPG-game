@@ -16,7 +16,6 @@ import OscillatingWall from "./actors/misc/oscillating-wall";
 import Wall from "../engine/entities/wall";
 import Door from "./actors/misc/door";
 import StatusBar from "./ui/status-bar";
-import setTicksOut from "../engine/util/set-ticks-out";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -69,12 +68,17 @@ export default class RPGSystem extends PIXISystem {
     this._loadArea(areaFile, heroStart);
   }
 
+  onTick() {
+    super.onTick();
+
+    this._updateStatusBars();
+  }
+
   _updateStatusBars() {
     if (!this.hero) return;
     this.healthBar.setValue(this.hero.health);
     this.energyBar.setValue(this.hero.energy);
     this.manaBar.setValue(this.hero.mana);
-    setTicksOut(this._updateStatusBars.bind(this), 10);
   }
 
   _loadArea(areaFile: string, heroStart: Vector) {

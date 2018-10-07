@@ -58,6 +58,28 @@ export default class Weapon {
     }
   }
 
+  get energyCost() {
+    switch(this._type) {
+      case WeaponType.IronSword:
+        return 30;
+      case WeaponType.RubyStaff:
+        return 20;
+      default:
+        return 20;
+    }
+  }
+
+  get manaCost() {
+    switch(this._type) {
+      case WeaponType.IronSword:
+        return 0;
+      case WeaponType.RubyStaff:
+        return 20;
+      default:
+        return 0;
+    }
+  }
+
   getAttack(hero: Entity, isFacingLeft: boolean) {
     switch(this._type) {
       case WeaponType.RubyStaff:

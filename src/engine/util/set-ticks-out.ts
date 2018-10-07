@@ -5,8 +5,8 @@ export default (callback: Function, numTicks: number): Function => {
   const onTick = () => {
     ticks++;
     if (ticks >= numTicks) {
-      callback();
       ticker.shared.remove(onTick);
+      callback();
     }
   };
   ticker.shared.add(onTick);

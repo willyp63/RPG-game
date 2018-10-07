@@ -15,6 +15,8 @@ const TEXTURES_FILE = 'public/imgs/man.json';
 const MAX_HEALTH = 200;
 const MAX_MANA = 100;
 const MAX_ENERGY = 100;
+const ENERGY_REGEN = 0.333;
+const ROLL_ENERGY_COST = 25;
 const SIZE = new Vector(15, 30);
 const ROLLING_SIZE = new Vector(15, 20);
 const RUN_FORCE = new Vector(0.25, 0);
@@ -266,6 +268,10 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       animations.standing().frames[0],
     );
 
+    setTimeout(() => {
+      if (this._healthBar) this._healthBar.alpha = 0;
+    }, 0);
+
     this.addKeyListeners();
     this.stopRunning();
   }
@@ -281,6 +287,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     } else {
       this.push(this.runForce.scaled(MID_AIR_RUN_SCALE));
     }
+    
+    if (this.energy < this.maxEnergy) this.energy += ENERGY_REGEN;
+    else this.energy =  this.maxEnergy;
   }
 
   kill() {
@@ -396,6 +405,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   private roll() {
     if (this.state !== HeroState.Nuetral || !this.isOnGround) return;
 
+    if (this.energy < ROLL_ENERGY_COST) return;
+    this.energy -= ROLL_ENERGY_COST;
+
     this.runForce = new Vector(0, 0);
     this.state = HeroState.Rolling;
     this.position = this.position.plus(Hero.rollPositionOffset);
@@ -415,10 +427,17 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   private attack(isOffHand = false) {
     if (this.state !== HeroState.Nuetral) return;
 
+    const weapon = isOffHand ? Hero.offHandWeapon : Hero.mainHandWeapon;
+
+    if (this.energy < weapon.energyCost || this.mana < weapon.manaCost) return;
+
+    this.energy -= weapon.energyCost;
+    this.mana -= weapon.manaCost;
+
     this.runForce = new Vector(0, 0);
     this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
 
-    switch(isOffHand ? Hero.offHandWeapon.attackType : Hero.mainHandWeapon.attackType) {
+    switch(weapon.attackType) {
       case AttackType.Slash:
         this.slash(isOffHand);
         break;

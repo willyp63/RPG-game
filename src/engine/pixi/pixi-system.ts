@@ -86,7 +86,7 @@ export default abstract class PIXISystem extends System {
   }
 
   /* --- overrides -- */
-  addEntity(entity: Entity) {
+  protected addEntity(entity: Entity) {
     super.addEntity(entity);
 
     if (entity instanceof PIXIEntity) {
@@ -94,11 +94,11 @@ export default abstract class PIXISystem extends System {
     }
   }
 
-  addUIEntity(entity: UIEntity) {
+  protected addUIEntity(entity: UIEntity) {
     this._uiContainer.addChild(entity.sprite);
   }
 
-  removeEntityAt(i: number) {
+  protected removeEntityAt(i: number) {
     const entity = this.entities[i];
     if (entity instanceof PIXIEntity) {
       this._entityContainer.removeChild(entity.container);
@@ -107,7 +107,7 @@ export default abstract class PIXISystem extends System {
     super.removeEntityAt(i);
   }
 
-  onTick() {
+  protected onTick() {
     super.onTick();
 
     // follow entity

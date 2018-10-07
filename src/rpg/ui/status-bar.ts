@@ -31,6 +31,8 @@ export default class StatusBar extends UIEntity {
   setValue(value: number) {
     const percent = value / this.maxValue;
 
+    this.graphics.clear();
+
     this.graphics.beginFill(0x000000);
     this.graphics.drawRect(this.size.x / -2 - BORDER_WIDTH + MARGIN, this.size.y / -2 - BORDER_WIDTH + MARGIN, this.size.x + BORDER_WIDTH * 2 - MARGIN * 2, this.size.y + BORDER_WIDTH * 2 - MARGIN * 2);
     this.graphics.endFill();
@@ -43,7 +45,7 @@ export default class StatusBar extends UIEntity {
     this.graphics.drawRect(this.size.x / -2 + MARGIN, this.size.y / -2 + MARGIN, (this.size.x - MARGIN * 2) * percent, this.size.y - MARGIN * 2);
     this.graphics.endFill();
 
-    this.text.text = `${value} / ${this.maxValue}`;
+    this.text.text = `${Math.round(value)} / ${this.maxValue}`;
   }
 
 }
