@@ -137,14 +137,14 @@ export default class Hero extends PIXIEntity {
   private frontLowerLegSprite = new Sprite(Hero.lowerLegTexture);
 
   // armor
-  private helm = new Helm(HelmType.Viking);
-  private chestPiece = new ChestPiece(ChestPieceType.Wizard);
-  private legGuards = new LegGuards(LegGuardType.Wizard);
+  private helm = new Helm(HelmType.None);
+  private chestPiece = new ChestPiece(ChestPieceType.None);
+  private legGuards = new LegGuards(LegGuardType.Iron);
 
   // weapons
   private mainHandWeapon = new Weapon(WeaponType.IronSword);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
-  private offHandWeapon = new Weapon(WeaponType.IronSword);
+  private offHandWeapon = new Weapon(WeaponType.RubyStaff);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
 
   private animationTicksOut?: Function;
