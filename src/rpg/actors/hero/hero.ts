@@ -125,16 +125,16 @@ export default class Hero extends PIXIEntity {
   private state = HeroState.Nuetral;
 
   // body parts
-  private head = new Sprite(Hero.headTexture);
-  private chest = new Sprite(Hero.chestTexture);
-  private backUpperArm = new Sprite(Hero.upperArmTexture);
-  private frontUpperArm = new Sprite(Hero.upperArmTexture);
-  private backLowerArm = new Sprite(Hero.lowerArmTexture);
-  private frontLowerArm = new Sprite(Hero.lowerArmTexture);
-  private backUpperLeg = new Sprite(Hero.upperLegTexture);
-  private frontUpperLeg = new Sprite(Hero.upperLegTexture);
-  private backLowerLeg = new Sprite(Hero.lowerLegTexture);
-  private frontLowerLeg = new Sprite(Hero.lowerLegTexture);
+  private headSprite = new Sprite(Hero.headTexture);
+  private chestSprite = new Sprite(Hero.chestTexture);
+  private backUpperArmSprite = new Sprite(Hero.upperArmTexture);
+  private frontUpperArmSprite = new Sprite(Hero.upperArmTexture);
+  private backLowerArmSprite = new Sprite(Hero.lowerArmTexture);
+  private frontLowerArmSprite = new Sprite(Hero.lowerArmTexture);
+  private backUpperLegSprite = new Sprite(Hero.upperLegTexture);
+  private frontUpperLegSprite = new Sprite(Hero.upperLegTexture);
+  private backLowerLegSprite = new Sprite(Hero.lowerLegTexture);
+  private frontLowerLegSprite = new Sprite(Hero.lowerLegTexture);
 
   // armor
   private helm = new Helm(HelmType.Viking);
@@ -142,7 +142,7 @@ export default class Hero extends PIXIEntity {
   private legGuards = new LegGuards(LegGuardType.Wizard);
 
   // weapons
-  private mainHandWeapon = new Weapon(WeaponType.RubyStaff);
+  private mainHandWeapon = new Weapon(WeaponType.IronSword);
   private mainHandWeaponSprite = this.mainHandWeapon.getSprite();
   private offHandWeapon = new Weapon(WeaponType.IronSword);
   private offHandWeaponSprite = this.offHandWeapon.getSprite();
@@ -180,110 +180,117 @@ export default class Hero extends PIXIEntity {
 
   private assembleSprite() {
     // back arm
-    this.backUpperArm.x = BACK_ARM_POSITION.x;
-    this.backUpperArm.y = BACK_ARM_POSITION.y;
-    this.backUpperArm.anchor = UPPER_ARM_ANCHOR;
-    this._sprite.addChild(this.backUpperArm);
-    this.backLowerArm.x = LOWER_ARM_POSITION.x;
-    this.backLowerArm.y = LOWER_ARM_POSITION.y;
-    this.backLowerArm.anchor = LOWER_ARM_ANCHOR;
-    this.backUpperArm.addChild(this.backLowerArm);
+    this.backUpperArmSprite.x = BACK_ARM_POSITION.x;
+    this.backUpperArmSprite.y = BACK_ARM_POSITION.y;
+    this.backUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
+    this._sprite.addChild(this.backUpperArmSprite);
+    this.backLowerArmSprite.x = LOWER_ARM_POSITION.x;
+    this.backLowerArmSprite.y = LOWER_ARM_POSITION.y;
+    this.backLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
+    this.backUpperArmSprite.addChild(this.backLowerArmSprite);
 
     // chest piece arm
     const backChestPieceUpperArmSprite = this.chestPiece.getUpperArmSprite();
     const backChestPieceLowerArmSprite = this.chestPiece.getLowerArmSprite();
     backChestPieceUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
     backChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
-    this.backUpperArm.addChild(backChestPieceUpperArmSprite);
-    this.backLowerArm.addChild(backChestPieceLowerArmSprite);
+    this.backUpperArmSprite.addChild(backChestPieceUpperArmSprite);
+    this.backLowerArmSprite.addChild(backChestPieceLowerArmSprite);
 
     // off hand weapon
     this.offHandWeaponSprite = this.offHandWeapon.getSprite();
     this.offHandWeaponSprite.x = WEAPON_POSITION.x;
     this.offHandWeaponSprite.y = WEAPON_POSITION.y;
-    this.backLowerArm.addChild(this.offHandWeaponSprite);
+    this.backLowerArmSprite.addChild(this.offHandWeaponSprite);
 
     // back leg
-    this.backUpperLeg.x = BACK_LEG_POSITION.x;
-    this.backUpperLeg.y = BACK_LEG_POSITION.y;
-    this.backUpperLeg.anchor = UPPER_LEG_ANCHOR;
-    this._sprite.addChild(this.backUpperLeg);
-    this.backLowerLeg.x = LOWER_LEG_POSITION.x;
-    this.backLowerLeg.y = LOWER_LEG_POSITION.y;
-    this.backLowerLeg.anchor = LOWER_LEG_ANCHOR;
-    this.backUpperLeg.addChild(this.backLowerLeg);
+    this.backUpperLegSprite.x = BACK_LEG_POSITION.x;
+    this.backUpperLegSprite.y = BACK_LEG_POSITION.y;
+    this.backUpperLegSprite.anchor = UPPER_LEG_ANCHOR;
+    this._sprite.addChild(this.backUpperLegSprite);
+    this.backLowerLegSprite.x = LOWER_LEG_POSITION.x;
+    this.backLowerLegSprite.y = LOWER_LEG_POSITION.y;
+    this.backLowerLegSprite.anchor = LOWER_LEG_ANCHOR;
+    this.backUpperLegSprite.addChild(this.backLowerLegSprite);
 
     // leg guards
     const backUpperLegGuardSprite = this.legGuards.getUpperLegSprite();
     const backLowerLegGuardSprite = this.legGuards.getLowerLegSprite();
     backUpperLegGuardSprite.anchor = UPPER_LEG_ANCHOR;
     backLowerLegGuardSprite.anchor = LOWER_LEG_ANCHOR;
-    this.backUpperLeg.addChild(backUpperLegGuardSprite);
-    this.backLowerLeg.addChild(backLowerLegGuardSprite);
+    this.backUpperLegSprite.addChild(backUpperLegGuardSprite);
+    this.backLowerLegSprite.addChild(backLowerLegGuardSprite);
 
     // chest
-    this.chest.x = CHEST_POSITION.x;
-    this.chest.y = CHEST_POSITION.y;
-    this.chest.anchor = CHEST_ANCHOR;
-    this._sprite.addChild(this.chest);
+    this.chestSprite.x = CHEST_POSITION.x;
+    this.chestSprite.y = CHEST_POSITION.y;
+    this.chestSprite.anchor = CHEST_ANCHOR;
+    this._sprite.addChild(this.chestSprite);
 
     // chest piece
     const chestPieceSprite = this.chestPiece.getSprite();
     chestPieceSprite.anchor = CHEST_ANCHOR;
-    this.chest.addChild(chestPieceSprite);
+    this.chestSprite.addChild(chestPieceSprite);
 
     // head
-    this.head.x = HEAD_POSITION.x;
-    this.head.y = HEAD_POSITION.y;
-    this.head.anchor = HEAD_ANCHOR;
-    this._sprite.addChild(this.head);
+    this.headSprite.x = HEAD_POSITION.x;
+    this.headSprite.y = HEAD_POSITION.y;
+    this.headSprite.anchor = HEAD_ANCHOR;
+    this._sprite.addChild(this.headSprite);
+
+    // helm
+    const helmSprite = this.helm.getSprite();
+    helmSprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    this.headSprite.addChild(helmSprite);
 
     // front leg
-    this.frontUpperLeg.x = FRONT_LEG_POSITION.x;
-    this.frontUpperLeg.y = FRONT_LEG_POSITION.y;
-    this.frontUpperLeg.anchor = UPPER_LEG_ANCHOR;
-    this._sprite.addChild(this.frontUpperLeg);
-    this.frontLowerLeg.x = LOWER_LEG_POSITION.x;
-    this.frontLowerLeg.y = LOWER_LEG_POSITION.y;
-    this.frontLowerLeg.anchor = LOWER_LEG_ANCHOR;
-    this.frontUpperLeg.addChild(this.frontLowerLeg);
+    this.frontUpperLegSprite.x = FRONT_LEG_POSITION.x;
+    this.frontUpperLegSprite.y = FRONT_LEG_POSITION.y;
+    this.frontUpperLegSprite.anchor = UPPER_LEG_ANCHOR;
+    this._sprite.addChild(this.frontUpperLegSprite);
+    this.frontLowerLegSprite.x = LOWER_LEG_POSITION.x;
+    this.frontLowerLegSprite.y = LOWER_LEG_POSITION.y;
+    this.frontLowerLegSprite.anchor = LOWER_LEG_ANCHOR;
+    this.frontUpperLegSprite.addChild(this.frontLowerLegSprite);
 
     // leg guards
     const frontUpperLegGuardSprite = this.legGuards.getUpperLegSprite();
     const frontLowerLegGuardSprite = this.legGuards.getLowerLegSprite();
     frontUpperLegGuardSprite.anchor = UPPER_LEG_ANCHOR;
     frontLowerLegGuardSprite.anchor = LOWER_LEG_ANCHOR;
-    this.frontUpperLeg.addChild(frontUpperLegGuardSprite);
-    this.frontLowerLeg.addChild(frontLowerLegGuardSprite);
+    this.frontUpperLegSprite.addChild(frontUpperLegGuardSprite);
+    this.frontLowerLegSprite.addChild(frontLowerLegGuardSprite);
 
     // front arm
-    this.frontUpperArm.x = FRONT_ARM_POSITION.x;
-    this.frontUpperArm.y = FRONT_ARM_POSITION.y;
-    this.frontUpperArm.anchor = UPPER_ARM_ANCHOR;
-    this._sprite.addChild(this.frontUpperArm);
-    this.frontLowerArm.x = LOWER_ARM_POSITION.x;
-    this.frontLowerArm.y = LOWER_ARM_POSITION.y;
-    this.frontLowerArm.anchor = LOWER_ARM_ANCHOR;
-    this.frontUpperArm.addChild(this.frontLowerArm);
+    this.frontUpperArmSprite.x = FRONT_ARM_POSITION.x;
+    this.frontUpperArmSprite.y = FRONT_ARM_POSITION.y;
+    this.frontUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
+    this._sprite.addChild(this.frontUpperArmSprite);
+    this.frontLowerArmSprite.x = LOWER_ARM_POSITION.x;
+    this.frontLowerArmSprite.y = LOWER_ARM_POSITION.y;
+    this.frontLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
+    this.frontUpperArmSprite.addChild(this.frontLowerArmSprite);
+
+    // main hand weapon
+    this.mainHandWeaponSprite = this.mainHandWeapon.getSprite();
+    this.mainHandWeaponSprite.x = WEAPON_POSITION.x;
+    this.mainHandWeaponSprite.y = WEAPON_POSITION.y;
+    this.frontLowerArmSprite.addChild(this.mainHandWeaponSprite);
+
+    // dup lower front arm
+    //
+    // we need this so that the arm sits on top of the weapon
+    const dupLowerArmSprite = new Sprite(Hero.lowerArmTexture);
+    dupLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
+    this.frontLowerArmSprite.addChild(dupLowerArmSprite);
 
     // chest piece arm
     const frontChestPieceUpperArmSprite = this.chestPiece.getUpperArmSprite();
     const frontChestPieceLowerArmSprite = this.chestPiece.getLowerArmSprite();
     frontChestPieceUpperArmSprite.anchor = UPPER_ARM_ANCHOR;
     frontChestPieceLowerArmSprite.anchor = LOWER_ARM_ANCHOR;
-    this.frontUpperArm.addChild(frontChestPieceUpperArmSprite);
-    this.frontLowerArm.addChild(frontChestPieceLowerArmSprite);
-
-    // main hand weapon
-    this.mainHandWeaponSprite = this.mainHandWeapon.getSprite();
-    this.mainHandWeaponSprite.x = WEAPON_POSITION.x;
-    this.mainHandWeaponSprite.y = WEAPON_POSITION.y;
-    this.frontLowerArm.addChild(this.mainHandWeaponSprite);
-
-    // helm
-    const helmSprite = this.helm.getSprite();
-    helmSprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
-    this.head.addChild(helmSprite);
+    this.frontUpperArmSprite.addChild(frontChestPieceUpperArmSprite);
+    this.frontLowerArmSprite.addChild(frontChestPieceLowerArmSprite);
   }
 
   private addKeyListeners() {
@@ -461,175 +468,175 @@ export default class Hero extends PIXIEntity {
     this.flipSprite(flippedHorizontally);
     switch(pose) {
       case HeroPose.Running1:
-        this.frontUpperArm.rotation = Math.PI * 2 / 3;
-        this.frontLowerArm.rotation = Math.PI / -2;
+        this.frontUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.frontLowerArmSprite.rotation = Math.PI / -2;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 3;
-        this.backLowerArm.rotation = Math.PI / -2;
+        this.backUpperArmSprite.rotation = Math.PI / 3;
+        this.backLowerArmSprite.rotation = Math.PI / -2;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = Math.PI / -3;
-        this.frontLowerLeg.rotation = Math.PI / 3;
-        this.backUpperLeg.rotation = Math.PI / 3;
-        this.backLowerLeg.rotation = Math.PI / 3;
+        this.frontUpperLegSprite.rotation = Math.PI / -3;
+        this.frontLowerLegSprite.rotation = Math.PI / 3;
+        this.backUpperLegSprite.rotation = Math.PI / 3;
+        this.backLowerLegSprite.rotation = Math.PI / 3;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Jumping:
       case HeroPose.Running3:
-        this.frontUpperArm.rotation = Math.PI / 3;
-        this.frontLowerArm.rotation = Math.PI / -2;
+        this.frontUpperArmSprite.rotation = Math.PI / 3;
+        this.frontLowerArmSprite.rotation = Math.PI / -2;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI * 2 / 3;
-        this.backLowerArm.rotation = Math.PI / -2;
+        this.backUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.backLowerArmSprite.rotation = Math.PI / -2;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = Math.PI / 3;
-        this.frontLowerLeg.rotation = Math.PI / 3;
-        this.backUpperLeg.rotation = Math.PI / -3;
-        this.backLowerLeg.rotation = Math.PI / 3;
+        this.frontUpperLegSprite.rotation = Math.PI / 3;
+        this.frontLowerLegSprite.rotation = Math.PI / 3;
+        this.backUpperLegSprite.rotation = Math.PI / -3;
+        this.backLowerLegSprite.rotation = Math.PI / 3;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Rolling1:
-        this.frontUpperArm.rotation = Math.PI / 2;
-        this.frontLowerArm.rotation = Math.PI / -2;
+        this.frontUpperArmSprite.rotation = Math.PI / 2;
+        this.frontLowerArmSprite.rotation = Math.PI / -2;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 2;
-        this.backLowerArm.rotation = Math.PI / -2;
+        this.backUpperArmSprite.rotation = Math.PI / 2;
+        this.backLowerArmSprite.rotation = Math.PI / -2;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = Math.PI * -2 / 3;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = Math.PI * -2 / 3;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = Math.PI * -2 / 3;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = Math.PI * -2 / 3;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = Math.PI * 2 / 3;
         break;
       case HeroPose.Rolling2:
-        this.frontUpperArm.rotation = Math.PI / 2;
-        this.frontLowerArm.rotation = Math.PI / -2;
+        this.frontUpperArmSprite.rotation = Math.PI / 2;
+        this.frontLowerArmSprite.rotation = Math.PI / -2;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 2;
-        this.backLowerArm.rotation = Math.PI / -2;
+        this.backUpperArmSprite.rotation = Math.PI / 2;
+        this.backLowerArmSprite.rotation = Math.PI / -2;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = Math.PI * -2 / 3;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = Math.PI * -2 / 3;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = Math.PI * -2 / 3;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = Math.PI * -2 / 3;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = Math.PI * -2 / 3;
         break;
       case HeroPose.Punching1:
-        this.frontUpperArm.rotation = Math.PI * 2 / 3;
-        this.frontLowerArm.rotation = Math.PI * -2 / 3;
+        this.frontUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.frontLowerArmSprite.rotation = Math.PI * -2 / 3;
         this.mainHandWeaponSprite.rotation = Math.PI / -6;
-        this.backUpperArm.rotation = Math.PI / 3;
-        this.backLowerArm.rotation = Math.PI / -3;
+        this.backUpperArmSprite.rotation = Math.PI / 3;
+        this.backLowerArmSprite.rotation = Math.PI / -3;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Punching2:
-        this.frontUpperArm.rotation = Math.PI / 9;
-        this.frontLowerArm.rotation = Math.PI / -9;
+        this.frontUpperArmSprite.rotation = Math.PI / 9;
+        this.frontLowerArmSprite.rotation = Math.PI / -9;
         this.mainHandWeaponSprite.rotation = Math.PI / -6;
-        this.backUpperArm.rotation = Math.PI * 2 / 3;
-        this.backLowerArm.rotation = Math.PI * -2 / 3;
+        this.backUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.backLowerArmSprite.rotation = Math.PI * -2 / 3;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.PunchingOffHand1:
-        this.frontUpperArm.rotation = Math.PI / 3;
-        this.frontLowerArm.rotation = Math.PI / -3;
+        this.frontUpperArmSprite.rotation = Math.PI / 3;
+        this.frontLowerArmSprite.rotation = Math.PI / -3;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI * 2 / 3;
-        this.backLowerArm.rotation = Math.PI * -2 / 3;
+        this.backUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.backLowerArmSprite.rotation = Math.PI * -2 / 3;
         this.offHandWeaponSprite.rotation = Math.PI / -6;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.PunchingOffHand2:
-        this.frontUpperArm.rotation = Math.PI * 2 / 3;
-        this.frontLowerArm.rotation = Math.PI * -2 / 3;
+        this.frontUpperArmSprite.rotation = Math.PI * 2 / 3;
+        this.frontLowerArmSprite.rotation = Math.PI * -2 / 3;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 9;
-        this.backLowerArm.rotation = Math.PI / -9;
+        this.backUpperArmSprite.rotation = Math.PI / 9;
+        this.backLowerArmSprite.rotation = Math.PI / -9;
         this.offHandWeaponSprite.rotation = Math.PI / -6;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Slashing1:
-        this.frontUpperArm.rotation = 0;
-        this.frontLowerArm.rotation = Math.PI / -2;
+        this.frontUpperArmSprite.rotation = 0;
+        this.frontLowerArmSprite.rotation = Math.PI / -2;
         this.mainHandWeaponSprite.rotation = Math.PI / -3;
-        this.backUpperArm.rotation = Math.PI / 2;
-        this.backLowerArm.rotation = 0;
+        this.backUpperArmSprite.rotation = Math.PI / 2;
+        this.backLowerArmSprite.rotation = 0;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Slashing2:
-        this.frontUpperArm.rotation = Math.PI / 3;
-        this.frontLowerArm.rotation = 0;
+        this.frontUpperArmSprite.rotation = Math.PI / 3;
+        this.frontLowerArmSprite.rotation = 0;
         this.mainHandWeaponSprite.rotation = Math.PI / -3;
-        this.backUpperArm.rotation = Math.PI / 2;
-        this.backLowerArm.rotation = 0;
+        this.backUpperArmSprite.rotation = Math.PI / 2;
+        this.backLowerArmSprite.rotation = 0;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.SlashingOffHand1:
-        this.frontUpperArm.rotation = Math.PI / 2;
-        this.frontLowerArm.rotation = 0;
+        this.frontUpperArmSprite.rotation = Math.PI / 2;
+        this.frontLowerArmSprite.rotation = 0;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = 0;
-        this.backLowerArm.rotation = Math.PI / -2;
+        this.backUpperArmSprite.rotation = 0;
+        this.backLowerArmSprite.rotation = Math.PI / -2;
         this.offHandWeaponSprite.rotation = Math.PI / -3;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.SlashingOffHand2:
-        this.frontUpperArm.rotation = Math.PI / 2;
-        this.frontLowerArm.rotation = 0;
+        this.frontUpperArmSprite.rotation = Math.PI / 2;
+        this.frontLowerArmSprite.rotation = 0;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 3;
-        this.backLowerArm.rotation = 0;
+        this.backUpperArmSprite.rotation = Math.PI / 3;
+        this.backLowerArmSprite.rotation = 0;
         this.offHandWeaponSprite.rotation = Math.PI / -3;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
       case HeroPose.Running2:
       case HeroPose.Standing:
       default:
-        this.frontUpperArm.rotation = Math.PI / 2;
-        this.frontLowerArm.rotation = 0;
+        this.frontUpperArmSprite.rotation = Math.PI / 2;
+        this.frontLowerArmSprite.rotation = 0;
         this.mainHandWeaponSprite.rotation = Math.PI / -2;
-        this.backUpperArm.rotation = Math.PI / 2;
-        this.backLowerArm.rotation = 0;
+        this.backUpperArmSprite.rotation = Math.PI / 2;
+        this.backLowerArmSprite.rotation = 0;
         this.offHandWeaponSprite.rotation = Math.PI / -2;
-        this.frontUpperLeg.rotation = 0;
-        this.frontLowerLeg.rotation = 0;
-        this.backUpperLeg.rotation = 0;
-        this.backLowerLeg.rotation = 0;
+        this.frontUpperLegSprite.rotation = 0;
+        this.frontLowerLegSprite.rotation = 0;
+        this.backUpperLegSprite.rotation = 0;
+        this.backLowerLegSprite.rotation = 0;
         this.sprite.rotation = 0;
         break;
     }
