@@ -1,8 +1,7 @@
-import AnimatedPIXIEntity from "../../../../engine/pixi/animated-pixi-entity";
+import AnimatedPIXIEntity, { PIXIAnimation } from "../../../../engine/pixi/animated-pixi-entity";
 import Vector from "../../../../engine/core/vector";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
 import Direction from "../../../../engine/core/direction";
-import PIXIAnimation from "../../../../engine/pixi/pixi-animation";
 import { EntityType } from "../../../../engine/core/entity";
 
 const TEXTURES_FILE = 'public/imgs/slime.json';

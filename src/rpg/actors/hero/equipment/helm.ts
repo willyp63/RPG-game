@@ -1,4 +1,3 @@
-import { Sprite } from "pixi.js";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = 'public/imgs/helms.json';
@@ -16,14 +15,14 @@ export default class Helm {
   private static get vikingTexture() { return TextureHelper.get(TEXTURES_FILE, "viking-helm.png"); }
   private static get wizardTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-hood.png"); }
 
-  public getSprite() {
+  get texture() {
     switch(this._type) {
       case HelmType.Viking:
-        return new Sprite(Helm.vikingTexture);
+        return Helm.vikingTexture;
       case HelmType.Wizard:
-        return new Sprite(Helm.wizardTexture);
+        return Helm.wizardTexture;
       default:
-        return new Sprite();
+        return undefined;
     }
   }
 

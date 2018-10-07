@@ -1,4 +1,3 @@
-import { Sprite } from "pixi.js";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = 'public/imgs/leg-guards.json';
@@ -18,24 +17,24 @@ export default class LegGuards {
   private static get wizardUpperLegTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-leg-guards__upper-leg.png"); }
   private static get wizardLowerLegTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-leg-guards__lower-leg.png"); }
 
-  public getUpperLegSprite() {
+  get upperLegTexture() {
     switch(this._type) {
       case LegGuardType.Iron:
-        return new Sprite(LegGuards.ironUpperLegTexture);
+        return LegGuards.ironUpperLegTexture;
       case LegGuardType.Wizard:
-        return new Sprite(LegGuards.wizardUpperLegTexture);
+        return LegGuards.wizardUpperLegTexture;
       default:
-        return new Sprite();
+        return undefined;
     }
   }
-  public getLowerLegSprite() {
+  get lowerLegTexture() {
     switch(this._type) {
       case LegGuardType.Iron:
-        return new Sprite(LegGuards.ironLowerLegTexture);
+        return LegGuards.ironLowerLegTexture;
       case LegGuardType.Wizard:
-        return new Sprite(LegGuards.wizardLowerLegTexture);
+        return LegGuards.wizardLowerLegTexture;
       default:
-        return new Sprite();
+        return undefined;
     }
   }
 

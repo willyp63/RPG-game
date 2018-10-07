@@ -1,4 +1,3 @@
-import { Sprite } from "pixi.js";
 import TextureHelper from "../../../../engine/pixi/texture-helper";
 
 const TEXTURES_FILE = 'public/imgs/chest-pieces.json';
@@ -18,27 +17,27 @@ export default class ChestPiece {
   private static get wizardTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-chest-piece.png"); }
   private static get wizardUpperArmtexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-chest-piece__upper-arm.png"); }
 
-  public getSprite() {
+  get texture() {
     switch(this._type) {
       case ChestPieceType.Iron:
-        return new Sprite(ChestPiece.ironTexture);
+        return ChestPiece.ironTexture;
       case ChestPieceType.Wizard:
-        return new Sprite(ChestPiece.wizardTexture);
+        return ChestPiece.wizardTexture;
       default:
-        return new Sprite();
+        return undefined;
     }
   }
-  public getUpperArmSprite() {
+  get upperArmTexture() {
     switch(this._type) {
       case ChestPieceType.Iron:
-        return new Sprite(ChestPiece.ironUpperArmtexture);
+        return ChestPiece.ironUpperArmtexture;
       case ChestPieceType.Wizard:
-        return new Sprite(ChestPiece.wizardUpperArmtexture);
+        return ChestPiece.wizardUpperArmtexture;
       default:
-        return new Sprite();
+        return undefined;
     }
   }
-  public getLowerArmSprite() { return new Sprite(); }
+  get lowerArmTexture() { return undefined; }
 
   constructor(private _type: ChestPieceType) { }
 
