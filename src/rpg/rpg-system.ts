@@ -15,10 +15,13 @@ import SignPost from "./actors/misc/sign-post";
 import OscillatingWall from "./actors/misc/oscillating-wall";
 import Wall from "../engine/entities/wall";
 import Door from "./actors/misc/door";
+import StatusBar from "./ui/status-bar";
+import setTicksOut from "../engine/util/set-ticks-out";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
 const MESSAGE_BOX_HEIGHT = 64;
+const STATUS_BAR_HEIGHT = 16;
 
 export default class RPGSystem extends PIXISystem {
 
@@ -45,14 +48,18 @@ export default class RPGSystem extends PIXISystem {
   protected get backgroundAsset() { return this._backgroundAsset; }
   protected get backdropAsset() { return this._backdropAsset; }
 
-  private _foregroundAsset = '';
-  private _backgroundAsset = '';
-  private _backdropAsset = '';
-  private _messageBox = new MessageBox(new Vector(0, 0), new Vector(SCREEN_WIDTH, MESSAGE_BOX_HEIGHT));
+  private messageBox = new MessageBox(new Vector(0, 0), new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
+  private manaBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 5 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x0000FF, 0x000088);
+  private energyBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 3 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0xFFDE00, 0x806F00);
+  private healthBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x00FF00, 0xFF0000);
+  private hero?: Hero;
 
   get width() { return this._width; };
   get height() { return this._height; };
 
+  private _foregroundAsset = '';
+  private _backgroundAsset = '';
+  private _backdropAsset = '';
   private _width = 0;
   private _height = 0;
 
@@ -60,6 +67,14 @@ export default class RPGSystem extends PIXISystem {
     super();
 
     this._loadArea(areaFile, heroStart);
+  }
+
+  _updateStatusBars() {
+    if (!this.hero) return;
+    this.healthBar.setValue(this.hero.health);
+    this.energyBar.setValue(this.hero.energy);
+    this.manaBar.setValue(this.hero.mana);
+    setTicksOut(this._updateStatusBars.bind(this), 10);
   }
 
   _loadArea(areaFile: string, heroStart: Vector) {
@@ -121,10 +136,10 @@ export default class RPGSystem extends PIXISystem {
                 new SignPost(
                   new Vector(entity.position[0], entity.position[1]),
                   () => {
-                    this._messageBox.showMessage(entity.message);
+                    this.messageBox.showMessage(entity.message);
                   },
                   () => {
-                    this._messageBox.hide();
+                    this.messageBox.hide();
                   },
                 )
               );
@@ -141,12 +156,19 @@ export default class RPGSystem extends PIXISystem {
           });
 
           // add hero
-          const hero = new Hero(heroStart);
-          this.addEntity(hero);
-          this.followEntity(hero);
+          this.hero = new Hero(heroStart);
+          this.addEntity(this.hero);
+          this.followEntity(this.hero);
 
           // add ui elements
-          this.addUIEntity(this._messageBox);
+          this.addUIEntity(this.messageBox);
+          this.healthBar.maxValue = this.hero.maxHealth;
+          this.energyBar.maxValue = this.hero.maxEnergy;
+          this.manaBar.maxValue = this.hero.maxMana;
+          this.addUIEntity(this.healthBar);
+          this.addUIEntity(this.energyBar);
+          this.addUIEntity(this.manaBar);
+          this._updateStatusBars();
         });
       }
     });

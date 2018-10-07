@@ -13,6 +13,8 @@ import animations from "./animations";
 const TEXTURES_FILE = 'public/imgs/man.json';
 
 const MAX_HEALTH = 200;
+const MAX_MANA = 100;
+const MAX_ENERGY = 100;
 const SIZE = new Vector(15, 30);
 const ROLLING_SIZE = new Vector(15, 20);
 const RUN_FORCE = new Vector(0.25, 0);
@@ -54,6 +56,8 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   get type() { return EntityType.Friendly; }
   get size() { return this.state === HeroState.Rolling ? ROLLING_SIZE : SIZE; }
   get maxHealth() { return MAX_HEALTH; }
+  get maxEnergy() { return MAX_ENERGY; }
+  get maxMana() { return MAX_MANA; }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
   get isSolidBound() { return this.state !== HeroState.Rolling; }
@@ -86,6 +90,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   private runForce = new Vector(0, 0);
   private isOnGround = false;
   private isJumping = false;
+
+  public energy = MAX_ENERGY;
+  public mana = MAX_MANA;
   
   constructor(position: Vector) {
     super(
