@@ -15,7 +15,7 @@ const TEXTURES_FILE = 'public/imgs/man.json';
 const MAX_HEALTH = 200;
 const MAX_MANA = 100;
 const MAX_ENERGY = 100;
-const ENERGY_REGEN = 0.333;
+const ENERGY_REGEN = 0.5;
 const ROLL_ENERGY_COST = 25;
 const SIZE = new Vector(15, 30);
 const ROLLING_SIZE = new Vector(15, 20);
@@ -288,8 +288,10 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       this.push(this.runForce.scaled(MID_AIR_RUN_SCALE));
     }
     
-    if (this.energy < this.maxEnergy) this.energy += ENERGY_REGEN;
-    else this.energy =  this.maxEnergy;
+    if (this.state === HeroState.Nuetral) {
+      if (this.energy < this.maxEnergy) this.energy += ENERGY_REGEN;
+      else this.energy =  this.maxEnergy;
+    }
   }
 
   kill() {

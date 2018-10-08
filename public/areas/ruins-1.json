@@ -47,6 +47,11 @@
     {
       "class": "SignPost",
       "position": [436, 240],
+      "message": "Press `c` to roll. Rolling can be useful for a lot of things,\nbut requires/consumes a bit of energy."
+    },
+    {
+      "class": "SignPost",
+      "position": [504, 240],
       "message": "When next to a door, press the up arrow key to enter."
     },
     {
