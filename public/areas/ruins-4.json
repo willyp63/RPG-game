@@ -90,6 +90,11 @@
       "message": "Rolling can be useful for dodging attacks,\nas well as passing through large enemies."
     },
     {
+      "class": "SignPost",
+      "position": [420, 562],
+      "message": "You can roll through small gaps in walls\nthat you would otherwise be too tall to fit through."
+    },
+    {
       "class": "Ogre",
       "position": [134, 370]
     },

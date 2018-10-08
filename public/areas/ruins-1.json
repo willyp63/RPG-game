@@ -46,6 +46,11 @@
     },
     {
       "class": "SignPost",
+      "position": [240, 240],
+      "message": "Use the left/right arrow keys to run,\nand the up arrow key to jump."
+    },
+    {
+      "class": "SignPost",
       "position": [436, 240],
       "message": "Press `c` to roll. Rolling can be useful for a lot of things,\nbut requires/consumes a bit of energy."
     },
