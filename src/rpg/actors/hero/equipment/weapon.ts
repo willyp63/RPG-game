@@ -20,7 +20,7 @@ export enum AttackType {
 
 export default class Weapon {
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   private static get ironSwordTexture() { return TextureHelper.get(TEXTURES_FILE, "iron-sword.png"); }
   private static get rubyStaffTexture() { return TextureHelper.get(TEXTURES_FILE, "ruby-staff.png"); }
@@ -43,7 +43,7 @@ export default class Weapon {
       case WeaponType.RubyStaff:
         return new Vector(0.25, 0.5);
       default:
-        return new Vector(0, 0);
+        return Vector.zero;
     }
   }
 

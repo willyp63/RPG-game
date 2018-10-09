@@ -53,6 +53,7 @@ export class PIXIAnimation {
 export default abstract class AnimatedPIXIEntity extends PIXIEntity {
 
   get sprite() { return <extras.AnimatedSprite>this._sprite; }
+  get isFacingLeft() { return this._animation ? this._animation.isFlippedHorizontally : false; }
 
   private _animation?: PIXIAnimation;
 
@@ -83,10 +84,6 @@ export default abstract class AnimatedPIXIEntity extends PIXIEntity {
     }
 
     this._animation = animation;
-  }
-
-  get isFacingLeft() {
-    return this._animation ? this._animation.isFlippedHorizontally : false;
   }
 
 }

@@ -24,9 +24,10 @@ const STATUS_BAR_HEIGHT = 16;
 
 export default class RPGSystem extends PIXISystem {
 
-  protected get screenWidth() { return SCREEN_WIDTH; };
-  protected get screenHeight() { return SCREEN_HEIGHT; };
-
+  get width() { return this._width; };
+  get height() { return this._height; };
+  get screenWidth() { return SCREEN_WIDTH; };
+  get screenHeight() { return SCREEN_HEIGHT; };
   get assets() {
     return (<Array<string>>[]).concat(
       Hero.assets,
@@ -42,19 +43,15 @@ export default class RPGSystem extends PIXISystem {
       FireBall.assets,
     );
   }
+  get foregroundAsset() { return this._foregroundAsset; }
+  get backgroundAsset() { return this._backgroundAsset; }
+  get backdropAsset() { return this._backdropAsset; }
 
-  protected get foregroundAsset() { return this._foregroundAsset; }
-  protected get backgroundAsset() { return this._backgroundAsset; }
-  protected get backdropAsset() { return this._backdropAsset; }
-
-  private messageBox = new MessageBox(new Vector(0, 0), new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
+  private messageBox = new MessageBox(Vector.zero, new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
   private manaBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 5 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x0000FF, 0x000088);
   private energyBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 3 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0xFFDE00, 0x806F00);
   private healthBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x00FF00, 0xFF0000);
   private hero?: Hero;
-
-  get width() { return this._width; };
-  get height() { return this._height; };
 
   private _foregroundAsset = '';
   private _backgroundAsset = '';
@@ -62,28 +59,35 @@ export default class RPGSystem extends PIXISystem {
   private _width = 0;
   private _height = 0;
 
-  constructor(areaFile: string, heroStart: Vector) {
+  constructor(
+    private areaFile: string,
+    private heroStart: Vector
+  ) {
     super();
+  }
 
-    this._loadArea(areaFile, heroStart);
+  init() {
+    super.init();
+
+    this.loadArea(this.areaFile, this.heroStart);
   }
 
   onTick() {
     super.onTick();
 
-    this._updateStatusBars();
+    this.updateStatusBars();
   }
 
-  _updateStatusBars() {
+  private updateStatusBars() {
     if (!this.hero) return;
     this.healthBar.setValue(this.hero.health);
     this.energyBar.setValue(this.hero.energy);
     this.manaBar.setValue(this.hero.mana);
   }
 
-  _loadArea(areaFile: string, heroStart: Vector) {
+  private loadArea(areaFile: string, heroStart: Vector) {
 
-    this.clearAreaAndShowLoadingScreen();
+    this.clearEntities();
 
     getJson(areaFile, (err: any, data: any) => {
       if (err !== null) {
@@ -111,7 +115,7 @@ export default class RPGSystem extends PIXISystem {
                   new Vector(entity.position[0], entity.position[1]),
                   new Vector(entity.size[0], entity.size[1]),
                   () => {
-                    this._loadArea(entity.area, new Vector(entity.start[0], entity.start[1]));
+                    this.loadArea(entity.area, new Vector(entity.start[0], entity.start[1]));
                   },
                 )
               );
@@ -172,7 +176,7 @@ export default class RPGSystem extends PIXISystem {
           this.addUIEntity(this.healthBar);
           this.addUIEntity(this.energyBar);
           this.addUIEntity(this.manaBar);
-          this._updateStatusBars();
+          this.updateStatusBars();
         });
       }
     });

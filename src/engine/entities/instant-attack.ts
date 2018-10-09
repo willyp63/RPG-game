@@ -4,7 +4,7 @@ import Collision from '../core/collision';
 
 export default class InstantAttack extends Entity {
 
-  get type() { return this._isFriendly ? EntityType.Friendly : EntityType.Unfriendly; }
+  get type() { return this.isFriendly ? EntityType.Friendly : EntityType.Unfriendly; }
   get size() { return this._size; }
 
   private _size: Vector;
@@ -13,22 +13,21 @@ export default class InstantAttack extends Entity {
     position: Vector,
     private _attacker: Entity,
     size: number | Vector,
-    private _force: Vector,
+    private force: Vector,
     private _damage: number,
-    private _isFriendly = false,
+    private isFriendly = false,
   ) {
     super(position);
 
-    if (typeof size === 'number') {
-      this._size = new Vector(size, size);
-    } else {
-      this._size = size;
-    }
+    this._size = typeof size === 'number'
+      ? new Vector(size, size)
+      : size;
   }
 
   afterTick() {
     super.afterTick();
 
+    // kill after one tick
     this.kill();
   }
 
@@ -37,7 +36,7 @@ export default class InstantAttack extends Entity {
 
     if (collision.hit && otherEntity.type === EntityType.Unfriendly) {
       otherEntity.damage(this._damage);
-      otherEntity.push(this._force.flippedHorizontally(this._attacker.position.x > otherEntity.position.x));
+      otherEntity.push(this.force.flippedHorizontally(this._attacker.position.x > otherEntity.position.x));
     }
   }
 

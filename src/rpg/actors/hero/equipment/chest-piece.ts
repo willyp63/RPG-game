@@ -10,7 +10,7 @@ export enum ChestPieceType {
 
 export default class ChestPiece {
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   private static get ironTexture() { return TextureHelper.get(TEXTURES_FILE, "iron-chest-piece.png"); }
   private static get ironUpperArmtexture() { return TextureHelper.get(TEXTURES_FILE, "iron-chest-piece__upper-arm.png"); }

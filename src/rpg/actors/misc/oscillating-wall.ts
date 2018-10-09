@@ -9,7 +9,7 @@ const MD_TEXTURES_FILE = 'public/imgs/wood-plank-md.jpg';
 
 export default class OscillatingWall extends PIXIEntity {
 
-  static assets = [TEXTURES_FILE, SM_TEXTURES_FILE, MD_TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE, SM_TEXTURES_FILE, MD_TEXTURES_FILE] };
 
   get isWall() { return true; }
   get size() { return this._size; }
@@ -22,7 +22,7 @@ export default class OscillatingWall extends PIXIEntity {
   ) {
     super(
       new Sprite(loader.resources[TEXTURES_FILE].texture),
-      position.plus(_size.scaled(0.5)),
+      position.plus(_size.times(0.5)),
     );
 
     this.velocity = velocity;
@@ -41,7 +41,7 @@ export default class OscillatingWall extends PIXIEntity {
   }
 
   private turnAround() {
-    this.velocity = this.velocity.scaled(-1);
+    this.velocity = this.velocity.times(-1);
     this.scheduleTurnAround();
   }
 

@@ -1,14 +1,13 @@
 export default class Vector {
 
+  static get zero() { return new Vector(0, 0); }
+
   constructor(
-    private _x: number,
-    private _y: number,
+    public x: number,
+    public y: number,
   ) { }
 
-  get x() { return this._x; }
-  get y() { return this._y; }
-
-  get length() { return Math.sqrt(Math.pow(this._x, 2) + Math.pow(this._y, 2)); }
+  get length() { return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2)); }
 
   plus(otherVector: Vector) {
     return new Vector(this.x + otherVector.x, this.y + otherVector.y);
@@ -18,7 +17,7 @@ export default class Vector {
     return new Vector(this.x - otherVector.x, this.y - otherVector.y);
   }
 
-  scaled(scaleVector: Vector | number) {
+  times(scaleVector: Vector | number) {
     if (typeof scaleVector === 'number') {
       scaleVector = new Vector(scaleVector, scaleVector);
     }
@@ -41,19 +40,19 @@ export default class Vector {
   }
 
   withNewX(newX: number) {
-    return new Vector(newX, this._y);
+    return new Vector(newX, this.y);
   }
 
   withNewY(newY: number) {
-    return new Vector(this._x, newY);
+    return new Vector(this.x, newY);
   }
 
   toUnitVector() {
-    return new Vector(this._x / this.length, this._y / this.length);
+    return new Vector(this.x / this.length, this.y / this.length);
   }
 
   flippedHorizontally(isFlipped = true) {
-    return this.scaled(new Vector(isFlipped ? -1 : 1, 1));
+    return this.times(new Vector(isFlipped ? -1 : 1, 1));
   }
 
 }

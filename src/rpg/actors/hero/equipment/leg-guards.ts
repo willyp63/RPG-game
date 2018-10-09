@@ -10,7 +10,7 @@ export enum LegGuardType {
 
 export default class LegGuards {
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   private static get ironUpperLegTexture() { return TextureHelper.get(TEXTURES_FILE, "iron-leg-guards__upper-leg.png"); }
   private static get ironLowerLegTexture() { return TextureHelper.get(TEXTURES_FILE, "iron-leg-guards__lower-leg.png"); }

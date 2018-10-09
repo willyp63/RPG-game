@@ -70,7 +70,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       : this.position;
   }
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
   private static get headTexture() { return TextureHelper.get(TEXTURES_FILE, "man__head.png"); }
   private static get chestTexture() { return TextureHelper.get(TEXTURES_FILE, "man__chest.png"); }
   private static get upperArmTexture() { return TextureHelper.get(TEXTURES_FILE, "man__upper-arm.png"); }
@@ -89,7 +89,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   private leftKeyDown = false;
   private state = HeroState.Nuetral;
   private runState = HeroRunState.Standing;
-  private runForce = new Vector(0, 0);
+  private runForce = Vector.zero;
   private isOnGround = false;
   private isJumping = false;
 
@@ -116,7 +116,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                 new SkeletalSprite(
                   '',
                   Hero.chestPiece.lowerArmTexture,
-                  new Vector(0, 0),
+                  Vector.zero,
                   LOWER_ARM_ANCHOR,
                 ),
                 new SkeletalSprite(
@@ -130,7 +130,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
             new SkeletalSprite(
               '',
               Hero.chestPiece.upperArmTexture,
-              new Vector(0, 0),
+              Vector.zero,
               UPPER_ARM_ANCHOR,
             ),
           ],
@@ -151,7 +151,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                 new SkeletalSprite(
                   '',
                   Hero.legGuards.lowerLegTexture,
-                  new Vector(0, 0),
+                  Vector.zero,
                   LOWER_LEG_ANCHOR,
                 ),
               ],
@@ -159,7 +159,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
             new SkeletalSprite(
               '',
               Hero.legGuards.upperLegTexture,
-              new Vector(0, 0),
+              Vector.zero,
               UPPER_LEG_ANCHOR,
             ),
           ],
@@ -210,7 +210,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                 new SkeletalSprite(
                   '',
                   Hero.legGuards.lowerLegTexture,
-                  new Vector(0, 0),
+                  Vector.zero,
                   LOWER_LEG_ANCHOR,
                 ),
               ],
@@ -218,7 +218,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
             new SkeletalSprite(
               '',
               Hero.legGuards.upperLegTexture,
-              new Vector(0, 0),
+              Vector.zero,
               UPPER_LEG_ANCHOR,
             ),
           ],
@@ -245,13 +245,13 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                 new SkeletalSprite(
                   '',
                   Hero.lowerArmTexture,
-                  new Vector(0, 0),
+                  Vector.zero,
                   LOWER_ARM_ANCHOR,
                 ),
                 new SkeletalSprite(
                   '',
                   Hero.chestPiece.lowerArmTexture,
-                  new Vector(0, 0),
+                  Vector.zero,
                   LOWER_ARM_ANCHOR,
                 ),
               ],
@@ -259,7 +259,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
             new SkeletalSprite(
               '',
               Hero.chestPiece.upperArmTexture,
-              new Vector(0, 0),
+              Vector.zero,
               UPPER_ARM_ANCHOR,
             ),
           ],
@@ -267,10 +267,6 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       ],
       animations.standing().frames[0],
     );
-
-    setTimeout(() => {
-      if (this._healthBar) this._healthBar.alpha = 0;
-    }, 0);
 
     this.addKeyListeners();
     this.stopRunning();
@@ -285,7 +281,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
 
       this.push(this.runForce);
     } else {
-      this.push(this.runForce.scaled(MID_AIR_RUN_SCALE));
+      this.push(this.runForce.times(MID_AIR_RUN_SCALE));
     }
     
     if (this.state === HeroState.Nuetral) {
@@ -294,9 +290,10 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     }
   }
 
-  kill() {
+  destroy() {
+    super.destroy();
+
     this.keyListeners.forEach(keyListener => keyListener.destroy());
-    super.kill();
   }
 
   private addKeyListeners() {
@@ -363,7 +360,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
 
     if (this.state !== HeroState.Nuetral) return;
 
-    this.runForce = new Vector(0, 0);
+    this.runForce = Vector.zero;
 
     if (!this.isJumping) this.animation = animations.standing();
   }
@@ -410,7 +407,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     if (this.energy < ROLL_ENERGY_COST) return;
     this.energy -= ROLL_ENERGY_COST;
 
-    this.runForce = new Vector(0, 0);
+    this.runForce = Vector.zero;
     this.state = HeroState.Rolling;
     this.position = this.position.plus(Hero.rollPositionOffset);
     this.push(ROLL_FORCE.flippedHorizontally(this.isFacingLeft));
@@ -436,7 +433,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     this.energy -= weapon.energyCost;
     this.mana -= weapon.manaCost;
 
-    this.runForce = new Vector(0, 0);
+    this.runForce = Vector.zero;
     this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
 
     switch(weapon.attackType) {
@@ -485,7 +482,7 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   }
 
   private static get rollPositionOffset() {
-    return SIZE.minus(ROLLING_SIZE).scaled(0.5);
+    return SIZE.minus(ROLLING_SIZE).times(0.5);
   }
 
 }

@@ -10,7 +10,8 @@ export default class Wall extends Entity {
     position: Vector,
     private _size: Vector,
   ) {
-    super(position.plus(_size.scaled(0.5)));
+    // when creating a wall you specify the upper-left point, not the center
+    super(position.plus(_size.times(0.5)));
   }
 
 }

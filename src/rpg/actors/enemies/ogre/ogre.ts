@@ -36,7 +36,7 @@ export default class Ogre extends AnimatedPIXIEntity {
   get isSolid() { return true; }
   get isFrictionBound() { return true; }
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   static get _runTextures() { return [
     TextureHelper.get(TEXTURES_FILE, "ogre__run-1.png"),
@@ -138,7 +138,7 @@ export default class Ogre extends AnimatedPIXIEntity {
     this._numSwipeAttacks = Math.ceil(Math.random() * MAX_NUM_SWIPE_ATTACKS);
     this._currentNumSwipeAttacks = 0;
     
-    this._runForce = this._runForce.scaled(SWIPE_ATTACK_RUN_FORCE_SCALE);
+    this._runForce = this._runForce.times(SWIPE_ATTACK_RUN_FORCE_SCALE);
     this._isAttacking = true;
 
     this.animation =

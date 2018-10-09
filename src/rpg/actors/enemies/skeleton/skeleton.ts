@@ -31,7 +31,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
   get isSolidBound() { return !this._isDead; }
   get isFrictionBound() { return true; }
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   static get _walkTextures() { return [
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-1.png"),
@@ -57,7 +57,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
     TextureHelper.get(TEXTURES_FILE, "skeleton__walk-2.png"),
   ]; }
 
-  private _walkForce = new Vector(0, 0);
+  private _walkForce = Vector.zero;
   private _isAttacking = false;
   private _changeDirectionTicker = 0;
   private _attackRechargeTicker = 0;
@@ -123,7 +123,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
   }
 
   kill() {
-    this._walkForce = new Vector(0, 0);
+    this._walkForce = Vector.zero;
     this._isAttacking = false;
     this._isDead = true;
 
@@ -134,8 +134,6 @@ export default class Skeleton extends AnimatedPIXIEntity {
   }
 
   _onDieAnimationComplete() {
-    if (this._healthBar) this._healthBar.alpha = 0;
-
     this.animation =
       new PIXIAnimation(Skeleton._dieTextures)
         .stopOn(2);
@@ -153,7 +151,6 @@ export default class Skeleton extends AnimatedPIXIEntity {
   _onReviveAnimationComplete() {
     this._isDead = false;
     this.heal(this.maxHealth);
-    if (this._healthBar) this._healthBar.alpha = 1;
 
     if (this.isFacingLeft) this._walkLeft();
     else this._walkRight();
@@ -182,7 +179,7 @@ export default class Skeleton extends AnimatedPIXIEntity {
   _attack () {
     if (this._isAttacking) return;
     
-    this._walkForce = new Vector(0, 0);
+    this._walkForce = Vector.zero;
     this._isAttacking = true;
 
     this.animation =

@@ -95,7 +95,7 @@ export class SkeletalAnimationJointPivot {
 
 export default abstract class SkeletalAnimatedPIXIEntity extends PIXIEntity {
 
-  public get isFacingLeft() { return this.sprite.scale.x < 0; }
+  get isFacingLeft() { return this.sprite.scale.x < 0; }
 
   private spriteMap = <any>{};
   private animationTicksOut?: Function;

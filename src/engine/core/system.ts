@@ -5,39 +5,46 @@ import Collision from "./collision";
 
 export default abstract class System {
 
-  protected get width() { return 0; };
-  protected get height() { return 0; };
-  protected get gravityForce() { return new Vector(0, 0.333); }
-  protected get frictionCoefficient() { return 0.0333; }
+  get width() { return 0; };
+  get height() { return 0; };
+  get gravityForce() { return new Vector(0, 0.333); }
+  get frictionCoefficient() { return 0.0333; }
 
-  protected entities: Array<Entity> = [];
+  public entities: Array<Entity> = [];
 
-  constructor() {
+  constructor() { }
+
+  init() {
     this.onTick();
   }
 
-  protected addEntity(entity: Entity) {
-    this.entities.push(entity);
-  }
-
-  protected removeEntityAt(i: number) {
-    this.entities.splice(i, 1);
-  }
-
-  protected onTick() {
+  onTick() {
     requestAnimationFrame(this.onTick.bind(this));
 
     this.entities.forEach(entity => entity.onTick());
-    this._checkForCollisions();
-    this._killSquishedEntities();
-    this._applyGravity();
-    this._applyFriction();
+    this.checkForCollisions();
+    this.killSquishedEntities();
+    this.applyGravity();
+    this.applyFriction();
     this.entities.forEach(entity => entity.afterTick());
-    this._addNewEntities();
-    this._removeEntities();
+    this.addNewEntities();
+    this.removeEntities();
   }
 
-  _checkForCollisions() {
+  addEntity(entity: Entity) {
+    entity.init();
+    this.entities.push(entity);
+  }
+
+  removeEntityAt(i: number) {
+    this.entities.splice(i, 1)[0].destroy();
+  }
+
+  clearEntities() {
+    while(this.entities.length) this.removeEntityAt(0);
+  }
+
+  private checkForCollisions() {
     for (let i = 0; i < this.entities.length; i++) {
       for (let j = i + 1; j < this.entities.length; j++) {
         const entity1 = this.entities[i];
@@ -50,7 +57,7 @@ export default abstract class System {
     }
   }
 
-  _killSquishedEntities() {
+  private killSquishedEntities() {
     this.entities.forEach(entity => {
       const isSquished =
         entity.isTouchingWallsInAllDirections([Direction.Up, Direction.Down]) ||
@@ -60,7 +67,7 @@ export default abstract class System {
     });
   }
 
-  _applyGravity() {
+  private applyGravity() {
     this.entities.forEach(entity => {
       if (entity.isGravityBound) {
         entity.push(this.gravityForce);
@@ -68,29 +75,30 @@ export default abstract class System {
     });
   }
 
-  _applyFriction() {
+  private applyFriction() {
     this.entities.forEach(entity => {
       if (entity.isFrictionBound) {
-        entity.push(entity.velocity.scaled(-this.frictionCoefficient));
+        entity.push(entity.velocity.times(-this.frictionCoefficient));
       }
     });
   }
 
-  _removeEntities() {
+  private removeEntities() {
     for (let i = 0; i < this.entities.length; i++) {
-      if (this.entities[i].canRemoveFromSystem) {
+      if (this.entities[i].canBeRemovedFromSystem) {
         this.removeEntityAt(i--);
       }
     }
   }
 
-  _addNewEntities() {
+  private addNewEntities() {
     const currentNumEntities = this.entities.length;
     for (let i = 0; i < currentNumEntities; i++) {
-      if (this.entities[i].entitiesToAdd.length){
-        this.entities[i].entitiesToAdd.forEach(entity => this.addEntity(entity));
-        this.entities[i].entitiesToAdd = [];
+      if (this.entities[i].entitiesToAddNextFrame.length){
+        this.entities[i].entitiesToAddNextFrame.forEach(entity => this.addEntity(entity));
+        this.entities[i].entitiesToAddNextFrame = [];
       }
     }
   }
+
 }

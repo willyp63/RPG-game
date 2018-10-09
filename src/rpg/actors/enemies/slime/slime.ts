@@ -30,11 +30,11 @@ export default class Slime extends AnimatedPIXIEntity {
   get isFrictionBound() { return true; }
 
   get weight() { return WEIGHT * this._scale; }
-  get size() { return SIZE.scaled(this._scale); }
+  get size() { return SIZE.times(this._scale); }
   get elasticity() { return ELASTICITY; }
   get maxHealth() { return MAX_HEALTH * this._scale; }
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   static get _crawlTextures() { return [
     TextureHelper.get(TEXTURES_FILE, "slime_1.png"),
@@ -75,24 +75,24 @@ export default class Slime extends AnimatedPIXIEntity {
     super.kill();
 
     if (this._size === SlimeSize.Large) {
-      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale)), SlimeSize.Medium);
-      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale).flippedHorizontally()), SlimeSize.Medium);
-      spawn1.push(SPWAN_FORCE.scaled(this._scale));
-      spawn2.push(SPWAN_FORCE.scaled(this._scale).flippedHorizontally());
+      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.times(this._scale)), SlimeSize.Medium);
+      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.times(this._scale).flippedHorizontally()), SlimeSize.Medium);
+      spawn1.push(SPWAN_FORCE.times(this._scale));
+      spawn2.push(SPWAN_FORCE.times(this._scale).flippedHorizontally());
       this.addEntityToSystem(spawn1);
       this.addEntityToSystem(spawn2);
     } else if (this._size === SlimeSize.Medium) {
-      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale)), SlimeSize.Small);
-      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.scaled(this._scale).flippedHorizontally()), SlimeSize.Small);
-      spawn1.push(SPWAN_FORCE.scaled(this._scale));
-      spawn2.push(SPWAN_FORCE.scaled(this._scale).flippedHorizontally());
+      const spawn1 = new Slime(this.position.plus(SPAWN_OFFSET.times(this._scale)), SlimeSize.Small);
+      const spawn2 = new Slime(this.position.plus(SPAWN_OFFSET.times(this._scale).flippedHorizontally()), SlimeSize.Small);
+      spawn1.push(SPWAN_FORCE.times(this._scale));
+      spawn2.push(SPWAN_FORCE.times(this._scale).flippedHorizontally());
       this.addEntityToSystem(spawn1);
       this.addEntityToSystem(spawn2);
     }
   }
 
   _crawlLeft() {
-    this._crawlForce = CRAWL_FORCE.scaled(1 / this._scale).flippedHorizontally();
+    this._crawlForce = CRAWL_FORCE.times(1 / this._scale).flippedHorizontally();
 
     this.animation =
       new PIXIAnimation(Slime._crawlTextures)
@@ -101,7 +101,7 @@ export default class Slime extends AnimatedPIXIEntity {
   }
 
   _crawlRight() {
-    this._crawlForce = CRAWL_FORCE.scaled(1 / this._scale);
+    this._crawlForce = CRAWL_FORCE.times(1 / this._scale);
 
     this.animation =
       new PIXIAnimation(Slime._crawlTextures)

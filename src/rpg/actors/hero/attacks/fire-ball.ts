@@ -13,7 +13,7 @@ const PROJECTILE_FORCE = new Vector(8, 0);
 
 export default class FireBall extends PIXIEntity {
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   get type() { return EntityType.Neutral; }
   get size() { return SIZE; }

@@ -9,9 +9,9 @@ const SIZE = new Vector(30, 32);
 
 export default class SignPost extends PIXIEntity {
 
-  get size() { return SIZE; }
+  static get assets() { return [TEXTURE_FILE] };
 
-  static assets = [TEXTURE_FILE];
+  get size() { return SIZE; }
 
   private _shouldShowMessage = false;
   private _isShowingMessage = false;

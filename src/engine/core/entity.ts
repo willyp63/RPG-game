@@ -2,10 +2,8 @@ import Vector from "./vector";
 import Direction, { oppositeDirection } from "./direction";
 import Collision from "./collision";
 
-const DEFAULT_WEIGHT = 1;
-const DEFAULT_MAX_VELOCITY = 16;
-const DEFAULT_FRICTION_COEFFICIENT = 0.1333;
-const DEFAULT_ELASTICITY = 0.1;
+const SOLID_FORCE_SCALE = new Vector(1.5, 0.1);
+const SOLID_MAX_FORCE = new Vector(4, 4);
 
 export enum EntityType {
   Friendly,
@@ -16,12 +14,18 @@ export enum EntityType {
 export default abstract class Entity {
 
   get type() { return EntityType.Neutral; }
-  get size() { return new Vector(0, 0); }
-  get weight() { return DEFAULT_WEIGHT; }
+
+  get size() { return Vector.zero; }
+  get weight() { return 1; }
+  
   get maxHealth() { return 0; }
-  get frictionCoefficient() { return DEFAULT_FRICTION_COEFFICIENT; }
-  get elasticity() { return DEFAULT_ELASTICITY; }
-  get maxVelocity() { return DEFAULT_MAX_VELOCITY; }
+  get maxMana() { return 0; }
+  get maxEnergy() { return 0; }
+
+  get frictionCoefficient() { return 0.133; }
+  get elasticity() { return 0.1; }
+  get maxVelocity() { return 16; }
+
   get isWall() { return false; }
   get isSolid() { return false; }
   get isWallBound() { return false; }
@@ -29,12 +33,16 @@ export default abstract class Entity {
   get isGravityBound() { return false; }
   get isFrictionBound() { return false; }
 
-  public velocity = new Vector(0, 0);
-  public acceleration = new Vector(0, 0);
+  public velocity = Vector.zero;
+  public acceleration = Vector.zero;
 
   public health = 0;
-  public canRemoveFromSystem = false;
-  public entitiesToAdd: Array<Entity> = [];
+  public mana = 0;
+  public energy = 0;
+
+  public canBeRemovedFromSystem = false;
+  public entitiesToAddNextFrame: Array<Entity> = [];
+
   public touchingWallInDirection: {
     [Direction.Up]?: Entity,
     [Direction.Down]?: Entity,
@@ -42,53 +50,29 @@ export default abstract class Entity {
     [Direction.Left]?: Entity,
   } = {};
 
-  constructor(
-    public position: Vector,
-  ) {
-    // wait for child constructor to run
-    setTimeout(() => {
-      this.health = this.maxHealth;
-    }, 0);
+  constructor(public position: Vector) { }
+
+  init() {
+    this.health = this.maxHealth;
+    this.mana = this.maxMana;
+    this.energy = this.maxEnergy;
   }
 
-  /* --- public --- */
-  public push(force: Vector) {
-    this.acceleration = this.acceleration.plus(force.scaled(1 / this.weight));
-  }
+  destroy() { }
 
-  public damage(damageAmount: number) {
-    this.health = Math.max(0, this.health - damageAmount);
-    
-    if (this.health === 0) this.kill();
-  }
-
-  public heal(healAmount: number) {
-    this.health = Math.min(this.maxHealth, this.health + healAmount);
-  }
-
-  public kill() {
-    this.canRemoveFromSystem = true;
-  }
-
-  public isTouchingWallInAnyDirection(directions: Array<Direction>): boolean {
-    return directions.some(direction => this.touchingWallInDirection[direction] !== undefined);
-  }
-
-  public isTouchingWallsInAllDirections(directions: Array<Direction>): boolean {
-    return directions.every(direction => this.touchingWallInDirection[direction] !== undefined);
-  }
-
-  public onTick() {
+  onTick() {
+    // update properties
     this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
     this.position = this.position.plus(this.velocity);
 
-    this.acceleration = new Vector(0, 0);
+    // reset properties
+    this.acceleration = Vector.zero;
     this.touchingWallInDirection = {};
   }
 
-  public afterTick() { }
+  afterTick() { }
 
-  public onCollision(otherEntity: Entity, collision: Collision) {
+  onCollision(otherEntity: Entity, collision: Collision) {
     if (collision.hit) {
 
       // wall physics
@@ -98,25 +82,26 @@ export default abstract class Entity {
         Collision.recede(otherEntity, this, collision.withOppositeDirection());
 
         // floor friction
-        if (collision.direction === Direction.Up || collision.direction === Direction.Down) {
-          otherEntity.push(new Vector((this.velocity.x - otherEntity.velocity.x) * this.frictionCoefficient, 0));
+        if (collision.direction === Direction.Up) {
+          const velocityDiff = this.velocity.minus(otherEntity.velocity);
+          otherEntity.push(new Vector(velocityDiff.x * this.frictionCoefficient, 0));
+
+          // stick to floor when going down elevators
+          if (this.velocity.y > 0) {
+            otherEntity.velocity.y = this.velocity.y;
+          }
         }
 
         // bounce off walls
         const combinedElasticity = (this.elasticity + otherEntity.elasticity) / 2;
         if (collision.direction === Direction.Up) {
-          otherEntity.velocity = otherEntity.velocity.withNewY(Math.min(this.velocity.y, otherEntity.velocity.y * -combinedElasticity));
+          otherEntity.velocity.y = Math.min(this.velocity.y, otherEntity.velocity.y * -combinedElasticity);
         } else if (collision.direction === Direction.Right) {
-          otherEntity.velocity = otherEntity.velocity.withNewX(Math.max(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
+          otherEntity.velocity.x = Math.max(this.velocity.x, otherEntity.velocity.x * -combinedElasticity);
         } else if (collision.direction === Direction.Down) {
-          otherEntity.velocity = otherEntity.velocity.withNewY(Math.max(this.velocity.y, otherEntity.velocity.y * -combinedElasticity));
+          otherEntity.velocity.y = Math.max(this.velocity.y, otherEntity.velocity.y * -combinedElasticity);
         } else if (collision.direction === Direction.Left) {
-          otherEntity.velocity = otherEntity.velocity.withNewX(Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity));
-        }
-
-        // stick to floor when going down elevators
-        if (collision.direction === Direction.Up && this.velocity.y > 0) {
-          otherEntity.velocity = otherEntity.velocity.withNewY(this.velocity.y);
+          otherEntity.velocity.x = Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity);
         }
 
         // track touching walls
@@ -125,25 +110,50 @@ export default abstract class Entity {
 
       // solid physics
       if (this.isSolid && otherEntity.isSolidBound) {
-
-        const thisHalfSize = this.size.scaled(0.5);
-        const otherHalfSize = otherEntity.size.scaled(0.5);
-        const combinedHalfSize = thisHalfSize.plus(otherHalfSize);
+        const combinedHalfSize = this.size.times(0.5).plus(otherEntity.size.times(0.5));
         const positionDiff = otherEntity.position.minus(this.position);
-
         const penetration = combinedHalfSize.length / (combinedHalfSize.length - positionDiff.length);
-        let solidForce = positionDiff.toUnitVector().scaled(penetration).scaled(this.elasticity + otherEntity.elasticity).scaled(new Vector(1.5, 0.1));
-        if (Math.abs(solidForce.x) > 4) solidForce = solidForce.withNewX(solidForce.x / Math.abs(solidForce.x) * 4);
-        if (Math.abs(solidForce.y) > 4) solidForce = solidForce.withNewY(solidForce.y / Math.abs(solidForce.y) * 4);
+
+        let solidForce =
+          positionDiff
+            .toUnitVector()
+            .times(penetration)
+            .times(this.elasticity + otherEntity.elasticity)
+            .times(SOLID_FORCE_SCALE)
+            .capped(SOLID_MAX_FORCE);
         otherEntity.push(solidForce);
       }
 
     }
   }
 
-  /* --- protected --- */
+  push(force: Vector) {
+    this.acceleration = this.acceleration.plus(force.times(1 / this.weight));
+  }
+
+  damage(amount: number) {
+    this.health = Math.max(0, this.health - amount);
+    if (this.health <= 0) this.kill();
+  }
+
+  heal(amount: number) {
+    this.health = Math.min(this.maxHealth, this.health + amount);
+  }
+
+  kill() {
+    this.canBeRemovedFromSystem = true;
+  }
+
+  isTouchingWallInAnyDirection(directions: Array<Direction>): boolean {
+    return directions.some(direction => this.touchingWallInDirection[direction] !== undefined);
+  }
+
+  isTouchingWallsInAllDirections(directions: Array<Direction>): boolean {
+    return directions.every(direction => this.touchingWallInDirection[direction] !== undefined);
+  }
+
   protected addEntityToSystem(entity: Entity) {
-    this.entitiesToAdd.push(entity);
+    this.entitiesToAddNextFrame.push(entity);
   }
 
 }

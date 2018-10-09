@@ -10,7 +10,7 @@ export enum HelmType {
 
 export default class Helm {
 
-  static assets = [TEXTURES_FILE];
+  static get assets() { return [TEXTURES_FILE]; }
 
   private static get vikingTexture() { return TextureHelper.get(TEXTURES_FILE, "viking-helm.png"); }
   private static get wizardTexture() { return TextureHelper.get(TEXTURES_FILE, "wizard-hood.png"); }

@@ -57,10 +57,10 @@ export default class Door extends PIXIEntity {
     )); 
   }
 
-  kill() {
+  destroy() {
+    super.destroy();
+    
     this._keyListeners.forEach(keyListener => keyListener.destroy());
-
-    super.kill();
   }
 
   onTick() {
