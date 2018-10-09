@@ -64,8 +64,12 @@ export default class Skeleton extends AnimatedPIXIEntity {
 
   constructor(position: Vector, private _isDead = false) {
     super(position, Skeleton._walkTextures);
+  }
 
-    if (_isDead) {
+  init() {
+    super.init();
+
+    if (this._isDead) {
       setTimeout(this._onDieAnimationComplete.bind(this), 0);
     } else {
       Math.random() < 0.5 ? this._walkLeft() : this._walkRight();
@@ -134,6 +138,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
   }
 
   _onDieAnimationComplete() {
+    this.hideHealthBar();
+    
     this.animation =
       new PIXIAnimation(Skeleton._dieTextures)
         .stopOn(2);
@@ -151,6 +157,8 @@ export default class Skeleton extends AnimatedPIXIEntity {
   _onReviveAnimationComplete() {
     this._isDead = false;
     this.heal(this.maxHealth);
+
+    this.showHealthBar();
 
     if (this.isFacingLeft) this._walkLeft();
     else this._walkRight();

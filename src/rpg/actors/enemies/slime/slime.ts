@@ -51,7 +51,11 @@ export default class Slime extends AnimatedPIXIEntity {
 
     this._scale = Slime._getScaleForSlimeSize(_size);
     this._sprite.scale.x = this._sprite.scale.y = this._scale;
+  }
 
+  init() {
+    super.init();
+    
     Math.random() < 0.5 ? this._crawlLeft() : this._crawlRight();
   }
 

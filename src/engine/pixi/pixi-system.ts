@@ -17,7 +17,8 @@ export default abstract class PIXISystem extends System {
   private app = new Application();
   private backdropSprite = new Sprite();
   private entityContainer = new Container();
-  private uiContainer = new Container();
+  private fixedUIContainer = new Container();
+  private staticUIContainer = new Container();
   private entityToFollow?: PIXIEntity;
 
   constructor() {
@@ -66,7 +67,8 @@ export default abstract class PIXISystem extends System {
         this.app.stage.addChild(new PIXI.Sprite(loader.resources[this.backgroundAsset].texture));
         this.app.stage.addChild(this.entityContainer);
         this.app.stage.addChild(new PIXI.Sprite(loader.resources[this.foregroundAsset].texture));
-        this.app.stage.addChild(this.uiContainer);
+        this.app.stage.addChild(this.staticUIContainer);
+        this.app.stage.addChild(this.fixedUIContainer);
 
         onLoadComplete();
       });
@@ -81,20 +83,30 @@ export default abstract class PIXISystem extends System {
 
     if (entity instanceof PIXIEntity) {
       this.entityContainer.addChild(entity.sprite);
+      entity.uiEntities.forEach(uiEntity => this.addUIEntity(uiEntity));
     }
   }
 
   addUIEntity(entity: UIEntity) {
-    this.uiContainer.addChild(entity.sprite);
+    entity.isFixed
+      ? this.fixedUIContainer.addChild(entity.sprite)
+      : this.staticUIContainer.addChild(entity.sprite);
   }
 
   removeEntityAt(i: number) {
     const entity = this.entities[i];
     if (entity instanceof PIXIEntity) {
       this.entityContainer.removeChild(entity.sprite);
+      entity.uiEntities.forEach(uiEntity => this.removeUIEntity(uiEntity));
     }
 
     super.removeEntityAt(i);
+  }
+
+  removeUIEntity(entity: UIEntity) {
+    entity.isFixed
+      ? this.fixedUIContainer.removeChild(entity.sprite)
+      : this.staticUIContainer.removeChild(entity.sprite);
   }
 
   onTick() {
@@ -119,8 +131,8 @@ export default abstract class PIXISystem extends System {
       this.backdropSprite.y = stageY * -0.2;
 
       // keep UI fixed
-      this.uiContainer.x = stageX * -1;
-      this.uiContainer.y = stageY * -1;
+      this.fixedUIContainer.x = stageX * -1;
+      this.fixedUIContainer.y = stageY * -1;
     }
   }
 }

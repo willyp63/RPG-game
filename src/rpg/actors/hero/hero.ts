@@ -267,7 +267,12 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       ],
       animations.standing().frames[0],
     );
+  }
 
+  init() {
+    super.init();
+
+    this.hideHealthBar();
     this.addKeyListeners();
     this.stopRunning();
   }

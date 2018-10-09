@@ -61,7 +61,11 @@ export default class Ogre extends AnimatedPIXIEntity {
 
   constructor(position: Vector) {
     super(position, Ogre._runTextures);
+  }
 
+  init() {
+    super.init();
+    
     Math.random() < 0.5 ? this._runLeft() : this._runRight();
   }
 

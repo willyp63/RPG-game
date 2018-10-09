@@ -1,35 +1,43 @@
-import { Graphics } from "pixi.js";
+import { Graphics, Sprite } from "pixi.js";
 import Vector from "../core/vector";
+import UIEntity from "./ui-entity";
 
 const WIDTH = 16;
 const HEIGHT = 2;
 const BORDER_WIDTH = 1;
 
-export class HealthBar extends Graphics {
+export class HealthBar extends UIEntity {
+
+  get isFixed() { return false; }
+
+  private graphics = new Graphics();
 
   constructor(position: Vector, public maxHealth: number) {
-    super();
+    super(
+      new Sprite(),
+      position,
+    );
 
-    this.x = position.x;
-    this.y = position.y;
-
+    this.sprite.addChild(this.graphics);
     this.setHealth(this.maxHealth);
   }
 
   setHealth(health: number) {
     const percent = health / this.maxHealth;
 
-    this.beginFill(0x000000);
-    this.drawRect(WIDTH / -2 - BORDER_WIDTH, HEIGHT / -2 - BORDER_WIDTH, WIDTH + BORDER_WIDTH * 2, HEIGHT + BORDER_WIDTH * 2);
-    this.endFill();
+    this.graphics.clear();
 
-    this.beginFill(0xFF0000);
-    this.drawRect(WIDTH / -2, HEIGHT / -2, WIDTH, HEIGHT);
-    this.endFill();
+    this.graphics.beginFill(0x000000);
+    this.graphics.drawRect(WIDTH / -2 - BORDER_WIDTH, HEIGHT / -2 - BORDER_WIDTH, WIDTH + BORDER_WIDTH * 2, HEIGHT + BORDER_WIDTH * 2);
+    this.graphics.endFill();
 
-    this.beginFill(0x00FF00);
-    this.drawRect(WIDTH / -2, HEIGHT / -2, WIDTH * percent, HEIGHT);
-    this.endFill();
+    this.graphics.beginFill(0xFF0000);
+    this.graphics.drawRect(WIDTH / -2, HEIGHT / -2, WIDTH, HEIGHT);
+    this.graphics.endFill();
+
+    this.graphics.beginFill(0x00FF00);
+    this.graphics.drawRect(WIDTH / -2, HEIGHT / -2, WIDTH * percent, HEIGHT);
+    this.graphics.endFill();
   }
 
 }

@@ -81,17 +81,6 @@ export default abstract class Entity {
         // recede from walls
         Collision.recede(otherEntity, this, collision.withOppositeDirection());
 
-        // floor friction
-        if (collision.direction === Direction.Up) {
-          const velocityDiff = this.velocity.minus(otherEntity.velocity);
-          otherEntity.push(new Vector(velocityDiff.x * this.frictionCoefficient, 0));
-
-          // stick to floor when going down elevators
-          if (this.velocity.y > 0) {
-            otherEntity.velocity.y = this.velocity.y;
-          }
-        }
-
         // bounce off walls
         const combinedElasticity = (this.elasticity + otherEntity.elasticity) / 2;
         if (collision.direction === Direction.Up) {
@@ -102,6 +91,17 @@ export default abstract class Entity {
           otherEntity.velocity.y = Math.max(this.velocity.y, otherEntity.velocity.y * -combinedElasticity);
         } else if (collision.direction === Direction.Left) {
           otherEntity.velocity.x = Math.min(this.velocity.x, otherEntity.velocity.x * -combinedElasticity);
+        }
+
+        // floor friction
+        if (collision.direction === Direction.Up) {
+          const velocityDiff = this.velocity.minus(otherEntity.velocity);
+          otherEntity.push(new Vector(velocityDiff.x * this.frictionCoefficient, 0));
+
+          // stick to floor when going down elevators
+          if (this.velocity.y > 0) {
+            otherEntity.velocity.y = this.velocity.y;
+          }
         }
 
         // track touching walls
