@@ -23,6 +23,10 @@ import RubyStaff from "./items/weapons/ruby-staff";
 import WizardLegGuards from "./items/leg-guards/wizard-leg-guards";
 import WizardChestPiece from "./items/chest-pieces/wizard-chest-piece";
 import WizardHood from "./items/helms/wizard-hood";
+import Helm from "./items/helms/helm";
+import ChestPiece from "./items/chest-pieces/chest-piece";
+import LegGuards from "./items/leg-guards/leg-guards";
+import Weapon from "./items/weapons/weapon";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -59,6 +63,12 @@ export default class RPGSystem extends PIXISystem {
   private healthBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x00FF00, 0xFF0000);
   private hero?: Hero;
   private isShowingInventory = false;
+
+  private helm: Helm | undefined = undefined;
+  private chestPiece: ChestPiece | undefined = undefined;
+  private legGuards: LegGuards | undefined = new IronLegGuards();
+  private mainHandWeapon: Weapon | undefined = new IronSword();
+  private offHandWeapon: Weapon | undefined = undefined;
 
   private _foregroundAsset = '';
   private _backgroundAsset = '';
@@ -170,23 +180,68 @@ export default class RPGSystem extends PIXISystem {
             }
           });
 
-          const helm = undefined;
-          const chestPiece = undefined;
-          const legGuards = new IronLegGuards();
-          const mainHandWeapon = new IronSword();
-          const offHandWeapon = undefined;
-
           // add hero
-          this.hero = new Hero(
-            heroStart,
-            helm,
-            chestPiece,
-            legGuards,
-            mainHandWeapon,
-            offHandWeapon,
-          );
+          let oldHealth, oldMana;
+          if (!this.hero) {
+            this.hero = new Hero(
+              heroStart,
+              this.helm,
+              this.chestPiece,
+              this.legGuards,
+              this.mainHandWeapon,
+              this.offHandWeapon,
+            );
+
+            // add items to inventory
+            this.inventory.addItem(new RubyStaff());
+            this.inventory.addItem(new IronSword());
+            this.inventory.addItem(new IronLegGuards());
+            this.inventory.addItem(new IronChestPiece());
+            this.inventory.addItem(new VikingHelm());
+            this.inventory.addItem(new WizardLegGuards());
+            this.inventory.addItem(new WizardChestPiece());
+            this.inventory.addItem(new WizardHood()); 
+
+            // event listeners
+            this.inventoryButton.onClick(() => {
+              this.isShowingInventory = !this.isShowingInventory;
+              if (this.isShowingInventory) {
+                this.inventory.show();
+              } else {
+                this.inventory.hide();
+              }
+            });
+
+            this.inventory.onHelmChange(() => {
+              this.helm = this.inventory.helm;
+              if (this.hero) this.hero.helm = this.helm;
+            });
+            this.inventory.onChestPieceChange(() => {
+              this.chestPiece = this.inventory.chestPiece;
+              if (this.hero) this.hero.chestPiece = this.chestPiece;
+            });
+            this.inventory.onLegGuardsChange(() => {
+              this.legGuards = this.inventory.legGuards;
+              if (this.hero) this.hero.legGuards = this.legGuards;
+            });
+            this.inventory.onMainHandWeaponChange(() => {
+              this.mainHandWeapon = this.inventory.mainHandWeapon;
+              if (this.hero) this.hero.mainHandWeapon = this.mainHandWeapon;
+            });
+            this.inventory.onOffHandWeaponChange(() => {
+              this.offHandWeapon = this.inventory.offHandWeapon;
+              if (this.hero) this.hero.offHandWeapon = this.offHandWeapon;
+            });
+          } else {
+            this.hero.position = heroStart;
+            oldHealth = this.hero.health;
+            oldMana = this.hero.mana;
+          }
           this.addEntity(this.hero);
           this.followEntity(this.hero);
+
+          if (oldHealth !== undefined) this.hero.health = oldHealth;
+          if (oldMana !== undefined) this.hero.mana = oldMana;
 
           // add ui elements
           this.addUIEntity(this.messageBox);
@@ -202,48 +257,11 @@ export default class RPGSystem extends PIXISystem {
           this.updateStatusBars();
 
           // add items to equipment
-          this.inventory.helm = helm;
-          this.inventory.chestPiece = chestPiece;
-          this.inventory.legGuards = legGuards;
-          this.inventory.mainHandWeapon = mainHandWeapon;
-          this.inventory.offHandWeapon = offHandWeapon;
-
-          // add items to inventory
-          this.inventory.addItem(new RubyStaff());
-          this.inventory.addItem(new IronSword());
-          this.inventory.addItem(new IronLegGuards());
-          this.inventory.addItem(new IronChestPiece());
-          this.inventory.addItem(new VikingHelm());
-          this.inventory.addItem(new WizardLegGuards());
-          this.inventory.addItem(new WizardChestPiece());
-          this.inventory.addItem(new WizardHood());
-
-          // event listeners
-          this.inventoryButton.onClick(() => {
-            this.isShowingInventory = !this.isShowingInventory;
-            if (this.isShowingInventory) {
-              this.inventory.show();
-            } else {
-              this.inventory.hide();
-            }
-          });
-
-          this.inventory.onHelmChange(() => {
-            if (this.hero) this.hero.helm = this.inventory.helm;
-          });
-          this.inventory.onChestPieceChange(() => {
-            if (this.hero) this.hero.chestPiece = this.inventory.chestPiece;
-          });
-          this.inventory.onLegGuardsChange(() => {
-            if (this.hero) this.hero.legGuards = this.inventory.legGuards;
-          });
-          this.inventory.onMainHandWeaponChange(() => {
-            if (this.hero) this.hero.mainHandWeapon = this.inventory.mainHandWeapon;
-          });
-          this.inventory.onOffHandWeaponChange(() => {
-            if (this.hero) this.hero.offHandWeapon = this.inventory.offHandWeapon;
-          });
-
+          this.inventory.helm = this.helm;
+          this.inventory.chestPiece = this.chestPiece;
+          this.inventory.legGuards = this.legGuards;
+          this.inventory.mainHandWeapon = this.mainHandWeapon;
+          this.inventory.offHandWeapon = this.offHandWeapon;
         });
       }
     });
