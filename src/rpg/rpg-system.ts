@@ -3,10 +3,6 @@ import getJson from "./util/get-json";
 import Vector from "../engine/core/vector";
 import MessageBox from "./ui/message-box";
 import Hero from "./actors/hero/hero";
-import Helm from "./actors/hero/equipment/helm";
-import ChestPiece from "./actors/hero/equipment/chest-piece";
-import LegGuards from "./actors/hero/equipment/leg-guards";
-import Weapon from "./actors/hero/equipment/weapon";
 import FireBall from "./actors/hero/attacks/fire-ball";
 import Skeleton from "./actors/enemies/skeleton/skeleton";
 import Ogre from "./actors/enemies/ogre/ogre";
@@ -16,6 +12,15 @@ import OscillatingWall from "./actors/misc/oscillating-wall";
 import Wall from "../engine/entities/wall";
 import Door from "./actors/misc/door";
 import StatusBar from "./ui/status-bar";
+import Inventory from "./ui/inventory";
+import Equipment from "./ui/equipment";
+import Button from "./ui/button";
+import Item from "./items/item";
+import VikingHelm from "./items/helms/viking-helm";
+import IronChestPiece from "./items/chest-pieces/iron-chest-piece";
+import IronLegGuards from "./items/leg-guards/iron-leg-guards";
+import IronSword from "./items/weapons/iron-sword";
+import RubyStaff from "./items/weapons/ruby-staff";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -36,10 +41,7 @@ export default class RPGSystem extends PIXISystem {
       Slime.assets,
       SignPost.assets,
       OscillatingWall.assets,
-      Helm.assets,
-      ChestPiece.assets,
-      LegGuards.assets,
-      Weapon.assets,
+      Item.assets,
       FireBall.assets,
     );
   }
@@ -47,11 +49,15 @@ export default class RPGSystem extends PIXISystem {
   get backgroundAsset() { return this._backgroundAsset; }
   get backdropAsset() { return this._backdropAsset; }
 
+  private inventoryButton = new Button(new Vector(SCREEN_WIDTH - 48, SCREEN_HEIGHT - 32), new Vector(48, 32), 'Inv');
+  private inventory = new Inventory(new Vector(SCREEN_WIDTH - Inventory.size.x, MESSAGE_BOX_HEIGHT));
+  private equipment = new Equipment(new Vector(SCREEN_WIDTH - Inventory.size.x - Equipment.size.x, MESSAGE_BOX_HEIGHT));
   private messageBox = new MessageBox(Vector.zero, new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
-  private manaBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 5 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x0000FF, 0x000088);
-  private energyBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 3 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0xFFDE00, 0x806F00);
+  private manaBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 5 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x4488FF, 0x000088);
+  private energyBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 3 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0xFFDE00, 0x664400);
   private healthBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x00FF00, 0xFF0000);
   private hero?: Hero;
+  private isShowingInventory = false;
 
   private _foregroundAsset = '';
   private _backgroundAsset = '';
@@ -164,7 +170,14 @@ export default class RPGSystem extends PIXISystem {
           });
 
           // add hero
-          this.hero = new Hero(heroStart);
+          this.hero = new Hero(
+            heroStart,
+            new VikingHelm(),
+            new IronChestPiece(),
+            new IronLegGuards(),
+            new IronSword(),
+            new RubyStaff(),
+          );
           this.addEntity(this.hero);
           this.followEntity(this.hero);
 
@@ -176,7 +189,24 @@ export default class RPGSystem extends PIXISystem {
           this.addUIEntity(this.healthBar);
           this.addUIEntity(this.energyBar);
           this.addUIEntity(this.manaBar);
+          this.addUIEntity(this.inventoryButton);
+          this.addUIEntity(this.inventory);
+          this.addUIEntity(this.equipment);
+          this.inventory.hide();
+          this.equipment.hide();
           this.updateStatusBars();
+
+          // event listeners
+          this.inventoryButton.onClick(() => {
+            this.isShowingInventory = !this.isShowingInventory;
+            if (this.isShowingInventory) {
+              this.inventory.show();
+              this.equipment.show();
+            } else {
+              this.inventory.hide();
+              this.equipment.hide();
+            }
+          });
         });
       }
     });

@@ -21,4 +21,12 @@ export default class UIEntity {
     this._sprite.y = position.y;
   }
 
+  hide() {
+    this._sprite.alpha = 0;
+  }
+
+  show() {
+    this._sprite.alpha = 1;
+  }
+
 }

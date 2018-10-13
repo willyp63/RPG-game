@@ -152,7 +152,7 @@ export default abstract class Entity {
     return directions.every(direction => this.touchingWallInDirection[direction] !== undefined);
   }
 
-  protected addEntityToSystem(entity: Entity) {
+  addEntityToSystem(entity: Entity) {
     this.entitiesToAddNextFrame.push(entity);
   }
 

@@ -1,0 +1,108 @@
+{"frames": {
+
+"iron-chest-piece.png":
+{
+	"frame": {"x":11,"y":18,"w":8,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":13},
+	"sourceSize": {"w":8,"h":13}
+},
+"iron-chest-piece__upper-arm.png":
+{
+	"frame": {"x":9,"y":0,"w":7,"h":4},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":4},
+	"sourceSize": {"w":7,"h":4}
+},
+"iron-leg-guards__lower-leg.png":
+{
+	"frame": {"x":35,"y":0,"w":8,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":6},
+	"sourceSize": {"w":8,"h":6}
+},
+"iron-leg-guards__upper-leg.png":
+{
+	"frame": {"x":45,"y":0,"w":5,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+	"sourceSize": {"w":5,"h":6}
+},
+"iron-sword.png":
+{
+	"frame": {"x":35,"y":8,"w":29,"h":8},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":29,"h":8},
+	"sourceSize": {"w":29,"h":8}
+},
+"ruby-staff.png":
+{
+	"frame": {"x":0,"y":8,"w":33,"h":8},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":8},
+	"sourceSize": {"w":33,"h":8}
+},
+"viking-helm.png":
+{
+	"frame": {"x":31,"y":18,"w":18,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":15},
+	"sourceSize": {"w":18,"h":15}
+},
+"wizard-chest-piece.png":
+{
+	"frame": {"x":21,"y":18,"w":8,"h":13},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":13},
+	"sourceSize": {"w":8,"h":13}
+},
+"wizard-chest-piece__upper-arm.png":
+{
+	"frame": {"x":0,"y":0,"w":7,"h":4},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":7,"h":4},
+	"sourceSize": {"w":7,"h":4}
+},
+"wizard-hood.png":
+{
+	"frame": {"x":0,"y":18,"w":9,"h":11},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":11},
+	"sourceSize": {"w":9,"h":11}
+},
+"wizard-leg-guards__lower-leg.png":
+{
+	"frame": {"x":18,"y":0,"w":8,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":8,"h":6},
+	"sourceSize": {"w":8,"h":6}
+},
+"wizard-leg-guards__upper-leg.png":
+{
+	"frame": {"x":28,"y":0,"w":5,"h":6},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+	"sourceSize": {"w":5,"h":6}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "items.png",
+	"format": "RGBA8888",
+	"size": {"w":64,"h":33},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2c71f6d6ad44c64640890ae9b48fec40:9b6feb596cf963e26b051f58d2844878:110e074689c9edd2c54833ce2e4d9270$"
+}
+}
