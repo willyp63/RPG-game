@@ -116,6 +116,12 @@ export default abstract class SkeletalAnimatedPIXIEntity extends PIXIEntity {
     });
   }
 
+  updateSprite(spriteId: string, texture: Texture | undefined, anchor: Vector) {
+    const sprite = this.spriteMap[spriteId];
+    sprite.texture = texture;
+    sprite.anchor = <ObservablePoint>{ x: anchor.x, y: anchor.y };
+  }
+
   set animation(animation: SkeletalAnimation) {
     this.cancelAnimation();
     this.flipSprite(animation.isFlippedHorizontally);

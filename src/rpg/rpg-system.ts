@@ -13,7 +13,6 @@ import Wall from "../engine/entities/wall";
 import Door from "./actors/misc/door";
 import StatusBar from "./ui/status-bar";
 import Inventory from "./ui/inventory";
-import Equipment from "./ui/equipment";
 import Button from "./ui/button";
 import Item from "./items/item";
 import VikingHelm from "./items/helms/viking-helm";
@@ -21,6 +20,9 @@ import IronChestPiece from "./items/chest-pieces/iron-chest-piece";
 import IronLegGuards from "./items/leg-guards/iron-leg-guards";
 import IronSword from "./items/weapons/iron-sword";
 import RubyStaff from "./items/weapons/ruby-staff";
+import WizardLegGuards from "./items/leg-guards/wizard-leg-guards";
+import WizardChestPiece from "./items/chest-pieces/wizard-chest-piece";
+import WizardHood from "./items/helms/wizard-hood";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -51,7 +53,6 @@ export default class RPGSystem extends PIXISystem {
 
   private inventoryButton = new Button(new Vector(SCREEN_WIDTH - 48, SCREEN_HEIGHT - 32), new Vector(48, 32), 'Inv');
   private inventory = new Inventory(new Vector(SCREEN_WIDTH - Inventory.size.x, MESSAGE_BOX_HEIGHT));
-  private equipment = new Equipment(new Vector(SCREEN_WIDTH - Inventory.size.x - Equipment.size.x, MESSAGE_BOX_HEIGHT));
   private messageBox = new MessageBox(Vector.zero, new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
   private manaBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 5 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0x4488FF, 0x000088);
   private energyBar = new StatusBar(new Vector(SCREEN_WIDTH * 5 / 6, STATUS_BAR_HEIGHT * 3 / 2 + 8), new Vector(SCREEN_WIDTH / 3 - 16, STATUS_BAR_HEIGHT), 0, 0xFFDE00, 0x664400);
@@ -169,14 +170,20 @@ export default class RPGSystem extends PIXISystem {
             }
           });
 
+          const helm = undefined;
+          const chestPiece = undefined;
+          const legGuards = new IronLegGuards();
+          const mainHandWeapon = new IronSword();
+          const offHandWeapon = undefined;
+
           // add hero
           this.hero = new Hero(
             heroStart,
-            new VikingHelm(),
-            new IronChestPiece(),
-            new IronLegGuards(),
-            new IronSword(),
-            new RubyStaff(),
+            helm,
+            chestPiece,
+            legGuards,
+            mainHandWeapon,
+            offHandWeapon,
           );
           this.addEntity(this.hero);
           this.followEntity(this.hero);
@@ -191,22 +198,52 @@ export default class RPGSystem extends PIXISystem {
           this.addUIEntity(this.manaBar);
           this.addUIEntity(this.inventoryButton);
           this.addUIEntity(this.inventory);
-          this.addUIEntity(this.equipment);
           this.inventory.hide();
-          this.equipment.hide();
           this.updateStatusBars();
+
+          // add items to equipment
+          this.inventory.helm = helm;
+          this.inventory.chestPiece = chestPiece;
+          this.inventory.legGuards = legGuards;
+          this.inventory.mainHandWeapon = mainHandWeapon;
+          this.inventory.offHandWeapon = offHandWeapon;
+
+          // add items to inventory
+          this.inventory.addItem(new RubyStaff());
+          this.inventory.addItem(new IronSword());
+          this.inventory.addItem(new IronLegGuards());
+          this.inventory.addItem(new IronChestPiece());
+          this.inventory.addItem(new VikingHelm());
+          this.inventory.addItem(new WizardLegGuards());
+          this.inventory.addItem(new WizardChestPiece());
+          this.inventory.addItem(new WizardHood());
 
           // event listeners
           this.inventoryButton.onClick(() => {
             this.isShowingInventory = !this.isShowingInventory;
             if (this.isShowingInventory) {
               this.inventory.show();
-              this.equipment.show();
             } else {
               this.inventory.hide();
-              this.equipment.hide();
             }
           });
+
+          this.inventory.onHelmChange(() => {
+            if (this.hero) this.hero.helm = this.inventory.helm;
+          });
+          this.inventory.onChestPieceChange(() => {
+            if (this.hero) this.hero.chestPiece = this.inventory.chestPiece;
+          });
+          this.inventory.onLegGuardsChange(() => {
+            if (this.hero) this.hero.legGuards = this.inventory.legGuards;
+          });
+          this.inventory.onMainHandWeaponChange(() => {
+            if (this.hero) this.hero.mainHandWeapon = this.inventory.mainHandWeapon;
+          });
+          this.inventory.onOffHandWeaponChange(() => {
+            if (this.hero) this.hero.offHandWeapon = this.inventory.offHandWeapon;
+          });
+
         });
       }
     });

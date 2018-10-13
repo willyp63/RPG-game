@@ -9,6 +9,7 @@ import Helm from "../../items/helms/helm";
 import ChestPiece from "../../items/chest-pieces/chest-piece";
 import LegGuards from "../../items/leg-guards/leg-guards";
 import Weapon, { WeaponAttackType } from "../../items/weapons/weapon";
+import InstantAttack from "../../../engine/entities/instant-attack";
 
 const TEXTURES_FILE = 'public/imgs/man.json';
 
@@ -23,6 +24,12 @@ const RUN_FORCE = new Vector(0.25, 0);
 const JUMP_FORCE = new Vector(0, -8);
 const ROLL_FORCE = new Vector(12, 0);
 const MID_AIR_RUN_SCALE = 0.333;
+
+const PUNCH_ENERGY_COST = 10;
+const PUNCH_POSITION = new Vector(12, 2);
+const PUNCH_SIZE = 8;
+const PUNCH_FORCE = new Vector(2, -1);
+const PUNCH_DAMAGE = 5;
 
 const CHEST_POSITION = new Vector(0, -2);
 const CHEST_ANCHOR =  new Vector(0.5, 0.5);
@@ -92,11 +99,11 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   
   constructor(
     position: Vector,
-    private _helm: Helm,
-    private _chestPiece: ChestPiece,
-    private _legGuards: LegGuards,
-    private _mainHandWeapon: Weapon,
-    private _offHandWeapon: Weapon,
+    private _helm: Helm | undefined,
+    private _chestPiece: ChestPiece | undefined,
+    private _legGuards: LegGuards | undefined,
+    private _mainHandWeapon: Weapon | undefined,
+    private _offHandWeapon: Weapon | undefined,
   ) {
     super(
       position,
@@ -115,24 +122,24 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               LOWER_ARM_ANCHOR,
               [
                 new SkeletalSprite(
-                  '',
-                  _chestPiece.lowerArmTexture,
+                  'chest-piece-back-lower-arm',
+                  _chestPiece ? _chestPiece.lowerArmTexture : undefined,
                   Vector.zero,
-                  _chestPiece.lowerArmAnchor,
+                  _chestPiece ? _chestPiece.lowerArmAnchor : Vector.zero,
                 ),
                 new SkeletalSprite(
                   'off-hand-weapon',
-                  _offHandWeapon.texture,
+                  _offHandWeapon ? _offHandWeapon.texture : undefined,
                   WEAPON_POSITION,
-                  _offHandWeapon.anchor,
+                  _offHandWeapon ? _offHandWeapon.anchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
-              '',
-              _chestPiece.upperArmTexture,
+              'chest-piece-back-upper-arm',
+              _chestPiece ? _chestPiece.upperArmTexture : undefined,
               Vector.zero,
-              _chestPiece.upperArmAnchor,
+              _chestPiece ? _chestPiece.upperArmAnchor : Vector.zero,
             ),
           ],
         ),
@@ -150,18 +157,18 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               LOWER_LEG_ANCHOR,
               [
                 new SkeletalSprite(
-                  '',
-                  _legGuards.lowerLegTexture,
+                  'leg-guards-back-lower-leg',
+                  _legGuards ? _legGuards.lowerLegTexture : undefined,
                   Vector.zero,
-                  _legGuards.lowerLegAnchor,
+                  _legGuards ? _legGuards.lowerLegAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
-              '',
-              _legGuards.upperLegTexture,
+              'leg-guards-back-upper-leg',
+              _legGuards ? _legGuards.upperLegTexture : undefined,
               Vector.zero,
-              _legGuards.upperLegAnchor,
+              _legGuards ? _legGuards.upperLegAnchor : Vector.zero,
             ),
           ],
         ),
@@ -174,9 +181,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
           [
             new SkeletalSprite(
               'chest-piece',
-              _chestPiece.texture,
+              _chestPiece ? _chestPiece.texture : undefined,
               Vector.zero,
-              _chestPiece.anchor,
+              _chestPiece ? _chestPiece.anchor : Vector.zero,
             ),
           ]
         ),
@@ -189,9 +196,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
           [
             new SkeletalSprite(
               'helm',
-              _helm.texture,
+              _helm ? _helm.texture : undefined,
               Vector.zero,
-              _helm.anchor,
+              _helm ? _helm.anchor : Vector.zero,
             ),
           ],
         ),
@@ -209,18 +216,18 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               LOWER_LEG_ANCHOR,
               [
                 new SkeletalSprite(
-                  '',
-                  _legGuards.lowerLegTexture,
+                  'leg-guards-front-lower-leg',
+                  _legGuards ? _legGuards.lowerLegTexture : undefined,
                   Vector.zero,
-                  _legGuards.lowerLegAnchor,
+                  _legGuards ? _legGuards.lowerLegAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
-              '',
-              _legGuards.upperLegTexture,
+              'leg-guards-front-upper-leg',
+              _legGuards ? _legGuards.upperLegTexture : undefined,
               Vector.zero,
-              _legGuards.upperLegAnchor,
+              _legGuards ? _legGuards.upperLegAnchor : Vector.zero,
             ),
           ],
         ),
@@ -239,9 +246,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               [
                 new SkeletalSprite(
                   'main-hand-weapon',
-                  _mainHandWeapon.texture,
+                  _mainHandWeapon ? _mainHandWeapon.texture : undefined,
                   WEAPON_POSITION,
-                  _mainHandWeapon.anchor,
+                  _mainHandWeapon ? _mainHandWeapon.anchor : Vector.zero,
                 ),
                 new SkeletalSprite(
                   '',
@@ -250,18 +257,18 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                   LOWER_ARM_ANCHOR,
                 ),
                 new SkeletalSprite(
-                  '',
-                  _chestPiece.lowerArmTexture,
+                  'chest-piece-front-lower-arm',
+                  _chestPiece ? _chestPiece.lowerArmTexture : undefined,
                   Vector.zero,
-                  _chestPiece.lowerArmAnchor,
+                  _chestPiece ? _chestPiece.lowerArmAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
-              '',
-              _chestPiece.upperArmTexture,
+              'chest-piece-front-upper-arm',
+              _chestPiece ? _chestPiece.upperArmTexture : undefined,
               Vector.zero,
-              _chestPiece.upperArmAnchor,
+              _chestPiece ? _chestPiece.upperArmAnchor : Vector.zero,
             ),
           ],
         ),
@@ -302,34 +309,36 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     this.keyListeners.forEach(keyListener => keyListener.destroy());
   }
 
-  set helm(helm: Helm) {
+  set helm(helm: Helm | undefined) {
     this._helm = helm;
-    console.log(this._helm);
-    // TODO
+    this.updateSprite('helm', this._helm ? this._helm.texture : undefined, this._helm ? this._helm.anchor : Vector.zero);
   }
 
-  set chestPiece(chestPiece: ChestPiece) {
+  set chestPiece(chestPiece: ChestPiece | undefined) {
     this._chestPiece = chestPiece;
-    console.log(this._chestPiece);
-    // TODO
+    this.updateSprite('chest-piece', this._chestPiece ? this._chestPiece.texture : undefined, this._chestPiece ? this._chestPiece.anchor : Vector.zero);
+    this.updateSprite('chest-piece-back-upper-arm', this._chestPiece ? this._chestPiece.upperArmTexture : undefined, this._chestPiece ? this._chestPiece.upperArmAnchor : Vector.zero);
+    this.updateSprite('chest-piece-front-upper-arm', this._chestPiece ? this._chestPiece.upperArmTexture : undefined, this._chestPiece ? this._chestPiece.upperArmAnchor : Vector.zero);
+    this.updateSprite('chest-piece-back-lower-arm', this._chestPiece ? this._chestPiece.lowerArmTexture : undefined, this._chestPiece ? this._chestPiece.lowerArmAnchor : Vector.zero);
+    this.updateSprite('chest-piece-front-lower-arm', this._chestPiece ? this._chestPiece.lowerArmTexture : undefined, this._chestPiece ? this._chestPiece.lowerArmAnchor : Vector.zero);
   }
 
-  set legGuards(legGuards: LegGuards) {
+  set legGuards(legGuards: LegGuards | undefined) {
     this._legGuards = legGuards;
-    console.log(this._legGuards);
-    // TODO
+    this.updateSprite('leg-guards-back-upper-leg', this._legGuards ? this._legGuards.upperLegTexture : undefined, this._legGuards ? this._legGuards.upperLegAnchor : Vector.zero);
+    this.updateSprite('leg-guards-front-upper-leg', this._legGuards ? this._legGuards.upperLegTexture : undefined, this._legGuards ? this._legGuards.upperLegAnchor : Vector.zero);
+    this.updateSprite('leg-guards-back-lower-leg', this._legGuards ? this._legGuards.lowerLegTexture : undefined, this._legGuards ? this._legGuards.lowerLegAnchor : Vector.zero);
+    this.updateSprite('leg-guards-front-lower-leg', this._legGuards ? this._legGuards.lowerLegTexture : undefined, this._legGuards ? this._legGuards.lowerLegAnchor : Vector.zero);
   }
 
-  set mainHandWeapon(mainHandWeapon: Weapon) {
+  set mainHandWeapon(mainHandWeapon: Weapon | undefined) {
     this._mainHandWeapon = mainHandWeapon;
-    console.log(this._mainHandWeapon);
-    // TODO
+    this.updateSprite('main-hand-weapon', this._mainHandWeapon ? this._mainHandWeapon.texture : undefined, this._mainHandWeapon ? this._mainHandWeapon.anchor : Vector.zero);
   }
 
-  set offHandWeapon(offHandWeapon: Weapon) {
+  set offHandWeapon(offHandWeapon: Weapon | undefined) {
     this._offHandWeapon = offHandWeapon;
-    console.log(this._offHandWeapon);
-    // TODO
+    this.updateSprite('off-hand-weapon', this._offHandWeapon ? this._offHandWeapon.texture : undefined, this._offHandWeapon ? this._offHandWeapon.anchor : Vector.zero);
   }
 
   private addKeyListeners() {
@@ -464,22 +473,33 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
 
     const weapon = isOffHand ? this._offHandWeapon : this._mainHandWeapon;
 
-    if (this.energy < weapon.attackEnergyCost || this.mana < weapon.attackManaCost) return;
+    if (weapon) {
+      if (this.energy < weapon.attackEnergyCost || this.mana < weapon.attackManaCost) return;
 
-    this.energy -= weapon.attackEnergyCost;
-    this.mana -= weapon.attackManaCost;
+      this.runForce = Vector.zero;
+      this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
 
-    this.runForce = Vector.zero;
-    this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
+      this.energy -= weapon.attackEnergyCost;
+      this.mana -= weapon.attackManaCost;
 
-    switch(weapon.attackType) {
-      case WeaponAttackType.Slash:
-        this.slash(isOffHand);
-        break;
-      case WeaponAttackType.Punch:
-      default:
-        this.punch(isOffHand);
-        break;
+      switch(weapon.attackType) {
+        case WeaponAttackType.Slash:
+          this.slash(isOffHand);
+          break;
+        case WeaponAttackType.Punch:
+        default:
+          this.punch(isOffHand);
+          break;
+      }
+    } else {
+      if (this.energy < PUNCH_ENERGY_COST) return;
+
+      this.runForce = Vector.zero;
+      this.state = isOffHand ? HeroState.AttackingOffHand : HeroState.AttackingMainHand;
+
+      this.energy -= PUNCH_ENERGY_COST;
+      
+      this.punch(isOffHand);
     }
   }
 
@@ -508,7 +528,19 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
   private addAttack() {
     const isOffHand = this.state === HeroState.AttackingOffHand;
     const weapon = isOffHand ? this._offHandWeapon : this._mainHandWeapon;
-    weapon.onAttack(this, this.isFacingLeft);
+
+    if (weapon) {
+      weapon.onAttack(this, this.isFacingLeft);
+    } else {
+      this.addEntityToSystem(new InstantAttack(
+        this.position.plus(PUNCH_POSITION.flippedHorizontally(this.isFacingLeft)),
+        this,
+        PUNCH_SIZE,
+        PUNCH_FORCE,
+        PUNCH_DAMAGE,
+        true,
+      ));
+    }
   }
 
   private onAttackComplete() {

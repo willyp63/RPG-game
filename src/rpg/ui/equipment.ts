@@ -34,4 +34,5 @@ export default class Equipment extends UIEntity {
       }
     }
   }
+
 }
