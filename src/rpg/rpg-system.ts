@@ -28,6 +28,7 @@ import GreatSword from "./items/weapons/great-sword";
 import RobinHoodHat from "./items/helms/robin-hood-hat";
 import BouncyBlueStaff from "./items/weapons/bouncy-blue-staff";
 import BouncyBlueBall from "./actors/hero/attacks/bouncy-blue-ball";
+import LoadingScreen from "./ui/loading-screen";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -85,6 +86,7 @@ export default class RPGSystem extends PIXISystem {
   );
 
   // UI
+  private loadingScreen = new LoadingScreen(Vector.zero, new Vector(SCREEN_WIDTH, SCREEN_HEIGHT));
   private equipmentInventoryButton = new Button(new Vector(SCREEN_WIDTH - 48, SCREEN_HEIGHT - 48), new Vector(48, 48), 'Inv.');
   private equipmentInventory = new EquipmentInventory(new Vector(SCREEN_WIDTH - EquipmentInventory.size.x, MESSAGE_BOX_HEIGHT));
   private messageBox = new MessageBox(Vector.zero, new Vector(SCREEN_WIDTH * 2 / 3, MESSAGE_BOX_HEIGHT));
@@ -126,6 +128,7 @@ export default class RPGSystem extends PIXISystem {
     this.addUIEntity(this.manaBar);
     this.addUIEntity(this.equipmentInventoryButton);
     this.addUIEntity(this.equipmentInventory);
+    this.addUIEntity(this.loadingScreen);
     this.equipmentInventory.hide();
   }
 
@@ -164,6 +167,7 @@ export default class RPGSystem extends PIXISystem {
 
   private loadArea(areaFile: string, heroStart: Vector, onLoad?: Function) {
     this.clearEntities();
+    this.loadingScreen.show();
 
     getJson(areaFile, (err: any, areaData: any) => {
       if (err === null) {
@@ -178,6 +182,7 @@ export default class RPGSystem extends PIXISystem {
         this.load(() => {
           this.addAreaEntities(areaData, heroStart);
           if (onLoad) onLoad();
+          this.loadingScreen.hide();
         });
       } else {
         console.warn('Error loading area JSON', err);
