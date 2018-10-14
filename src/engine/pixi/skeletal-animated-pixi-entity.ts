@@ -99,17 +99,26 @@ export default abstract class SkeletalAnimatedPIXIEntity extends PIXIEntity {
 
   private spriteMap = <any>{};
   private animationTicksOut?: Function;
+  private defaultFrame = new SkeletalAnimationFrame([]);
+  private isAnimationSetup = false;
 
   constructor(
     position: Vector,
-    rootSprites: Array<SkeletalSprite>,
-    private defaultFrame: SkeletalAnimationFrame,
   ) {
     super(
       new Sprite(),
       position,
     );
+  }
 
+  setupAnimation(
+    rootSprites: Array<SkeletalSprite>,
+    defaultFrame: SkeletalAnimationFrame,
+  ) {
+    if (this.isAnimationSetup) return;
+    this.isAnimationSetup = true;
+    
+    this.defaultFrame = defaultFrame;
     rootSprites.forEach(sprite => {
       this._sprite.addChild(sprite);
       this.addToSpriteMap(sprite);

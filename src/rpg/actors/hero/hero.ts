@@ -105,8 +105,13 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
     private _mainHandWeapon: Weapon | undefined,
     private _offHandWeapon: Weapon | undefined,
   ) {
-    super(
-      position,
+    super(position);
+  }
+
+  init() {
+    super.init();
+
+    this.setupAnimation(
       [
         // BACK ARM
         new SkeletalSprite(
@@ -123,23 +128,23 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               [
                 new SkeletalSprite(
                   'chest-piece-back-lower-arm',
-                  _chestPiece ? _chestPiece.lowerArmTexture : undefined,
+                  this._chestPiece ? this._chestPiece.lowerArmTexture : undefined,
                   Vector.zero,
-                  _chestPiece ? _chestPiece.lowerArmAnchor : Vector.zero,
+                  this._chestPiece ? this._chestPiece.lowerArmAnchor : Vector.zero,
                 ),
                 new SkeletalSprite(
                   'off-hand-weapon',
-                  _offHandWeapon ? _offHandWeapon.texture : undefined,
+                  this._offHandWeapon ? this._offHandWeapon.texture : undefined,
                   WEAPON_POSITION,
-                  _offHandWeapon ? _offHandWeapon.anchor : Vector.zero,
+                  this._offHandWeapon ? this._offHandWeapon.anchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
               'chest-piece-back-upper-arm',
-              _chestPiece ? _chestPiece.upperArmTexture : undefined,
+              this._chestPiece ? this._chestPiece.upperArmTexture : undefined,
               Vector.zero,
-              _chestPiece ? _chestPiece.upperArmAnchor : Vector.zero,
+              this._chestPiece ? this._chestPiece.upperArmAnchor : Vector.zero,
             ),
           ],
         ),
@@ -158,17 +163,17 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               [
                 new SkeletalSprite(
                   'leg-guards-back-lower-leg',
-                  _legGuards ? _legGuards.lowerLegTexture : undefined,
+                  this._legGuards ? this._legGuards.lowerLegTexture : undefined,
                   Vector.zero,
-                  _legGuards ? _legGuards.lowerLegAnchor : Vector.zero,
+                  this._legGuards ? this._legGuards.lowerLegAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
               'leg-guards-back-upper-leg',
-              _legGuards ? _legGuards.upperLegTexture : undefined,
+              this._legGuards ? this._legGuards.upperLegTexture : undefined,
               Vector.zero,
-              _legGuards ? _legGuards.upperLegAnchor : Vector.zero,
+              this._legGuards ? this._legGuards.upperLegAnchor : Vector.zero,
             ),
           ],
         ),
@@ -181,9 +186,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
           [
             new SkeletalSprite(
               'chest-piece',
-              _chestPiece ? _chestPiece.texture : undefined,
+              this._chestPiece ? this._chestPiece.texture : undefined,
               Vector.zero,
-              _chestPiece ? _chestPiece.anchor : Vector.zero,
+              this._chestPiece ? this._chestPiece.anchor : Vector.zero,
             ),
           ]
         ),
@@ -196,9 +201,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
           [
             new SkeletalSprite(
               'helm',
-              _helm ? _helm.texture : undefined,
+              this._helm ? this._helm.texture : undefined,
               Vector.zero,
-              _helm ? _helm.anchor : Vector.zero,
+              this._helm ? this._helm.anchor : Vector.zero,
             ),
           ],
         ),
@@ -217,17 +222,17 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               [
                 new SkeletalSprite(
                   'leg-guards-front-lower-leg',
-                  _legGuards ? _legGuards.lowerLegTexture : undefined,
+                  this._legGuards ? this._legGuards.lowerLegTexture : undefined,
                   Vector.zero,
-                  _legGuards ? _legGuards.lowerLegAnchor : Vector.zero,
+                  this._legGuards ? this._legGuards.lowerLegAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
               'leg-guards-front-upper-leg',
-              _legGuards ? _legGuards.upperLegTexture : undefined,
+              this._legGuards ? this._legGuards.upperLegTexture : undefined,
               Vector.zero,
-              _legGuards ? _legGuards.upperLegAnchor : Vector.zero,
+              this._legGuards ? this._legGuards.upperLegAnchor : Vector.zero,
             ),
           ],
         ),
@@ -246,9 +251,9 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
               [
                 new SkeletalSprite(
                   'main-hand-weapon',
-                  _mainHandWeapon ? _mainHandWeapon.texture : undefined,
+                  this._mainHandWeapon ? this._mainHandWeapon.texture : undefined,
                   WEAPON_POSITION,
-                  _mainHandWeapon ? _mainHandWeapon.anchor : Vector.zero,
+                  this._mainHandWeapon ? this._mainHandWeapon.anchor : Vector.zero,
                 ),
                 new SkeletalSprite(
                   '',
@@ -258,27 +263,23 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
                 ),
                 new SkeletalSprite(
                   'chest-piece-front-lower-arm',
-                  _chestPiece ? _chestPiece.lowerArmTexture : undefined,
+                  this._chestPiece ? this._chestPiece.lowerArmTexture : undefined,
                   Vector.zero,
-                  _chestPiece ? _chestPiece.lowerArmAnchor : Vector.zero,
+                  this._chestPiece ? this._chestPiece.lowerArmAnchor : Vector.zero,
                 ),
               ],
             ),
             new SkeletalSprite(
               'chest-piece-front-upper-arm',
-              _chestPiece ? _chestPiece.upperArmTexture : undefined,
+              this._chestPiece ? this._chestPiece.upperArmTexture : undefined,
               Vector.zero,
-              _chestPiece ? _chestPiece.upperArmAnchor : Vector.zero,
+              this._chestPiece ? this._chestPiece.upperArmAnchor : Vector.zero,
             ),
           ],
         ),
       ],
       animations.standing().frames[0],
     );
-  }
-
-  init() {
-    super.init();
 
     this.hideHealthBar();
     this.addKeyListeners();

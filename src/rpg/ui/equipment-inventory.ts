@@ -73,11 +73,12 @@ export default class EquipmenyInventory extends UIEntity {
   }
 
   private onItemPickUp(inventoryItem: InventoryItem) {
-    this.inventory.removeItemWithId(inventoryItem.id);
     this.equipment.removeItemWithId(inventoryItem.id);
   }
 
   private onItemPutDown(inventoryItem: InventoryItem) {
+    this.inventory.removeItemWithId(inventoryItem.id);
+    
     const dropPosition = inventoryItem.position.plus(InventoryItem.size.times(0.5));
     const didLandInEquipmentSlot = this.equipment.onItemDrop(inventoryItem, dropPosition);
 
