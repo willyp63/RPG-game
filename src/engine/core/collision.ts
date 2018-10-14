@@ -58,12 +58,12 @@ export default class Collision {
     let penetrationX = velocityDiff.x > 0
       ? combinedHalfSize.x + positionDiff.x
       : combinedHalfSize.x - positionDiff.x;
-    penetrationX = 1 / Math.abs(penetrationX - velocityDiff.x);
+    penetrationX = 1 / Math.abs(penetrationX - Math.abs(velocityDiff.x));
     
     let penetrationY = velocityDiff.y > 0
       ? combinedHalfSize.y + positionDiff.y
       : combinedHalfSize.y - positionDiff.y;
-    penetrationY = 1 / Math.abs(penetrationY - velocityDiff.y);
+    penetrationY = 1 / Math.abs(penetrationY - Math.abs(velocityDiff.y));
 
     return new Vector(penetrationX, penetrationY);
   }
