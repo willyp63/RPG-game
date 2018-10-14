@@ -10,9 +10,11 @@
   "author": "Wil Pirino",
   "license": "ISC",
   "dependencies": {
+    "@types/uuid": "^3.4.4",
     "express": "^4.16.3",
     "morgan": "^1.9.1",
-    "pixi.js": "^4.8.2"
+    "pixi.js": "^4.8.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/pixi.js": "^4.8.0",

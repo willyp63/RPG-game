@@ -1,41 +1,51 @@
 import UIEntity from "../../engine/pixi/ui-entity";
 import Vector from "../../engine/core/vector";
-import { Sprite } from "pixi.js";
+import { Sprite, RenderTexture } from "pixi.js";
 import Item from "../items/item";
 
 export type DragCallback = (inventoryItem: InventoryItem) => void;
 
-const SIZE = new Vector(12, 12);
-const MARGIN = 2;
+const SIZE = new Vector(16, 16);
+const PADDING = new Vector(3, 3);
+const INNER_SIZE = SIZE.minus(PADDING.times(2));
 
 export default class InventoryItem extends UIEntity {
 
-  public inventoryIndex = 0;
+  static get size() { return SIZE; }
 
-  private offset: Vector;
+  get id() { return this._id; }
+
   private data: any;
   private dragging = false;
   private onPickUpFunc?: DragCallback;
   private onPutDownFunc?: DragCallback;
 
-  constructor(position: Vector, public item: Item) {
+  constructor(position: Vector, public item: Item, private _id: string) {
     super(
-      new Sprite(item.texture),
+      () => {
+        const container = new Sprite(RenderTexture.create(SIZE.x, SIZE.y));
+        const sprite = new Sprite(item.texture);
+
+        const scale = sprite.width > sprite.height
+          ? INNER_SIZE.x / sprite.width
+          : INNER_SIZE.y / sprite.height;
+
+        let position = sprite.width > sprite.height
+          ? new Vector(0, (INNER_SIZE.y - sprite.height * scale) / 2)
+          : new Vector((INNER_SIZE.x - sprite.width * scale) / 2, 0);
+        position = position.plus(PADDING);
+
+        sprite.width *= scale;
+        sprite.height *= scale;
+        sprite.x += position.x;
+        sprite.y += position.y;
+
+        container.addChild(sprite);
+
+        return container;
+      },
       position,
     );
-
-    const scale = this.sprite.width > this.sprite.height
-      ? SIZE.x / this.sprite.width
-      : SIZE.y / this.sprite.height;
-    this.offset = this.sprite.width > this.sprite.height
-      ? new Vector(0, (SIZE.y - this.sprite.height * scale) / 2)
-      : new Vector((SIZE.x - this.sprite.width * scale) / 2, 0);
-    this.offset = this.offset.plus(new Vector(MARGIN, MARGIN));
-
-    this.sprite.width *= scale;
-    this.sprite.height *= scale;
-    this.sprite.x += this.offset.x;
-    this.sprite.y += this.offset.y;
 
     this.sprite.interactive = true;
     this.sprite
@@ -52,11 +62,6 @@ export default class InventoryItem extends UIEntity {
       .on('touchmove', this.onDragMove.bind(this));
   }
 
-  set position(position: Vector) {
-    this._sprite.x = position.x + this.offset.x;
-    this._sprite.y = position.y + this.offset.y;
-  }
-
   onPickUp(func: DragCallback) {
     this.onPickUpFunc = func;
   }
@@ -67,18 +72,20 @@ export default class InventoryItem extends UIEntity {
 
   private onDragStart(e: any) {
     this.data = e.data;
-    this.sprite.alpha = 0.5;
+    this.sprite.alpha = 0.75;
     this.dragging = true;
 
     if (this.onPickUpFunc) this.onPickUpFunc(this);
   }
 
   private onDragEnd() {
+    if (this.dragging && this.onPutDownFunc) {
+      this.onPutDownFunc(this);
+    }
+
     this.sprite.alpha = 1;
     this.dragging = false;
     this.data = null;
-
-    if (this.onPutDownFunc) this.onPutDownFunc(this);
   }
 
   private onDragMove() {

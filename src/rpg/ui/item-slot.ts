@@ -25,4 +25,10 @@ export default class ItemSlot extends UIEntity {
       position,
     );
   }
+
+  containsPoint(point: Vector) {
+    const positionDiff = point.minus(this.position);
+    return (positionDiff.x >= 0 && positionDiff.x <= SIZE.x) && 
+      (positionDiff.y >= 0 && positionDiff.x <= SIZE.y);
+  }
 }
