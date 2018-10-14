@@ -27,6 +27,11 @@ import Helm from "./items/helms/helm";
 import ChestPiece from "./items/chest-pieces/chest-piece";
 import LegGuards from "./items/leg-guards/leg-guards";
 import Weapon from "./items/weapons/weapon";
+import BlessedTwig from "./items/weapons/blessed-twig";
+import GreatSword from "./items/weapons/great-sword";
+import RobinHoodHat from "./items/helms/robin-hood-hat";
+import BouncyBlueStaff from "./items/weapons/bouncy-blue-staff";
+import BouncyBlueBall from "./actors/hero/attacks/bouncy-blue-ball";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -49,6 +54,7 @@ export default class RPGSystem extends PIXISystem {
       OscillatingWall.assets,
       Item.assets,
       FireBall.assets,
+      BouncyBlueBall.assets,
     );
   }
   get foregroundAsset() { return this._foregroundAsset; }
@@ -194,13 +200,19 @@ export default class RPGSystem extends PIXISystem {
 
             // add items to inventory
             this.inventory.addItem(new RubyStaff());
+            this.inventory.addItem(new BouncyBlueStaff());
             this.inventory.addItem(new IronSword());
+            this.inventory.addItem(new IronSword());
+            this.inventory.addItem(new BlessedTwig());
+            this.inventory.addItem(new GreatSword());
+            this.inventory.addItem(new GreatSword());
             this.inventory.addItem(new IronLegGuards());
             this.inventory.addItem(new IronChestPiece());
             this.inventory.addItem(new VikingHelm());
             this.inventory.addItem(new WizardLegGuards());
             this.inventory.addItem(new WizardChestPiece());
             this.inventory.addItem(new WizardHood()); 
+            this.inventory.addItem(new RobinHoodHat()); 
 
             // event listeners
             this.inventoryButton.onClick(() => {
