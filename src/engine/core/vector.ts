@@ -8,6 +8,7 @@ export default class Vector {
   ) { }
 
   get length() { return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2)); }
+  get angle() { return Math.atan2(this.y, this.x); }
 
   plus(otherVector: Vector) {
     return new Vector(this.x + otherVector.x, this.y + otherVector.y);

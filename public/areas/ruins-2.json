@@ -71,6 +71,10 @@
     {
       "class": "Skeleton",
       "position": [900, 200]
+    },
+    {
+      "class": "Whelp",
+      "position": [550, 140]
     }
   ]
 }

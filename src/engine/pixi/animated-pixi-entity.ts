@@ -1,6 +1,7 @@
 import PIXIEntity from './pixi-entity';
 import Vector from '../core/vector';
 import { extras, Texture } from 'pixi.js';
+import Entity from '../core/entity';
 
 const DEFAULT_ANIMATION_SPEED = 0.1;
 
@@ -84,6 +85,11 @@ export default abstract class AnimatedPIXIEntity extends PIXIEntity {
     }
 
     this._animation = animation;
+  }
+
+  isFacingOtherEntity(otherEntity: Entity) {
+    return (this.isFacingLeft && otherEntity.position.x < this.position.x) ||
+      (!this.isFacingLeft && otherEntity.position.x > this.position.x);
   }
 
 }

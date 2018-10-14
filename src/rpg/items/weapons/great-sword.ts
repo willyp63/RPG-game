@@ -6,7 +6,7 @@ import InstantAttack from '../../../engine/entities/instant-attack';
 
 const ATTACK_POSITION = new Vector(32, 2);
 const ATTACK_SIZE = 60;
-const ATTACK_FORCE = new Vector(10, -5);
+const ATTACK_FORCE = new Vector(10, 10);
 const ATTACK_DAMAGE = 40;
 
 export default class GreatSword extends Weapon {

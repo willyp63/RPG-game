@@ -29,6 +29,7 @@ import RobinHoodHat from "./items/helms/robin-hood-hat";
 import BouncyBlueStaff from "./items/weapons/bouncy-blue-staff";
 import BouncyBlueBall from "./actors/hero/attacks/bouncy-blue-ball";
 import LoadingScreen from "./ui/loading-screen";
+import Whelp from "./actors/enemies/whelp/whelp";
 
 const SCREEN_WIDTH = 512;
 const SCREEN_HEIGHT = 288;
@@ -69,6 +70,7 @@ export default class RPGSystem extends PIXISystem {
       Item.assets,
       FireBall.assets,
       BouncyBlueBall.assets,
+      Whelp.assets,
     );
   }
   get foregroundAsset() { return this._foregroundAsset; }
@@ -228,6 +230,12 @@ export default class RPGSystem extends PIXISystem {
           new Skeleton(
             new Vector(entity.position[0], entity.position[1]),
             entity.dead,
+          )
+        );
+      } else if (entity.class === 'Whelp') {
+        this.addEntity(
+          new Whelp(
+            new Vector(entity.position[0], entity.position[1]),
           )
         );
       } else if (entity.class === 'Ogre') {

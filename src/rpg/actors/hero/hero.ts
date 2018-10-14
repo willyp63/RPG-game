@@ -28,7 +28,7 @@ const MID_AIR_RUN_SCALE = 0.333;
 const PUNCH_ENERGY_COST = 10;
 const PUNCH_POSITION = new Vector(12, 2);
 const PUNCH_SIZE = 8;
-const PUNCH_FORCE = new Vector(2, -1);
+const PUNCH_FORCE = new Vector(2, 0);
 const PUNCH_DAMAGE = 5;
 
 const CHEST_POSITION = new Vector(0, -2);

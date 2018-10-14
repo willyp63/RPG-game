@@ -8,7 +8,7 @@ const TEXTURES_FILE = 'public/imgs/fireball.png';
 
 const SIZE = new Vector(16, 16);
 const DAMAGE = 15;
-const FORCE = new Vector(4, -2);
+const FORCE = new Vector(4, 0);
 const PROJECTILE_FORCE = new Vector(8, 0);
 
 export default class FireBall extends PIXIEntity {

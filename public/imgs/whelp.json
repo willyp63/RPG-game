@@ -1,0 +1,31 @@
+{"frames": {
+
+"whelp__flying-1.png":
+{
+	"frame": {"x":0,"y":0,"w":46,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":48},
+	"sourceSize": {"w":46,"h":48}
+},
+"whelp__flying-2.png":
+{
+	"frame": {"x":0,"y":50,"w":46,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":48},
+	"sourceSize": {"w":46,"h":48}
+}},
+"animations": {
+	"whelp__flying": ["whelp__flying-1.png","whelp__flying-2.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "whelp.png",
+	"format": "RGBA8888",
+	"size": {"w":46,"h":98},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:607a67940511a7bfb18787606882f578:490f3282e93383cf098c37b11d1e2e78:bc61ba6e59f880c0f00f8a15ce984898$"
+}
+}

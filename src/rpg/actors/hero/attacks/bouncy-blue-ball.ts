@@ -8,7 +8,7 @@ const TEXTURES_FILE = 'public/imgs/bouncy-blue-ball.png';
 
 const SIZE = new Vector(10, 10);
 const DAMAGE = 15;
-const FORCE = new Vector(4, -2);
+const FORCE = new Vector(4, 0);
 const PROJECTILE_FORCE = new Vector(6, 3);
 const MAX_WALLS_HIT = 6;
 
