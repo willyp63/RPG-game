@@ -37,20 +37,13 @@ const MESSAGE_BOX_HEIGHT = 64;
 const STATUS_BAR_HEIGHT = 16;
 
 const STARTING_ITEMS = [
-  new RubyStaff(),
   new BouncyBlueStaff(),
-  new IronSword(),
-  new IronSword(),
   new BlessedTwig(),
   new GreatSword(),
-  new GreatSword(),
-  new IronLegGuards(),
-  new IronChestPiece(),
-  new VikingHelm(),
   new WizardLegGuards(),
   new WizardChestPiece(),
+  new VikingHelm(),
   new WizardHood(),
-  new RobinHoodHat(),
 ];
 
 export default class RPGSystem extends PIXISystem {
@@ -80,11 +73,11 @@ export default class RPGSystem extends PIXISystem {
   // hero
   private hero = new Hero(
     Vector.zero,
-    undefined,
-    undefined,
+    new RobinHoodHat(),
+    new IronChestPiece(),
     new IronLegGuards(),
     new IronSword(),
-    undefined,
+    new RubyStaff(),
   );
 
   // UI

@@ -33,17 +33,12 @@
     {
       "class": "SignPost",
       "position": [170, 189],
-      "message": "Press `z` to attack with your main hand weapon.\nPress `x` to attack with your off hand weapon."
+      "message": "All attacks consume energy.\nMagic attacks may also consume mana."
     },
     {
       "class": "SignPost",
       "position": [238, 189],
-      "message": "All attacks consume/require energy.\nMagic attacks may also consume/require mana."
-    },
-    {
-      "class": "SignPost",
-      "position": [1160, 210],
-      "message": "Keep an eye on your energy. It's easy to deplete,\nbut will regenerate quickly when you're not using it."
+      "message": "Try rolling to get behind enemies."
     },
     {
       "class": "Door",
@@ -71,10 +66,6 @@
     {
       "class": "Skeleton",
       "position": [900, 200]
-    },
-    {
-      "class": "Whelp",
-      "position": [550, 140]
     }
   ]
 }

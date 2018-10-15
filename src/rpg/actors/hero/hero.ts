@@ -77,6 +77,12 @@ export default class Hero extends SkeletalAnimatedPIXIEntity {
       : this.position;
   }
 
+  get helm() { return this._helm; }
+  get chestPiece() { return this._chestPiece; }
+  get legGuards() { return this._legGuards; }
+  get mainHandWeapon() { return this._mainHandWeapon; }
+  get offHandWeapon() { return this._offHandWeapon; }
+
   static get assets() { return [TEXTURES_FILE]; }
   private static get headTexture() { return TextureHelper.get(TEXTURES_FILE, "man__head.png"); }
   private static get chestTexture() { return TextureHelper.get(TEXTURES_FILE, "man__chest.png"); }

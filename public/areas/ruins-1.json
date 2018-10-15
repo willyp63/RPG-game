@@ -51,12 +51,17 @@
     },
     {
       "class": "SignPost",
-      "position": [436, 240],
-      "message": "Press `c` to roll. Rolling can be useful for a lot of things,\nbut requires/consumes a bit of energy."
+      "position": [320, 240],
+      "message": "Press `z` to attack with your main hand weapon.\nPress `x` to attack with your off hand weapon."
     },
     {
       "class": "SignPost",
-      "position": [504, 240],
+      "position": [400, 240],
+      "message": "Press `c` to roll."
+    },
+    {
+      "class": "SignPost",
+      "position": [480, 240],
       "message": "When next to a door, press the up arrow key to enter."
     },
     {
