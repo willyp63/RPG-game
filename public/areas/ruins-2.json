@@ -33,12 +33,7 @@
     {
       "class": "SignPost",
       "position": [170, 189],
-      "message": "All attacks consume energy.\nMagic attacks may also consume mana."
-    },
-    {
-      "class": "SignPost",
-      "position": [238, 189],
-      "message": "Try rolling to get behind enemies."
+      "message": "Click on the button in the lower right to see your inventory\nand equip new items."
     },
     {
       "class": "Door",
