@@ -206,10 +206,10 @@ exports.default = HPStaticImageActor;
 
 /***/ }),
 
-/***/ "./src/engine/actors/wall.ts":
-/*!***********************************!*\
-  !*** ./src/engine/actors/wall.ts ***!
-  \***********************************/
+/***/ "./src/engine/actors/static-shape-actor.ts":
+/*!*************************************************!*\
+  !*** ./src/engine/actors/static-shape-actor.ts ***!
+  \*************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -231,77 +231,49 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
-var HPWall = /** @class */ (function (_super) {
-    __extends(HPWall, _super);
-    function HPWall(position, _size) {
-        var _this = 
-        // when creating a wall you specify the upper-left point, not the center
-        _super.call(this, position.plus(_size.times(0.5))) || this;
-        _this._size = _size;
-        // paint a red box
+var HPStaticShapeActor = /** @class */ (function (_super) {
+    __extends(HPStaticShapeActor, _super);
+    function HPStaticShapeActor(position) {
+        var _this = _super.call(this, position) || this;
         _this._sprite = new pixi_js_1.Graphics();
-        _this._sprite.beginFill(0xFF0000);
-        _this._sprite.drawRect(_size.x / -2, _size.y / -2, _size.x, _size.y);
-        _this._sprite.endFill();
         return _this;
     }
-    Object.defineProperty(HPWall, "type", {
-        get: function () { return 'Wall'; },
+    Object.defineProperty(HPStaticShapeActor.prototype, "cornerRadius", {
+        /* override */
+        get: function () { return 0; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(HPWall.prototype, "sprite", {
+    ;
+    Object.defineProperty(HPStaticShapeActor.prototype, "borderWidth", {
+        get: function () { return 0; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(HPStaticShapeActor.prototype, "borderColor", {
+        get: function () { return 0x000000; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(HPStaticShapeActor.prototype, "sprite", {
         get: function () { return this._sprite; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(HPWall.prototype, "size", {
-        get: function () { return this._size; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPWall.prototype, "isWall", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    return HPWall;
+    HPStaticShapeActor.prototype.init = function () {
+        if (this.borderWidth > 0)
+            this._sprite.lineStyle(this.borderWidth, this.borderColor);
+        this._sprite.beginFill(this.color);
+        this.cornerRadius > 0
+            ? this._sprite.drawRoundedRect(this.size.x / -2, this.size.y / -2, this.size.x, this.size.y, this.cornerRadius)
+            : this._sprite.drawRect(this.size.x / -2, this.size.y / -2, this.size.x, this.size.y);
+        this._sprite.endFill();
+    };
+    return HPStaticShapeActor;
 }(actor_1.default));
-exports.default = HPWall;
-
-
-/***/ }),
-
-/***/ "./src/engine/core/actor-factory.ts":
-/*!******************************************!*\
-  !*** ./src/engine/core/actor-factory.ts ***!
-  \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var wall_1 = __webpack_require__(/*! ../actors/wall */ "./src/engine/actors/wall.ts");
-var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
-var HPActorFactory = /** @class */ (function () {
-    function HPActorFactory() {
-    }
-    HPActorFactory.prototype.createFromData = function (data) {
-        var actor = this._createFromData(data);
-        if (actor === undefined)
-            throw new Error("Failed to return actor for data: " + JSON.stringify(data));
-        return actor;
-    };
-    HPActorFactory.prototype._createFromData = function (data) {
-        if (data.type === wall_1.default.type) {
-            return new wall_1.default(vector_1.default.fromData(data.position), vector_1.default.fromData(data.props['size']));
-        }
-        return undefined;
-    };
-    return HPActorFactory;
-}());
-exports.default = HPActorFactory;
+exports.default = HPStaticShapeActor;
 
 
 /***/ }),
@@ -513,8 +485,11 @@ var HPApp = /** @class */ (function () {
         var _this = this;
         this.stage.size = vector_1.default.fromData(areaData.size);
         this.stage.clearActors();
-        areaData.actors.forEach(function (actorData) {
-            _this.stage.addActor(_this.actorFactory.createFromData(actorData));
+        areaData.actors.forEach(function (data) {
+            var actor = _this.actorFactory(data);
+            if (actor === undefined)
+                throw new Error("Actor factory failed to return actor for data: " + JSON.stringify(data));
+            _this.stage.addActor(actor);
         });
     };
     HPApp.prototype.addHero = function () {
@@ -1035,10 +1010,33 @@ exports.default = (function (url) {
 
 /***/ }),
 
-/***/ "./src/game/main.ts":
-/*!**************************!*\
-  !*** ./src/game/main.ts ***!
-  \**************************/
+/***/ "./src/game/actor-factory.ts":
+/*!***********************************!*\
+  !*** ./src/game/actor-factory.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var wall_1 = __webpack_require__(/*! ./actors/wall */ "./src/game/actors/wall.ts");
+var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var TGActorFactory = function (data) {
+    if (data.type === wall_1.default.type) {
+        return new wall_1.default(vector_1.default.fromData(data.position), vector_1.default.fromData(data.props['size']));
+    }
+    return undefined;
+};
+exports.default = TGActorFactory;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero.ts":
+/*!*********************************!*\
+  !*** ./src/game/actors/hero.ts ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1058,12 +1056,10 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
-var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var actor_factory_1 = __webpack_require__(/*! ../engine/core/actor-factory */ "./src/engine/core/actor-factory.ts");
-var static_image_actor_1 = __webpack_require__(/*! ../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
-var key_listener_1 = __webpack_require__(/*! ../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
-var direction_1 = __webpack_require__(/*! ../engine/physics/direction */ "./src/engine/physics/direction.ts");
+var static_image_actor_1 = __webpack_require__(/*! ../../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
+var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var key_listener_1 = __webpack_require__(/*! ../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
+var direction_1 = __webpack_require__(/*! ../../engine/physics/direction */ "./src/engine/physics/direction.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
@@ -1151,21 +1147,102 @@ var TGHero = /** @class */ (function (_super) {
     };
     return TGHero;
 }(static_image_actor_1.default));
-var TGActorFactory = /** @class */ (function (_super) {
-    __extends(TGActorFactory, _super);
-    function TGActorFactory() {
-        return _super !== null && _super.apply(this, arguments) || this;
+exports.default = TGHero;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/wall.ts":
+/*!*********************************!*\
+  !*** ./src/game/actors/wall.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
     }
-    TGActorFactory.prototype._createFromData = function (data) {
-        return _super.prototype._createFromData.call(this, data) || this.__createFromData(data);
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
-    TGActorFactory.prototype.__createFromData = function (data) {
-        return undefined;
-    };
-    return TGActorFactory;
-}(actor_factory_1.default));
-var hero = new TGHero();
-var app = new app_1.default(new vector_1.default(825, 525), '#game-container', new TGActorFactory(), [hero.imageFile], 'public/areas/test-1.json', hero, new vector_1.default(200, 200), new vector_1.default(0, 1), 0.01);
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
+var TGWall = /** @class */ (function (_super) {
+    __extends(TGWall, _super);
+    function TGWall(position, _size) {
+        var _this = 
+        // when creating a wall you specify the upper-left point, not the center
+        _super.call(this, position.plus(_size.times(0.5))) || this;
+        _this._size = _size;
+        return _this;
+    }
+    Object.defineProperty(TGWall, "type", {
+        get: function () { return 'Wall'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "color", {
+        get: function () { return 0xAA0000; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "borderWidth", {
+        get: function () { return 2; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TGWall.prototype, "borderColor", {
+        get: function () { return 0xFF0000; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TGWall.prototype, "size", {
+        get: function () { return this._size; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isWall", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGWall;
+}(static_shape_actor_1.default));
+exports.default = TGWall;
+
+
+/***/ }),
+
+/***/ "./src/game/main.ts":
+/*!**************************!*\
+  !*** ./src/game/main.ts ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
+var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var hero_1 = __webpack_require__(/*! ./actors/hero */ "./src/game/actors/hero.ts");
+var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
+var hero = new hero_1.default();
+var assets = [
+    hero.imageFile,
+];
+var app = new app_1.default(new vector_1.default(825, 525), '#game-container', actor_factory_1.default, assets, 'public/areas/test-1.json', hero, new vector_1.default(200, 200), new vector_1.default(0, 1), 0.01);
 app.start();
 
 
