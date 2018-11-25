@@ -277,12 +277,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var wall_contact_map_1 = __webpack_require__(/*! ../physics/wall-contact-map */ "./src/engine/physics/wall-contact-map.ts");
 var actor_type_1 = __webpack_require__(/*! ./actor-type */ "./src/engine/core/actor-type.ts");
+var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
 var HPActor = /** @class */ (function () {
     function HPActor(position) {
         this.position = position;
         this.velocity = vector_1.default.Zero;
         this.acceleration = vector_1.default.Zero;
+        this.moveForce = vector_1.default.Zero;
+        this.facingDirection = direction_1.default.Right;
         this.wallContact = new wall_contact_map_1.default();
+        this.isOnGround = false;
         this.isDead = false;
         this.newBornActors = [];
     }
@@ -307,6 +311,11 @@ var HPActor = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "canWalkOnAir", {
         get: function () { return false; },
         enumerable: true,
         configurable: true
@@ -339,6 +348,9 @@ var HPActor = /** @class */ (function () {
     HPActor.prototype.onTick = function () {
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
+        this.isOnGround = this.wallContact.all([direction_1.default.Down]);
+        if (this.isOnGround || this.canWalkOnAir)
+            this.push(this.moveForce);
     };
     HPActor.prototype.beforeTick = function () {
         this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
@@ -346,12 +358,24 @@ var HPActor = /** @class */ (function () {
         this.acceleration = vector_1.default.Zero;
         this.wallContact = new wall_contact_map_1.default();
     };
+    HPActor.prototype.move = function (moveForce, faceMoveDirection) {
+        if (faceMoveDirection === void 0) { faceMoveDirection = true; }
+        this.moveForce = moveForce;
+        if (faceMoveDirection && moveForce.x !== 0) {
+            this.facingDirection = moveForce.x < 0 ? direction_1.default.Left : direction_1.default.Right;
+        }
+    };
     HPActor.prototype.push = function (force) {
         this.acceleration = this.acceleration.plus(force.times(1 / this.weight));
     };
     HPActor.prototype.kill = function () {
         this.isDead = true;
     };
+    Object.defineProperty(HPActor.prototype, "isFacingLeft", {
+        get: function () { return this.facingDirection === direction_1.default.Left; },
+        enumerable: true,
+        configurable: true
+    });
     return HPActor;
 }());
 exports.default = HPActor;
@@ -1189,7 +1213,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var key_listener_1 = __webpack_require__(/*! ../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
-var direction_1 = __webpack_require__(/*! ../../engine/physics/direction */ "./src/engine/physics/direction.ts");
 var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var fire_ball_1 = __webpack_require__(/*! ./fire-ball */ "./src/game/actors/fire-ball.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
@@ -1200,9 +1223,6 @@ var TGHero = /** @class */ (function (_super) {
         _this.keyListeners = [];
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
-        _this.runForce = vector_1.default.Zero;
-        _this.isOnGround = false;
-        _this.facingDirection = direction_1.default.Right;
         _this.keyListeners.push(new key_listener_1.default(37 /* left arrow */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
         _this.keyListeners.push(new key_listener_1.default(39 /* right arrow */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
         _this.keyListeners.push(new key_listener_1.default(38 /* up arrow */, function () { return _this.jump(); }));
@@ -1269,25 +1289,17 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    TGHero.prototype.onTick = function () {
-        _super.prototype.onTick.call(this);
-        this.isOnGround = this.wallContact.all([direction_1.default.Down]);
-        if (this.isOnGround)
-            this.push(this.runForce);
-    };
     TGHero.prototype.destroy = function () {
         this.keyListeners.forEach(function (listener) { return listener.destroy(); });
     };
     TGHero.prototype.runLeft = function () {
-        this.facingDirection = direction_1.default.Left;
-        this.runForce = TGHero.runForce.flipHorz();
+        this.move(TGHero.runForce.flipHorz());
     };
     TGHero.prototype.runRight = function () {
-        this.facingDirection = direction_1.default.Right;
-        this.runForce = TGHero.runForce;
+        this.move(TGHero.runForce);
     };
     TGHero.prototype.stopRunning = function () {
-        this.runForce = vector_1.default.Zero;
+        this.move(vector_1.default.Zero);
     };
     TGHero.prototype.onLeftDown = function () {
         this.leftKeyDown = true;
@@ -1306,13 +1318,12 @@ var TGHero = /** @class */ (function (_super) {
         this.leftKeyDown ? this.runLeft() : this.stopRunning();
     };
     TGHero.prototype.jump = function () {
-        if (!this.isOnGround)
-            return;
-        this.push(TGHero.jumpForce);
+        if (this.isOnGround)
+            this.push(TGHero.jumpForce);
     };
     TGHero.prototype.shootFireBall = function () {
         var fireBall = new fire_ball_1.default(this.position);
-        fireBall.push(TGHero.shootForce.flipHorz(this.facingDirection === direction_1.default.Left));
+        fireBall.push(TGHero.shootForce.flipHorz(this.isFacingLeft));
         this.newBornActors.push(fireBall);
     };
     return TGHero;
@@ -1417,18 +1428,13 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var direction_1 = __webpack_require__(/*! ../../engine/physics/direction */ "./src/engine/physics/direction.ts");
 var set_ticks_out_1 = __webpack_require__(/*! ../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var random_1 = __webpack_require__(/*! ../../engine/util/random */ "./src/engine/util/random.ts");
 var TGWanderingTarget = /** @class */ (function (_super) {
     __extends(TGWanderingTarget, _super);
     function TGWanderingTarget(position) {
-        var _this = _super.call(this, position) || this;
-        _this.wanderDirection = random_1.default.chance(0.5)
-            ? direction_1.default.Right
-            : direction_1.default.Left;
-        return _this;
+        return _super.call(this, position) || this;
     }
     Object.defineProperty(TGWanderingTarget, "type", {
         get: function () { return 'WanderingTarget'; },
@@ -1492,21 +1498,18 @@ var TGWanderingTarget = /** @class */ (function (_super) {
     });
     TGWanderingTarget.prototype.init = function () {
         _super.prototype.init.call(this);
+        this.move(TGWanderingTarget.wanderForce.flipHorz(random_1.default.chance(0.5)));
         this.changeDirection();
     };
     TGWanderingTarget.prototype.onTick = function () {
         _super.prototype.onTick.call(this);
-        var isOnGround = this.wallContact.all([direction_1.default.Down]);
-        if (isOnGround) {
-            this.push(TGWanderingTarget.wanderForce.flipHorz(this.wanderDirection === direction_1.default.Left));
-            if (random_1.default.chance(0.005)) {
-                this.push(TGWanderingTarget.jumpForce);
-            }
+        if (this.isOnGround && random_1.default.chance(0.005)) {
+            this.push(TGWanderingTarget.jumpForce);
         }
     };
     TGWanderingTarget.prototype.changeDirection = function () {
         var _this = this;
-        this.wanderDirection *= -1;
+        this.move(this.moveForce.flipHorz());
         set_ticks_out_1.default(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
     };
     return TGWanderingTarget;

@@ -1,6 +1,5 @@
 import HPVector from "../../engine/physics/vector";
 import HPKeyListener from "../../engine/interaction/key-listener";
-import HPDirection from "../../engine/physics/direction";
 import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
 import TGFireBall from "./fire-ball";
 import HPActorType from "../../engine/core/actor-type";
@@ -25,9 +24,6 @@ export default class TGHero extends HPStaticShapeActor {
   private keyListeners: Array<HPKeyListener> = [];
   private leftKeyDown = false;
   private rightKeyDown = false;
-  private runForce = HPVector.Zero;
-  private isOnGround = false;
-  private facingDirection = HPDirection.Right;
 
   constructor() {
     super(
@@ -53,30 +49,20 @@ export default class TGHero extends HPStaticShapeActor {
     ));
   }
 
-  onTick() {
-    super.onTick();
-
-    this.isOnGround = this.wallContact.all([HPDirection.Down]);
-
-    if (this.isOnGround) this.push(this.runForce);
-  }
-
   destroy() {
     this.keyListeners.forEach(listener => listener.destroy());
   }
 
   private runLeft() {
-    this.facingDirection = HPDirection.Left;
-    this.runForce = TGHero.runForce.flipHorz();
+    this.move(TGHero.runForce.flipHorz());
   }
 
   private runRight() {
-    this.facingDirection = HPDirection.Right;
-    this.runForce = TGHero.runForce;
+    this.move(TGHero.runForce);
   }
 
   private stopRunning() {
-    this.runForce = HPVector.Zero;
+    this.move(HPVector.Zero);
   }
 
   private onLeftDown() {
@@ -100,13 +86,12 @@ export default class TGHero extends HPStaticShapeActor {
   }
 
   private jump() {
-    if (!this.isOnGround) return;
-    this.push(TGHero.jumpForce)
+    if (this.isOnGround) this.push(TGHero.jumpForce);
   }
 
   private shootFireBall() {
     const fireBall = new TGFireBall(this.position);
-    fireBall.push(TGHero.shootForce.flipHorz(this.facingDirection === HPDirection.Left));
+    fireBall.push(TGHero.shootForce.flipHorz(this.isFacingLeft));
     this.newBornActors.push(fireBall);
   }
   

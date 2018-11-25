@@ -1,6 +1,5 @@
 import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
 import HPVector from "../../engine/physics/vector";
-import HPDirection from "../../engine/physics/direction";
 import setTicksOut from "../../engine/util/set-ticks-out";
 import HPActorType from "../../engine/core/actor-type";
 import HPRandom from "../../engine/util/random";
@@ -23,10 +22,6 @@ export default class TGWanderingTarget extends HPStaticShapeActor {
   get isWallBound() { return true; }
   get isAirFrictionBound() { return true; }
 
-  private wanderDirection = HPRandom.chance(0.5)
-    ? HPDirection.Right
-    : HPDirection.Left;
-
   constructor(
     position: HPVector,
   ) {
@@ -36,25 +31,20 @@ export default class TGWanderingTarget extends HPStaticShapeActor {
   init() {
     super.init();
 
+    this.move(TGWanderingTarget.wanderForce.flipHorz(HPRandom.chance(0.5)));
     this.changeDirection();
   }
 
   onTick() {
     super.onTick();
 
-    const isOnGround = this.wallContact.all([HPDirection.Down]);
-
-    if (isOnGround) {
-      this.push(TGWanderingTarget.wanderForce.flipHorz(this.wanderDirection === HPDirection.Left));
-
-      if (HPRandom.chance(0.005)) {
-        this.push(TGWanderingTarget.jumpForce);
-      }
+    if (this.isOnGround && HPRandom.chance(0.005)) {
+      this.push(TGWanderingTarget.jumpForce);
     }
   }
 
   private changeDirection() {
-    this.wanderDirection *= -1;
+    this.move(this.moveForce.flipHorz());
     setTicksOut(() => this.changeDirection(), HPRandom.int(80, 160));
   }
 
