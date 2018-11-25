@@ -10,16 +10,8 @@ export default class TGHero extends HPStaticShapeActor {
   static get jumpForce() { return new HPVector(0, -16); }
   static get shootForce() { return new HPVector(16, 0); }
 
-  get color() { return 0x0000FF; }
-  get borderWidth() { return 2; }
-  get borderColor() { return 0x000000; }
-  get cornerRadius() { return 4; }
-
   get type() { return HPActorType.Friendly; }
   get size() { return new HPVector(40, 80); }
-  get isGravityBound() { return true; }
-  get isWallBound() { return true; }
-  get isAirFrictionBound() { return true; }
 
   private keyListeners: Array<HPKeyListener> = [];
   private leftKeyDown = false;
@@ -28,6 +20,12 @@ export default class TGHero extends HPStaticShapeActor {
   constructor() {
     super(
       HPVector.Zero,
+      {
+        color: 0x0000FF,
+        borderWidth: 2,
+        borderColor: 0x000000,
+        cornerRadius: 4,
+      },
     );
 
     this.keyListeners.push(new HPKeyListener(37 /* left arrow */,

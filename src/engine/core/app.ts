@@ -85,7 +85,7 @@ export default class HPApp {
 
     this.stage.clearActors();
     areaData.actors.forEach(data => {
-      const actor = this.actorFactory(data);
+      const actor = this.actorFactory[data.id](data);
       if (actor === undefined) throw new Error(`Actor factory failed to return actor for data: ${JSON.stringify(data)}`);
       this.stage.addActor(actor);
     });

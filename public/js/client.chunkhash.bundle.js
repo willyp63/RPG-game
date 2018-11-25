@@ -180,57 +180,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var defaultOptions = {
+    color: 0xFFFFFF,
+    borderWidth: 0,
+    borderColor: 0x000000,
+    cornerRadius: 0,
+    isRound: false,
+};
 var HPStaticShapeActor = /** @class */ (function (_super) {
     __extends(HPStaticShapeActor, _super);
-    function HPStaticShapeActor(position) {
+    function HPStaticShapeActor(position, _options) {
         var _this = _super.call(this, position) || this;
+        _this.options = Object.assign({}, defaultOptions, _options);
         _this._sprite = new pixi_js_1.Graphics();
         return _this;
     }
-    Object.defineProperty(HPStaticShapeActor.prototype, "borderWidth", {
-        /* override */
-        get: function () { return 0; },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(HPStaticShapeActor.prototype, "borderColor", {
-        get: function () { return 0x000000; },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(HPStaticShapeActor.prototype, "cornerRadius", {
-        get: function () { return 0; },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(HPStaticShapeActor.prototype, "isRound", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
-    ;
     Object.defineProperty(HPStaticShapeActor.prototype, "sprite", {
         get: function () { return this._sprite; },
         enumerable: true,
         configurable: true
     });
     HPStaticShapeActor.prototype.init = function () {
-        this._sprite.beginFill(this.color);
+        this._sprite.beginFill(this.options.color);
         var adjustedSize = this.size;
-        if (this.borderWidth > 0) {
-            this._sprite.lineStyle(this.borderWidth, this.borderColor);
-            var borderSize = new vector_1.default(this.borderWidth, this.borderWidth);
+        if (this.options.borderWidth > 0) {
+            this._sprite.lineStyle(this.options.borderWidth, this.options.borderColor);
+            var borderSize = new vector_1.default(this.options.borderWidth, this.options.borderWidth);
             adjustedSize = this.size.minus(borderSize);
         }
-        if (this.isRound) {
+        if (this.options.isRound) {
             this._sprite.drawEllipse(0, 0, adjustedSize.x / 2, adjustedSize.y / 2);
         }
         else {
-            this.cornerRadius > 0
-                ? this._sprite.drawRoundedRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y, this.cornerRadius)
+            this.options.cornerRadius > 0
+                ? this._sprite.drawRoundedRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y, this.options.cornerRadius)
                 : this._sprite.drawRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y);
         }
         this._sprite.endFill();
@@ -290,6 +273,12 @@ var HPActor = /** @class */ (function () {
         this.isDead = false;
         this.newBornActors = [];
     }
+    Object.defineProperty(HPActor, "id", {
+        /* @override */
+        get: function () { return ''; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(HPActor.prototype, "type", {
         get: function () { return actor_type_1.default.Nuetral; },
         enumerable: true,
@@ -301,17 +290,17 @@ var HPActor = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "isWallBound", {
-        get: function () { return false; },
+        get: function () { return true; },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "isGravityBound", {
-        get: function () { return false; },
+        get: function () { return true; },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "isAirFrictionBound", {
-        get: function () { return false; },
+        get: function () { return true; },
         enumerable: true,
         configurable: true
     });
@@ -502,7 +491,7 @@ var HPApp = /** @class */ (function () {
         this.stage.size = vector_1.default.fromData(areaData.size);
         this.stage.clearActors();
         areaData.actors.forEach(function (data) {
-            var actor = _this.actorFactory(data);
+            var actor = _this.actorFactory[data.id](data);
             if (actor === undefined)
                 throw new Error("Actor factory failed to return actor for data: " + JSON.stringify(data));
             _this.stage.addActor(actor);
@@ -1097,18 +1086,18 @@ exports.clearTicksOut = function (onTick) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
 var wall_1 = __webpack_require__(/*! ./actors/wall */ "./src/game/actors/wall.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var wandering_target_1 = __webpack_require__(/*! ./actors/wandering-target */ "./src/game/actors/wandering-target.ts");
-var TGActorFactory = function (data) {
-    if (data.type === wall_1.default.type) {
+var TGActorFactory = (_a = {},
+    _a[wall_1.default.id] = function (data) {
         return new wall_1.default(vector_1.default.fromData(data.position), vector_1.default.fromData(data.props['size']));
-    }
-    else if (data.type === wandering_target_1.default.type) {
+    },
+    _a[wandering_target_1.default.id] = function (data) {
         return new wandering_target_1.default(vector_1.default.fromData(data.position));
-    }
-    return undefined;
-};
+    },
+    _a);
 exports.default = TGActorFactory;
 
 
@@ -1143,30 +1132,19 @@ var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./sr
 var TGFireBall = /** @class */ (function (_super) {
     __extends(TGFireBall, _super);
     function TGFireBall(position) {
-        return _super.call(this, position) || this;
+        return _super.call(this, position, {
+            color: 0xFF7700,
+            borderWidth: 2,
+            borderColor: 0x000000,
+        }) || this;
     }
-    Object.defineProperty(TGFireBall.prototype, "color", {
-        get: function () { return 0xFF7700; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGFireBall.prototype, "borderWidth", {
-        get: function () { return 2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGFireBall.prototype, "borderColor", {
-        get: function () { return 0x000000; },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(TGFireBall.prototype, "size", {
         get: function () { return new vector_1.default(20, 20); },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "isWallBound", {
-        get: function () { return true; },
+    Object.defineProperty(TGFireBall.prototype, "isGravityBound", {
+        get: function () { return false; },
         enumerable: true,
         configurable: true
     });
@@ -1219,7 +1197,12 @@ var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./sr
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
-        var _this = _super.call(this, vector_1.default.Zero) || this;
+        var _this = _super.call(this, vector_1.default.Zero, {
+            color: 0x0000FF,
+            borderWidth: 2,
+            borderColor: 0x000000,
+            cornerRadius: 4,
+        }) || this;
         _this.keyListeners = [];
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
@@ -1244,26 +1227,6 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGHero.prototype, "color", {
-        get: function () { return 0x0000FF; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "borderWidth", {
-        get: function () { return 2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "borderColor", {
-        get: function () { return 0x000000; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "cornerRadius", {
-        get: function () { return 4; },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(TGHero.prototype, "type", {
         get: function () { return actor_type_1.default.Friendly; },
         enumerable: true,
@@ -1271,21 +1234,6 @@ var TGHero = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGHero.prototype, "size", {
         get: function () { return new vector_1.default(40, 80); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "isGravityBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "isWallBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "isAirFrictionBound", {
-        get: function () { return true; },
         enumerable: true,
         configurable: true
     });
@@ -1360,29 +1308,17 @@ var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-sh
 var TGWall = /** @class */ (function (_super) {
     __extends(TGWall, _super);
     function TGWall(position, _size) {
-        var _this = 
-        // when creating a wall you specify the upper-left point, not the center
-        _super.call(this, position.plus(_size.times(0.5))) || this;
+        var _this = _super.call(this, position.plus(_size.times(0.5)), // when creating a wall you specify the upper-left point, not the center
+        {
+            color: 0x333333,
+            borderWidth: 2,
+            borderColor: 0x757575,
+        }) || this;
         _this._size = _size;
         return _this;
     }
-    Object.defineProperty(TGWall, "type", {
+    Object.defineProperty(TGWall, "id", {
         get: function () { return 'Wall'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "color", {
-        get: function () { return 0x333333; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "borderWidth", {
-        get: function () { return 2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "borderColor", {
-        get: function () { return 0x757575; },
         enumerable: true,
         configurable: true
     });
@@ -1393,6 +1329,21 @@ var TGWall = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGWall.prototype, "isWall", {
         get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isWallBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isGravityBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
         enumerable: true,
         configurable: true
     });
@@ -1434,9 +1385,14 @@ var random_1 = __webpack_require__(/*! ../../engine/util/random */ "./src/engine
 var TGWanderingTarget = /** @class */ (function (_super) {
     __extends(TGWanderingTarget, _super);
     function TGWanderingTarget(position) {
-        return _super.call(this, position) || this;
+        return _super.call(this, position, {
+            color: 0xFF0000,
+            borderWidth: 2,
+            borderColor: 0x000000,
+            cornerRadius: 4,
+        }) || this;
     }
-    Object.defineProperty(TGWanderingTarget, "type", {
+    Object.defineProperty(TGWanderingTarget, "id", {
         get: function () { return 'WanderingTarget'; },
         enumerable: true,
         configurable: true
@@ -1451,26 +1407,6 @@ var TGWanderingTarget = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGWanderingTarget.prototype, "color", {
-        get: function () { return 0xFF0000; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "borderWidth", {
-        get: function () { return 2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "borderColor", {
-        get: function () { return 0x000000; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "cornerRadius", {
-        get: function () { return 4; },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(TGWanderingTarget.prototype, "type", {
         get: function () { return actor_type_1.default.Unfriendly; },
         enumerable: true,
@@ -1478,21 +1414,6 @@ var TGWanderingTarget = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGWanderingTarget.prototype, "size", {
         get: function () { return new vector_1.default(30, 60); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "isGravityBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "isWallBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "isAirFrictionBound", {
-        get: function () { return true; },
         enumerable: true,
         configurable: true
     });

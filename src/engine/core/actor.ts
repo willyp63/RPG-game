@@ -9,13 +9,16 @@ import HPDirection from "../physics/direction";
 export default abstract class HPActor implements HPEntity {
 
   /* @override */
+  static get id() { return ''; }
+
+  /* @override */
   abstract get sprite(): Container;
   abstract get size(): HPVector;
   get type() { return HPActorType.Nuetral; }
   get isWall() { return false; }
-  get isWallBound() { return false; }
-  get isGravityBound() { return false; }
-  get isAirFrictionBound() { return false; }
+  get isWallBound() { return true; }
+  get isGravityBound() { return true; }
+  get isAirFrictionBound() { return true; }
   get canWalkOnAir() { return false; }
   get bounciness() { return 0.2; }
   get slipperiness() { return 0.2; }

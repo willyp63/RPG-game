@@ -1,7 +1,7 @@
 import HPVectorData from "./vector-data";
 
 export default interface HPActorData {
-  type: string;
+  id: string;
   position: HPVectorData;
   props: {[index:string]: any};
 }

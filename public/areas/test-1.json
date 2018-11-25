@@ -2,30 +2,30 @@
   "size": { "x": 2000, "y": 1000 },
   "actors": [
     {
-      "type": "Wall",
+      "id": "Wall",
       "position": { "x": 0, "y": 0 },
       "props": { "size": { "x": 32, "y": 1000 } }
     },
     {
-      "type": "Wall",
+      "id": "Wall",
       "position": { "x": 1968, "y": 0 },
       "props": { "size": { "x": 32, "y": 1000 } }
     },
     {
-      "type": "Wall",
+      "id": "Wall",
       "position": { "x": 32, "y": 968 },
       "props": { "size": { "x": 1936, "y": 32 } }
     },
     {
-      "type": "WanderingTarget",
+      "id": "WanderingTarget",
       "position": { "x": 500, "y": 800 }
     },
     {
-      "type": "WanderingTarget",
+      "id": "WanderingTarget",
       "position": { "x": 700, "y": 800 }
     },
     {
-      "type": "WanderingTarget",
+      "id": "WanderingTarget",
       "position": { "x": 900, "y": 800 }
     }
   ]

@@ -6,17 +6,20 @@ import HPActorType from "../../engine/core/actor-type";
 
 export default class TGFireBall extends HPStaticShapeActor {
 
-  get color() { return 0xFF7700; }
-  get borderWidth() { return 2; }
-  get borderColor() { return 0x000000; }
-
   get size() { return new HPVector(20, 20); }
-  get isWallBound() { return true; }
+  get isGravityBound() { return false; }
 
   constructor(
     position: HPVector,
   ) {
-    super(position);
+    super(
+      position,
+      {
+        color: 0xFF7700,
+        borderWidth: 2,
+        borderColor: 0x000000,
+      },
+    );
   }
 
   onCollision(actor: HPActor, collision: HPCollision) {

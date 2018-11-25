@@ -6,26 +6,26 @@ import HPRandom from "../../engine/util/random";
 
 export default class TGWanderingTarget extends HPStaticShapeActor {
 
-  static get type() { return 'WanderingTarget'; }
+  static get id() { return 'WanderingTarget'; }
 
   static get wanderForce() { return new HPVector(1, 0); }
   static get jumpForce() { return new HPVector(0, -12); }
 
-  get color() { return 0xFF0000; }
-  get borderWidth() { return 2; }
-  get borderColor() { return 0x000000; }
-  get cornerRadius() { return 4; }
-
   get type() { return HPActorType.Unfriendly; }
   get size() { return new HPVector(30, 60); }
-  get isGravityBound() { return true; }
-  get isWallBound() { return true; }
-  get isAirFrictionBound() { return true; }
 
   constructor(
     position: HPVector,
   ) {
-    super(position);
+    super(
+      position,
+      {
+        color: 0xFF0000,
+        borderWidth: 2,
+        borderColor: 0x000000,
+        cornerRadius: 4,
+      },
+    );
   }
 
   init() {
