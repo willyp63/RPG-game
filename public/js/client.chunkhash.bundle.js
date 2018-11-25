@@ -270,7 +270,7 @@ exports.HPActorDefaultOptions = {
     isWallBound: true,
     isGravityBound: true,
     isAirFrictionBound: true,
-    canWalkOnAir: false,
+    airWalkCoefficient: 0.066,
 };
 var HPActor = /** @class */ (function () {
     function HPActor(_position, _size, _sprite, _options) {
@@ -295,7 +295,7 @@ var HPActor = /** @class */ (function () {
         this.isWallBound = options.isWallBound;
         this.isGravityBound = options.isGravityBound;
         this.isAirFrictionBound = options.isAirFrictionBound;
-        this.canWalkOnAir = options.canWalkOnAir;
+        this.airWalkCoefficient = options.airWalkCoefficient;
     }
     /* @override */
     HPActor.prototype.init = function () { };
@@ -306,8 +306,7 @@ var HPActor = /** @class */ (function () {
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
         this.isOnGround = this.wallContact.all([direction_1.default.Down]);
-        if (this.isOnGround || this.canWalkOnAir)
-            this.push(this.moveForce);
+        this.push(this.isOnGround ? this.moveForce : this.moveForce.times(this.airWalkCoefficient));
     };
     HPActor.prototype.beforeTick = function () {
         this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
@@ -389,8 +388,20 @@ var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/i
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
+exports.HPAppDefaultOptions = {
+    viewSize: new vector_1.default(825, 525),
+    elementSelector: '',
+    actorFactory: {},
+    assets: [],
+    areaFile: '',
+    hero: undefined,
+    heroStart: vector_1.default.Zero,
+    gravityForce: new vector_1.default(0, 1),
+    airFrictionCoefficient: 0.033,
+};
 var HPApp = /** @class */ (function () {
-    function HPApp(options) {
+    function HPApp(_options) {
+        var options = Object.assign({}, exports.HPAppDefaultOptions, _options);
         this.actorFactory = options.actorFactory;
         this.assets = options.assets;
         this.areaFile = options.areaFile;
@@ -1380,15 +1391,11 @@ var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine
 var hero_1 = __webpack_require__(/*! ./actors/hero */ "./src/game/actors/hero.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var app = new app_1.default({
-    viewSize: new vector_1.default(825, 525),
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
-    assets: [],
     areaFile: 'public/areas/test-1.json',
     hero: new hero_1.default(),
     heroStart: new vector_1.default(200, 700),
-    gravityForce: new vector_1.default(0, 1),
-    airFrictionCoefficient: 0.01,
 });
 app.start();
 

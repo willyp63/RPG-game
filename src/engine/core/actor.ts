@@ -17,7 +17,7 @@ export interface HPActorOptions {
   isWallBound: boolean;
   isGravityBound: boolean;
   isAirFrictionBound: boolean;
-  canWalkOnAir: boolean;
+  airWalkCoefficient: number;
 }
 
 export interface HPActorArgs {
@@ -30,7 +30,7 @@ export interface HPActorArgs {
   isWallBound?: boolean;
   isGravityBound?: boolean;
   isAirFrictionBound?: boolean;
-  canWalkOnAir?: boolean;
+  airWalkCoefficient?: number;
 }
 
 export const HPActorDefaultOptions: HPActorOptions = {
@@ -43,7 +43,7 @@ export const HPActorDefaultOptions: HPActorOptions = {
   isWallBound: true,
   isGravityBound: true,
   isAirFrictionBound: true,
-  canWalkOnAir: false,
+  airWalkCoefficient: 0.066,
 };
 
 export default abstract class HPActor implements HPEntity, HPDestroyable {
@@ -74,7 +74,7 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   isWallBound: boolean;
   isGravityBound: boolean;
   isAirFrictionBound: boolean;
-  canWalkOnAir: boolean;
+  airWalkCoefficient: number;
 
   constructor(
     _position: HPVector,
@@ -96,7 +96,7 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
     this.isWallBound = options.isWallBound;
     this.isGravityBound = options.isGravityBound;
     this.isAirFrictionBound = options.isAirFrictionBound;
-    this.canWalkOnAir = options.canWalkOnAir;
+    this.airWalkCoefficient = options.airWalkCoefficient;
   }
 
   /* @override */
@@ -110,7 +110,7 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
     this.sprite.y = this.position.y;
 
     this.isOnGround = this.wallContact.all([HPDirection.Down]);
-    if (this.isOnGround || this.canWalkOnAir) this.push(this.moveForce);
+    this.push(this.isOnGround ? this.moveForce : this.moveForce.times(this.airWalkCoefficient));
   }
 
   beforeTick() {

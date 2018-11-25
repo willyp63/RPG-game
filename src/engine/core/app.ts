@@ -12,10 +12,34 @@ export interface HPAppOptions {
   actorFactory: HPActorFactory,
   assets: Array<string>,
   areaFile: string,
-  hero: HPActor,
+  hero: HPActor | undefined,
   heroStart: HPVector,
   gravityForce: HPVector,
   airFrictionCoefficient: number,
+}
+
+export interface HPAppArgs {
+  viewSize?: HPVector,
+  elementSelector: string,
+  actorFactory: HPActorFactory,
+  assets?: Array<string>,
+  areaFile: string,
+  hero: HPActor,
+  heroStart?: HPVector,
+  gravityForce?: HPVector,
+  airFrictionCoefficient?: number,
+}
+
+export const HPAppDefaultOptions: HPAppOptions = {
+  viewSize: new HPVector(825, 525),
+  elementSelector: '',
+  actorFactory: {},
+  assets: [],
+  areaFile: '',
+  hero: undefined,
+  heroStart: HPVector.Zero,
+  gravityForce: new HPVector(0, 1),
+  airFrictionCoefficient: 0.033,
 }
 
 export default class HPApp {
@@ -31,8 +55,10 @@ export default class HPApp {
   private heroStart: HPVector;
   
   constructor(
-    options: HPAppOptions,
+    _options: HPAppArgs,
   ) {
+    const options = Object.assign({}, HPAppDefaultOptions, _options);
+
     this.actorFactory = options.actorFactory;
     this.assets = options.assets;
     this.areaFile = options.areaFile;
