@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>My PIXI.js project</title>
+		<title>2D platform, RPG game</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<style>
@@ -9,11 +9,9 @@
 			html {
 				margin: 0;
 				padding: 0;
-
-				font-family: sans-serif;
 			}
 
-			#pixi-app {
+			#game-container {
 				position: fixed;
 				top: 0;
 				left: 0;
@@ -28,7 +26,8 @@
 	</head>
 
 	<body>
-		<div id="pixi-app"></div>
-		<script src="public/js/bundle.js"></script>
+		<div id="game-container"></div>
+		<script src="public/js/vendor.chunkhash.bundle.js"></script>
+		<script src="public/js/client.chunkhash.bundle.js"></script>
 	</body>
 </html>

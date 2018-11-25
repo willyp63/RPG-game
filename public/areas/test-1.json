@@ -1,0 +1,20 @@
+{
+  "size": { "x": 2000, "y": 1000 },
+  "actors": [
+    {
+      "type": "Wall",
+      "position": { "x": 0, "y": 0 },
+      "props": { "size": { "x": 32, "y": 1000 } }
+    },
+    {
+      "type": "Wall",
+      "position": { "x": 1968, "y": 0 },
+      "props": { "size": { "x": 32, "y": 1000 } }
+    },
+    {
+      "type": "Wall",
+      "position": { "x": 32, "y": 968 },
+      "props": { "size": { "x": 1936, "y": 32 } }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-export default class KeyListener {
+export default class HPKeyListener {
   private _code: number;
   private _onPress: Function;
   private _onRelease?: Function;
