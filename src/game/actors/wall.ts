@@ -5,9 +5,10 @@ export default class TGWall extends HPStaticShapeActor {
 
   static get type() { return 'Wall'; }
 
-  get color() { return 0xAA0000; }
-  get borderWidth() { return 2; };
-  get borderColor() { return 0xFF0000; };
+  get color() { return 0x333333; }
+  get borderWidth() { return 2; }
+  get borderColor() { return 0x757575; }
+
   get size() { return this._size; }
   get isWall() { return true; }
 

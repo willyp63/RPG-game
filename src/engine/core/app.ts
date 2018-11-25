@@ -33,7 +33,7 @@ export default class HPApp {
       width: viewSize.x,
       height: viewSize.y,
       transparent: false,
-      backgroundColor: 0x000000,
+      backgroundColor: 0xFFFFFF,
       antialias: false, // required for pixelated textures
       resolution: 3, // required for pixelated textures
     });

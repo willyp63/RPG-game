@@ -1,15 +1,18 @@
-import HPStaticImageActor from "../../engine/actors/static-image-actor";
 import HPVector from "../../engine/physics/vector";
 import HPKeyListener from "../../engine/interaction/key-listener";
 import HPDirection from "../../engine/physics/direction";
+import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
 
-export default class TGHero extends HPStaticImageActor {
+export default class TGHero extends HPStaticShapeActor {
 
   static get runForce() { return new HPVector(3, 0); }
   static get jumpForce() { return new HPVector(0, -16); }
 
-  get imageFile() { return 'public/imgs/barbarian.png'; }
-  get size() { return new HPVector(94, 107); }
+  get color() { return 0x0000AA; }
+  get borderWidth() { return 2; }
+  get borderColor() { return 0x000000FF; }
+
+  get size() { return new HPVector(40, 80); }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
 
@@ -53,12 +56,10 @@ export default class TGHero extends HPStaticImageActor {
 
   private runLeft() {
     this.runForce = TGHero.runForce.flipHorz();
-    this.flipSprite();
   }
 
   private runRight() {
     this.runForce = TGHero.runForce;
-    this.flipSprite(false);
   }
 
   private stopRunning() {
