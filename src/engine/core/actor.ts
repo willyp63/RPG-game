@@ -5,8 +5,9 @@ import HPCollision from "../physics/collision";
 import HPWallContactMap from "../physics/wall-contact-map";
 import HPActorType from "./actor-type";
 import HPDirection from "../physics/direction";
+import HPDestroyable from "../util/destroyer";
 
-export default abstract class HPActor implements HPEntity {
+export default abstract class HPActor implements HPEntity, HPDestroyable {
 
   /* @override */
   static get id() { return ''; }

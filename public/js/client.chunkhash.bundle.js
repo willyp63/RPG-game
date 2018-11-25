@@ -985,6 +985,33 @@ exports.default = HPAreaService;
 
 /***/ }),
 
+/***/ "./src/engine/util/destroyable.ts":
+/*!****************************************!*\
+  !*** ./src/engine/util/destroyable.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var HPDestroyer = /** @class */ (function () {
+    function HPDestroyer() {
+        this.destroyables = [];
+    }
+    HPDestroyer.prototype.add = function (destroyable) {
+        this.destroyables.push(destroyable);
+    };
+    HPDestroyer.prototype.destroy = function () {
+        this.destroyables.forEach(function (destroyable) { return destroyable.destroy(); });
+    };
+    return HPDestroyer;
+}());
+exports.default = HPDestroyer;
+
+
+/***/ }),
+
 /***/ "./src/engine/util/get-json.ts":
 /*!*************************************!*\
   !*** ./src/engine/util/get-json.ts ***!
@@ -1194,6 +1221,7 @@ var key_listener_1 = __webpack_require__(/*! ../../engine/interaction/key-listen
 var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var fire_ball_1 = __webpack_require__(/*! ./fire-ball */ "./src/game/actors/fire-ball.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
+var destroyable_1 = __webpack_require__(/*! ../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
@@ -1203,13 +1231,13 @@ var TGHero = /** @class */ (function (_super) {
             borderColor: 0x000000,
             cornerRadius: 4,
         }) || this;
-        _this.keyListeners = [];
+        _this.destroyer = new destroyable_1.default();
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
-        _this.keyListeners.push(new key_listener_1.default(37 /* left arrow */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
-        _this.keyListeners.push(new key_listener_1.default(39 /* right arrow */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
-        _this.keyListeners.push(new key_listener_1.default(38 /* up arrow */, function () { return _this.jump(); }));
-        _this.keyListeners.push(new key_listener_1.default(90 /* z */, function () { return _this.shootFireBall(); }));
+        _this.destroyer.add(new key_listener_1.default(37 /* left arrow */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
+        _this.destroyer.add(new key_listener_1.default(39 /* right arrow */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
+        _this.destroyer.add(new key_listener_1.default(38 /* up arrow */, function () { return _this.jump(); }));
+        _this.destroyer.add(new key_listener_1.default(90 /* z */, function () { return _this.shootFireBall(); }));
         return _this;
     }
     Object.defineProperty(TGHero, "runForce", {
@@ -1238,7 +1266,7 @@ var TGHero = /** @class */ (function (_super) {
         configurable: true
     });
     TGHero.prototype.destroy = function () {
-        this.keyListeners.forEach(function (listener) { return listener.destroy(); });
+        this.destroyer.destroy();
     };
     TGHero.prototype.runLeft = function () {
         this.move(TGHero.runForce.flipHorz());

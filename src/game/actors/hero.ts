@@ -3,6 +3,7 @@ import HPKeyListener from "../../engine/interaction/key-listener";
 import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
 import TGFireBall from "./fire-ball";
 import HPActorType from "../../engine/core/actor-type";
+import HPDestroyer from "../../engine/util/destroyable";
 
 export default class TGHero extends HPStaticShapeActor {
 
@@ -13,7 +14,7 @@ export default class TGHero extends HPStaticShapeActor {
   get type() { return HPActorType.Friendly; }
   get size() { return new HPVector(40, 80); }
 
-  private keyListeners: Array<HPKeyListener> = [];
+  private destroyer = new HPDestroyer();
   private leftKeyDown = false;
   private rightKeyDown = false;
 
@@ -28,27 +29,27 @@ export default class TGHero extends HPStaticShapeActor {
       },
     );
 
-    this.keyListeners.push(new HPKeyListener(37 /* left arrow */,
+    this.destroyer.add(new HPKeyListener(37 /* left arrow */,
       () => this.onLeftDown(),
       () => this.onLeftUp(),
     ));
 
-    this.keyListeners.push(new HPKeyListener(39 /* right arrow */,
+    this.destroyer.add(new HPKeyListener(39 /* right arrow */,
       () => this.onRightDown(),
       () => this.onRightUp(),
     ));
 
-    this.keyListeners.push(new HPKeyListener(38 /* up arrow */,
+    this.destroyer.add(new HPKeyListener(38 /* up arrow */,
       () => this.jump(),
     ));
 
-    this.keyListeners.push(new HPKeyListener(90 /* z */,
+    this.destroyer.add(new HPKeyListener(90 /* z */,
       () => this.shootFireBall(),
     ));
   }
 
   destroy() {
-    this.keyListeners.forEach(listener => listener.destroy());
+    this.destroyer.destroy();
   }
 
   private runLeft() {
