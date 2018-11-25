@@ -3,12 +3,14 @@ import HPEntity from "../physics/entity";
 import HPVector from "../physics/vector";
 import HPCollision from "../physics/collision";
 import HPWallContactMap from "../physics/wall-contact-map";
+import HPActorType from "./actor-type";
 
 export default abstract class HPActor implements HPEntity {
 
   /* @override */
   abstract get sprite(): Container;
   abstract get size(): HPVector;
+  get type() { return HPActorType.Nuetral; }
   get isWall() { return false; }
   get isWallBound() { return false; }
   get isGravityBound() { return false; }

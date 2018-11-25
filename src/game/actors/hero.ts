@@ -2,25 +2,32 @@ import HPVector from "../../engine/physics/vector";
 import HPKeyListener from "../../engine/interaction/key-listener";
 import HPDirection from "../../engine/physics/direction";
 import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
+import TGFireBall from "./fire-ball";
+import HPActorType from "../../engine/core/actor-type";
 
 export default class TGHero extends HPStaticShapeActor {
 
   static get runForce() { return new HPVector(3, 0); }
   static get jumpForce() { return new HPVector(0, -16); }
+  static get shootForce() { return new HPVector(16, 0); }
 
-  get color() { return 0x0000AA; }
+  get color() { return 0x0000FF; }
   get borderWidth() { return 2; }
-  get borderColor() { return 0x000000FF; }
+  get borderColor() { return 0x000000; }
+  get cornerRadius() { return 4; }
 
+  get type() { return HPActorType.Friendly; }
   get size() { return new HPVector(40, 80); }
   get isGravityBound() { return true; }
   get isWallBound() { return true; }
+  get isAirFrictionBound() { return true; }
 
   private keyListeners: Array<HPKeyListener> = [];
   private leftKeyDown = false;
   private rightKeyDown = false;
   private runForce = HPVector.Zero;
   private isOnGround = false;
+  private facingDirection = HPDirection.Right;
 
   constructor() {
     super(
@@ -40,6 +47,10 @@ export default class TGHero extends HPStaticShapeActor {
     this.keyListeners.push(new HPKeyListener(38 /* up arrow */,
       () => this.jump(),
     ));
+
+    this.keyListeners.push(new HPKeyListener(90 /* z */,
+      () => this.shootFireBall(),
+    ));
   }
 
   onTick() {
@@ -55,10 +66,12 @@ export default class TGHero extends HPStaticShapeActor {
   }
 
   private runLeft() {
+    this.facingDirection = HPDirection.Left;
     this.runForce = TGHero.runForce.flipHorz();
   }
 
   private runRight() {
+    this.facingDirection = HPDirection.Right;
     this.runForce = TGHero.runForce;
   }
 
@@ -89,6 +102,12 @@ export default class TGHero extends HPStaticShapeActor {
   private jump() {
     if (!this.isOnGround) return;
     this.push(TGHero.jumpForce)
+  }
+
+  private shootFireBall() {
+    const fireBall = new TGFireBall(this.position);
+    fireBall.push(TGHero.shootForce.flipHorz(this.facingDirection === HPDirection.Left));
+    this.newBornActors.push(fireBall);
   }
   
 }

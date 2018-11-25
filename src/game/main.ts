@@ -12,7 +12,7 @@ const app = new HPApp(
   [],
   'public/areas/test-1.json',
   hero,
-  new HPVector(200, 200),
+  new HPVector(200, 700),
   new HPVector(0, 1),
   0.01,
 );

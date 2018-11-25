@@ -15,6 +15,18 @@
       "type": "Wall",
       "position": { "x": 32, "y": 968 },
       "props": { "size": { "x": 1936, "y": 32 } }
+    },
+    {
+      "type": "WanderingTarget",
+      "position": { "x": 500, "y": 800 }
+    },
+    {
+      "type": "WanderingTarget",
+      "position": { "x": 700, "y": 800 }
+    },
+    {
+      "type": "WanderingTarget",
+      "position": { "x": 900, "y": 800 }
     }
   ]
 }

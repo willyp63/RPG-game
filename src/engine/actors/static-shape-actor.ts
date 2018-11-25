@@ -7,9 +7,10 @@ export default abstract class HPStaticShapeActor extends HPActor {
   abstract get color(): number;
 
   /* override */
-  get cornerRadius() { return 0; };
   get borderWidth() { return 0; };
   get borderColor() { return 0x000000; };
+  get cornerRadius() { return 0; };
+  get isRound() { return false; };
 
   get sprite() { return this._sprite; }
 
@@ -24,11 +25,23 @@ export default abstract class HPStaticShapeActor extends HPActor {
   }
 
   init() {
-    if (this.borderWidth > 0) this._sprite.lineStyle(this.borderWidth, this.borderColor);
     this._sprite.beginFill(this.color);
-    this.cornerRadius > 0
-      ? this._sprite.drawRoundedRect(this.size.x / -2, this.size.y / -2, this.size.x, this.size.y, this.cornerRadius)
-      : this._sprite.drawRect(this.size.x / -2, this.size.y / -2, this.size.x, this.size.y);
+
+    let adjustedSize = this.size;
+    if (this.borderWidth > 0) {
+      this._sprite.lineStyle(this.borderWidth, this.borderColor);
+      const borderSize = new HPVector(this.borderWidth, this.borderWidth);
+      adjustedSize = this.size.minus(borderSize);
+    }
+
+    if (this.isRound) {
+      this._sprite.drawEllipse(0, 0, adjustedSize.x / 2, adjustedSize.y / 2);
+    } else {
+      this.cornerRadius > 0
+        ? this._sprite.drawRoundedRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y, this.cornerRadius)
+        : this._sprite.drawRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y);
+    }
+    
     this._sprite.endFill();
   }
 
