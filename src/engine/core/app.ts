@@ -6,47 +6,57 @@ import HPAreaData from "../services/data/area-data";
 import HPActorFactory from "./actor-factory";
 import HPActor from "./actor";
 
+export interface HPAppOptions {
+  viewSize: HPVector,
+  elementSelector: string,
+  actorFactory: HPActorFactory,
+  assets: Array<string>,
+  areaFile: string,
+  hero: HPActor,
+  heroStart: HPVector,
+  gravityForce: HPVector,
+  airFrictionCoefficient: number,
+}
+
 export default class HPApp {
 
-  /** Underlying PIXI application */
   private app: Application;
-
-  /** Element to render the app within */
   private element: HTMLElement;
-
-  /** Main stage for actors */
   private stage: HPStage;
+
+  private actorFactory: HPActorFactory;
+  private assets: Array<string>;
+  private areaFile: string;
+  private hero: HPActor;
+  private heroStart: HPVector;
   
   constructor(
-    viewSize: HPVector, // size of the app view in pixels
-    elementSelector: string, // identifies the DOM element the app should be rendered within
-    private actorFactory: HPActorFactory, // function that turns actor data into actors
-    private assets: Array<string>, // all required assets
-    private areaFile: string, // the file name of the starting area
-    private hero: HPActor, // the hero
-    private heroStart: HPVector, // the hero's starting position
-    gravityForce: HPVector, // universal force applied to all actors each tick
-    airFrictionCoefficient: number, // number from 0 to 1, the higher the number the more resistance actors will feel when moving
+    options: HPAppOptions,
   ) {
+    this.actorFactory = options.actorFactory;
+    this.assets = options.assets;
+    this.areaFile = options.areaFile;
+    this.hero = options.hero;
+    this.heroStart = options.heroStart;
 
     this.app = new Application({
-      width: viewSize.x,
-      height: viewSize.y,
+      width: options.viewSize.x,
+      height: options.viewSize.y,
       transparent: false,
       backgroundColor: 0xFFFFFF,
       antialias: false, // required for pixelated textures
       resolution: 3, // required for pixelated textures
     });
 
-    this.element = document.body.querySelector(elementSelector) ||
-      (() => { throw new Error(`Can't find element with selector: ${elementSelector}`) })();
+    this.element = document.body.querySelector(options.elementSelector) ||
+      (() => { throw new Error(`Can't find element with selector: ${options.elementSelector}`) })();
 
     this.stage = new HPStage(
-      viewSize,
+      options.viewSize,
       this.app.stage,
-      hero,
-      gravityForce,
-      airFrictionCoefficient,
+      this.hero,
+      options.gravityForce,
+      options.airFrictionCoefficient,
     );
 
     this.addPIXICanvasToScreen();

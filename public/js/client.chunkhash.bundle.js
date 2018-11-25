@@ -180,23 +180,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
-var defaultOptions = {
+var defaultOptions = Object.assign({
     color: 0xFFFFFF,
     borderWidth: 0,
     borderColor: 0x000000,
     cornerRadius: 0,
     isRound: false,
-};
+}, actor_1.HPActorDefaultOptions);
 var HPStaticShapeActor = /** @class */ (function (_super) {
     __extends(HPStaticShapeActor, _super);
-    function HPStaticShapeActor(position, _options) {
-        var _this = _super.call(this, position) || this;
+    function HPStaticShapeActor(position, size, _options) {
+        var _this = _super.call(this, position, size, new pixi_js_1.Graphics(), _options) || this;
         _this.options = Object.assign({}, defaultOptions, _options);
-        _this._sprite = new pixi_js_1.Graphics();
         return _this;
     }
-    Object.defineProperty(HPStaticShapeActor.prototype, "sprite", {
-        get: function () { return this._sprite; },
+    Object.defineProperty(HPStaticShapeActor.prototype, "_sprite", {
+        get: function () { return this.sprite; },
         enumerable: true,
         configurable: true
     });
@@ -261,9 +260,20 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var wall_contact_map_1 = __webpack_require__(/*! ../physics/wall-contact-map */ "./src/engine/physics/wall-contact-map.ts");
 var actor_type_1 = __webpack_require__(/*! ./actor-type */ "./src/engine/core/actor-type.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
+exports.HPActorDefaultOptions = {
+    type: actor_type_1.default.Nuetral,
+    bounciness: 0.2,
+    slipperiness: 0.2,
+    weight: 1,
+    maxVelocity: 64,
+    isWall: false,
+    isWallBound: true,
+    isGravityBound: true,
+    isAirFrictionBound: true,
+    canWalkOnAir: false,
+};
 var HPActor = /** @class */ (function () {
-    function HPActor(position) {
-        this.position = position;
+    function HPActor(_position, _size, _sprite, _options) {
         this.velocity = vector_1.default.Zero;
         this.acceleration = vector_1.default.Zero;
         this.moveForce = vector_1.default.Zero;
@@ -272,63 +282,21 @@ var HPActor = /** @class */ (function () {
         this.isOnGround = false;
         this.isDead = false;
         this.newBornActors = [];
+        this.position = _position;
+        this.size = _size;
+        this.sprite = _sprite;
+        var options = Object.assign({}, exports.HPActorDefaultOptions, _options);
+        this.type = options.type;
+        this.bounciness = options.bounciness;
+        this.slipperiness = options.slipperiness;
+        this.weight = options.weight;
+        this.maxVelocity = options.maxVelocity;
+        this.isWall = options.isWall;
+        this.isWallBound = options.isWallBound;
+        this.isGravityBound = options.isGravityBound;
+        this.isAirFrictionBound = options.isAirFrictionBound;
+        this.canWalkOnAir = options.canWalkOnAir;
     }
-    Object.defineProperty(HPActor, "id", {
-        /* @override */
-        get: function () { return ''; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "type", {
-        get: function () { return actor_type_1.default.Nuetral; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "isWall", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "isWallBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "isGravityBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "isAirFrictionBound", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "canWalkOnAir", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "bounciness", {
-        get: function () { return 0.2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "slipperiness", {
-        get: function () { return 0.2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "weight", {
-        get: function () { return 1; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HPActor.prototype, "maxVelocity", {
-        get: function () { return 64; },
-        enumerable: true,
-        configurable: true
-    });
     /* @override */
     HPActor.prototype.init = function () { };
     HPActor.prototype.destroy = function () { };
@@ -422,31 +390,23 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
 var HPApp = /** @class */ (function () {
-    function HPApp(viewSize, // size of the app view in pixels
-    elementSelector, // identifies the DOM element the app should be rendered within
-    actorFactory, // function that turns actor data into actors
-    assets, // all required assets
-    areaFile, // the file name of the starting area
-    hero, // the hero
-    heroStart, // the hero's starting position
-    gravityForce, // universal force applied to all actors each tick
-    airFrictionCoefficient) {
-        this.actorFactory = actorFactory;
-        this.assets = assets;
-        this.areaFile = areaFile;
-        this.hero = hero;
-        this.heroStart = heroStart;
+    function HPApp(options) {
+        this.actorFactory = options.actorFactory;
+        this.assets = options.assets;
+        this.areaFile = options.areaFile;
+        this.hero = options.hero;
+        this.heroStart = options.heroStart;
         this.app = new pixi_js_1.Application({
-            width: viewSize.x,
-            height: viewSize.y,
+            width: options.viewSize.x,
+            height: options.viewSize.y,
             transparent: false,
             backgroundColor: 0xFFFFFF,
             antialias: false,
             resolution: 3,
         });
-        this.element = document.body.querySelector(elementSelector) ||
-            (function () { throw new Error("Can't find element with selector: " + elementSelector); })();
-        this.stage = new stage_1.default(viewSize, this.app.stage, hero, gravityForce, airFrictionCoefficient);
+        this.element = document.body.querySelector(options.elementSelector) ||
+            (function () { throw new Error("Can't find element with selector: " + options.elementSelector); })();
+        this.stage = new stage_1.default(options.viewSize, this.app.stage, this.hero, options.gravityForce, options.airFrictionCoefficient);
         this.addPIXICanvasToScreen();
     }
     HPApp.prototype.start = function () {
@@ -1159,22 +1119,13 @@ var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./sr
 var TGFireBall = /** @class */ (function (_super) {
     __extends(TGFireBall, _super);
     function TGFireBall(position) {
-        return _super.call(this, position, {
+        return _super.call(this, position, new vector_1.default(20, 20), {
+            isGravityBound: false,
             color: 0xFF7700,
             borderWidth: 2,
             borderColor: 0x000000,
         }) || this;
     }
-    Object.defineProperty(TGFireBall.prototype, "size", {
-        get: function () { return new vector_1.default(20, 20); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGFireBall.prototype, "isGravityBound", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
     TGFireBall.prototype.onCollision = function (actor, collision) {
         if (!collision.hit)
             return;
@@ -1222,10 +1173,14 @@ var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-sh
 var fire_ball_1 = __webpack_require__(/*! ./fire-ball */ "./src/game/actors/fire-ball.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var destroyable_1 = __webpack_require__(/*! ../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
+var RUN_FORCE = new vector_1.default(3, 0);
+var JUMP_FORCE = new vector_1.default(0, -16);
+var SHOOT_FORCE = new vector_1.default(16, 0);
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
-        var _this = _super.call(this, vector_1.default.Zero, {
+        var _this = _super.call(this, vector_1.default.Zero, new vector_1.default(40, 80), {
+            type: actor_type_1.default.Friendly,
             color: 0x0000FF,
             borderWidth: 2,
             borderColor: 0x000000,
@@ -1234,72 +1189,54 @@ var TGHero = /** @class */ (function (_super) {
         _this.destroyer = new destroyable_1.default();
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
-        _this.destroyer.add(new key_listener_1.default(37 /* left arrow */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
-        _this.destroyer.add(new key_listener_1.default(39 /* right arrow */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
-        _this.destroyer.add(new key_listener_1.default(38 /* up arrow */, function () { return _this.jump(); }));
-        _this.destroyer.add(new key_listener_1.default(90 /* z */, function () { return _this.shootFireBall(); }));
         return _this;
     }
-    Object.defineProperty(TGHero, "runForce", {
-        get: function () { return new vector_1.default(3, 0); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero, "jumpForce", {
-        get: function () { return new vector_1.default(0, -16); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero, "shootForce", {
-        get: function () { return new vector_1.default(16, 0); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "type", {
-        get: function () { return actor_type_1.default.Friendly; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGHero.prototype, "size", {
-        get: function () { return new vector_1.default(40, 80); },
-        enumerable: true,
-        configurable: true
-    });
+    TGHero.prototype.init = function () {
+        _super.prototype.init.call(this);
+        this.addKeyListeners();
+    };
     TGHero.prototype.destroy = function () {
         this.destroyer.destroy();
     };
-    TGHero.prototype.runLeft = function () {
-        this.move(TGHero.runForce.flipHorz());
-    };
-    TGHero.prototype.runRight = function () {
-        this.move(TGHero.runForce);
-    };
-    TGHero.prototype.stopRunning = function () {
-        this.move(vector_1.default.Zero);
+    TGHero.prototype.addKeyListeners = function () {
+        var _this = this;
+        // left arrow
+        this.destroyer.add(new key_listener_1.default(37, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
+        // right arrow
+        this.destroyer.add(new key_listener_1.default(39, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
+        // up arrow
+        this.destroyer.add(new key_listener_1.default(38, function () { return _this.jump(); }));
+        // Z
+        this.destroyer.add(new key_listener_1.default(90, function () { return _this.shootFireBall(); }));
     };
     TGHero.prototype.onLeftDown = function () {
         this.leftKeyDown = true;
-        this.runLeft();
+        this.move(RUN_FORCE.flipHorz());
     };
     TGHero.prototype.onLeftUp = function () {
         this.leftKeyDown = false;
-        this.rightKeyDown ? this.runRight() : this.stopRunning();
+        this.rightKeyDown
+            ? this.move(RUN_FORCE)
+            : this.move(vector_1.default.Zero);
     };
     TGHero.prototype.onRightDown = function () {
         this.rightKeyDown = true;
-        this.runRight();
+        this.move(RUN_FORCE);
     };
     TGHero.prototype.onRightUp = function () {
         this.rightKeyDown = false;
-        this.leftKeyDown ? this.runLeft() : this.stopRunning();
+        this.leftKeyDown
+            ? this.move(RUN_FORCE.flipHorz())
+            : this.move(vector_1.default.Zero);
     };
     TGHero.prototype.jump = function () {
-        if (this.isOnGround)
-            this.push(TGHero.jumpForce);
+        if (!this.isOnGround)
+            return;
+        this.push(JUMP_FORCE);
     };
     TGHero.prototype.shootFireBall = function () {
         var fireBall = new fire_ball_1.default(this.position);
-        fireBall.push(TGHero.shootForce.flipHorz(this.isFacingLeft));
+        fireBall.push(SHOOT_FORCE.flipHorz(this.isFacingLeft));
         this.newBornActors.push(fireBall);
     };
     return TGHero;
@@ -1335,43 +1272,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var TGWall = /** @class */ (function (_super) {
     __extends(TGWall, _super);
-    function TGWall(position, _size) {
-        var _this = _super.call(this, position.plus(_size.times(0.5)), // when creating a wall you specify the upper-left point, not the center
-        {
+    function TGWall(position, size) {
+        return _super.call(this, 
+        // when creating a wall you specify the upper-left point, not the center
+        position.plus(size.times(0.5)), size, {
+            isWall: true,
+            isWallBound: false,
+            isGravityBound: false,
+            isAirFrictionBound: false,
             color: 0x333333,
             borderWidth: 2,
             borderColor: 0x757575,
         }) || this;
-        _this._size = _size;
-        return _this;
     }
     Object.defineProperty(TGWall, "id", {
         get: function () { return 'Wall'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "size", {
-        get: function () { return this._size; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "isWall", {
-        get: function () { return true; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "isWallBound", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "isGravityBound", {
-        get: function () { return false; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWall.prototype, "isAirFrictionBound", {
-        get: function () { return false; },
         enumerable: true,
         configurable: true
     });
@@ -1410,10 +1325,13 @@ var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/eng
 var set_ticks_out_1 = __webpack_require__(/*! ../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var random_1 = __webpack_require__(/*! ../../engine/util/random */ "./src/engine/util/random.ts");
+var WANDER_FORCE = new vector_1.default(1, 0);
+var JUMP_FORCE = new vector_1.default(0, -12);
 var TGWanderingTarget = /** @class */ (function (_super) {
     __extends(TGWanderingTarget, _super);
     function TGWanderingTarget(position) {
-        return _super.call(this, position, {
+        return _super.call(this, position, new vector_1.default(30, 60), {
+            type: actor_type_1.default.Unfriendly,
             color: 0xFF0000,
             borderWidth: 2,
             borderColor: 0x000000,
@@ -1425,36 +1343,15 @@ var TGWanderingTarget = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGWanderingTarget, "wanderForce", {
-        get: function () { return new vector_1.default(1, 0); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget, "jumpForce", {
-        get: function () { return new vector_1.default(0, -12); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "type", {
-        get: function () { return actor_type_1.default.Unfriendly; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "size", {
-        get: function () { return new vector_1.default(30, 60); },
-        enumerable: true,
-        configurable: true
-    });
     TGWanderingTarget.prototype.init = function () {
         _super.prototype.init.call(this);
-        this.move(TGWanderingTarget.wanderForce.flipHorz(random_1.default.chance(0.5)));
+        this.move(WANDER_FORCE.flipHorz(random_1.default.chance(0.5)));
         this.changeDirection();
     };
     TGWanderingTarget.prototype.onTick = function () {
         _super.prototype.onTick.call(this);
-        if (this.isOnGround && random_1.default.chance(0.005)) {
-            this.push(TGWanderingTarget.jumpForce);
-        }
+        if (this.isOnGround && random_1.default.chance(0.005))
+            this.push(JUMP_FORCE);
     };
     TGWanderingTarget.prototype.changeDirection = function () {
         var _this = this;
@@ -1482,8 +1379,17 @@ var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero */ "./src/game/actors/hero.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
-var hero = new hero_1.default();
-var app = new app_1.default(new vector_1.default(825, 525), '#game-container', actor_factory_1.default, [], 'public/areas/test-1.json', hero, new vector_1.default(200, 700), new vector_1.default(0, 1), 0.01);
+var app = new app_1.default({
+    viewSize: new vector_1.default(825, 525),
+    elementSelector: '#game-container',
+    actorFactory: actor_factory_1.default,
+    assets: [],
+    areaFile: 'public/areas/test-1.json',
+    hero: new hero_1.default(),
+    heroStart: new vector_1.default(200, 700),
+    gravityForce: new vector_1.default(0, 1),
+    airFrictionCoefficient: 0.01,
+});
 app.start();
 
 

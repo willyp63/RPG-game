@@ -1,26 +1,28 @@
-import HPActor from "../core/actor";
+import HPActor, { HPActorArgs } from "../core/actor";
 import HPVector from "../physics/vector";
 import { Sprite, loader, ObservablePoint } from "pixi.js";
 
 export default abstract class HPStaticImageActor extends HPActor {
 
-  abstract get imageFile(): string;
-
-  get sprite() { return this._sprite; }
-
-  private _sprite: Sprite;
+  get _sprite() { return <Sprite>this.sprite; }
 
   constructor(
     position: HPVector,
+    size: HPVector,
+    private imageFile: string,
+    _actorOptions: HPActorArgs,
   ) {
-    super(position);
-
-    this._sprite = new Sprite();
-    this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
+    super(
+      position,
+      size,
+      new Sprite(),
+      _actorOptions,
+    );
   }
 
   init() {
     this._sprite.texture = loader.resources[this.imageFile].texture;
+    this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
   }
 
   flipSprite(isFacingLeft = true) {

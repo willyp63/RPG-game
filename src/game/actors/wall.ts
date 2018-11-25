@@ -5,19 +5,19 @@ export default class TGWall extends HPStaticShapeActor {
 
   static get id() { return 'Wall'; }
 
-  get size() { return this._size; }
-  get isWall() { return true; }
-  get isWallBound() { return false; }
-  get isGravityBound() { return false; }
-  get isAirFrictionBound() { return false; }
-
   constructor(
     position: HPVector,
-    private _size: HPVector,
+    size: HPVector,
   ) {
     super(
-      position.plus(_size.times(0.5)), // when creating a wall you specify the upper-left point, not the center
+      // when creating a wall you specify the upper-left point, not the center
+      position.plus(size.times(0.5)),
+      size,
       {
+        isWall: true,
+        isWallBound: false,
+        isGravityBound: false,
+        isAirFrictionBound: false,
         color: 0x333333,
         borderWidth: 2,
         borderColor: 0x757575,

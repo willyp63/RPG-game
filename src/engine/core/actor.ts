@@ -7,32 +7,54 @@ import HPActorType from "./actor-type";
 import HPDirection from "../physics/direction";
 import HPDestroyable from "../util/destroyer";
 
+export interface HPActorOptions {
+  type: HPActorType;
+  bounciness: number;
+  slipperiness: number;
+  weight: number;
+  maxVelocity: number;
+  isWall: boolean;
+  isWallBound: boolean;
+  isGravityBound: boolean;
+  isAirFrictionBound: boolean;
+  canWalkOnAir: boolean;
+}
+
+export interface HPActorArgs {
+  type?: HPActorType;
+  bounciness?: number;
+  slipperiness?: number;
+  weight?: number;
+  maxVelocity?: number;
+  isWall?: boolean;
+  isWallBound?: boolean;
+  isGravityBound?: boolean;
+  isAirFrictionBound?: boolean;
+  canWalkOnAir?: boolean;
+}
+
+export const HPActorDefaultOptions: HPActorOptions = {
+  type: HPActorType.Nuetral,
+  bounciness: 0.2,
+  slipperiness: 0.2,
+  weight: 1,
+  maxVelocity: 64,
+  isWall: false,
+  isWallBound: true,
+  isGravityBound: true,
+  isAirFrictionBound: true,
+  canWalkOnAir: false,
+};
+
 export default abstract class HPActor implements HPEntity, HPDestroyable {
 
-  /* @override */
-  static get id() { return ''; }
+  size: HPVector;
 
-  /* @override */
-  abstract get sprite(): Container;
-  abstract get size(): HPVector;
-  get type() { return HPActorType.Nuetral; }
-  get isWall() { return false; }
-  get isWallBound() { return true; }
-  get isGravityBound() { return true; }
-  get isAirFrictionBound() { return true; }
-  get canWalkOnAir() { return false; }
-  get bounciness() { return 0.2; }
-  get slipperiness() { return 0.2; }
-  get weight() { return 1; }
-  get maxVelocity() { return 64; }
-
-  /* @override */
-  init() { }
-  destroy() { }
-  onCollision(actor: HPActor, collision: HPCollision) { }
-
+  position: HPVector;
   velocity = HPVector.Zero;
   acceleration = HPVector.Zero;
+
+  sprite: Container;
 
   moveForce = HPVector.Zero;
   facingDirection = HPDirection.Right;
@@ -43,9 +65,44 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   isDead = false;
   newBornActors: Array<HPActor> = [];
 
+  type: HPActorType;
+  bounciness: number;
+  slipperiness: number;
+  weight: number;
+  maxVelocity: number;
+  isWall: boolean;
+  isWallBound: boolean;
+  isGravityBound: boolean;
+  isAirFrictionBound: boolean;
+  canWalkOnAir: boolean;
+
   constructor(
-    public position: HPVector,
-  ) { }
+    _position: HPVector,
+    _size: HPVector,
+    _sprite: Container,
+    _options: HPActorArgs,
+  ) {
+    this.position = _position;
+    this.size = _size;
+    this.sprite = _sprite;
+
+    const options = Object.assign({}, HPActorDefaultOptions, _options);
+    this.type = options.type;
+    this.bounciness = options.bounciness;
+    this.slipperiness = options.slipperiness;
+    this.weight = options.weight;
+    this.maxVelocity = options.maxVelocity;
+    this.isWall = options.isWall;
+    this.isWallBound = options.isWallBound;
+    this.isGravityBound = options.isGravityBound;
+    this.isAirFrictionBound = options.isAirFrictionBound;
+    this.canWalkOnAir = options.canWalkOnAir;
+  }
+
+  /* @override */
+  init() { }
+  destroy() { }
+  onCollision(actor: HPActor, collision: HPCollision) { }
 
   /* @override */
   onTick() {

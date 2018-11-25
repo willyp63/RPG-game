@@ -1,46 +1,53 @@
-import HPActor from "../core/actor";
+import HPActor, { HPActorArgs, HPActorOptions, HPActorDefaultOptions } from "../core/actor";
 import HPVector from "../physics/vector";
 import { Graphics } from "pixi.js";
 
-interface HPStaticShapeOptions {
+interface HPStaticShapeOptions extends HPActorOptions {
   color: number;
   borderWidth: number;
   borderColor: number;
   cornerRadius: number;
-  isRound: false;
+  isRound: boolean;
 }
 
-interface HPStaticShapeArgs {
+interface HPStaticShapeArgs extends HPActorArgs {
   color: number;
   borderWidth?: number;
   borderColor?: number;
   cornerRadius?: number;
-  isRound?: false;
+  isRound?: boolean;
 }
 
-const defaultOptions: HPStaticShapeOptions = {
-  color: 0xFFFFFF,
-  borderWidth: 0,
-  borderColor: 0x000000,
-  cornerRadius: 0,
-  isRound: false,
-};
+const defaultOptions: HPStaticShapeOptions = Object.assign(
+  {
+    color: 0xFFFFFF,
+    borderWidth: 0,
+    borderColor: 0x000000,
+    cornerRadius: 0,
+    isRound: false,
+  },
+  HPActorDefaultOptions,
+);
 
 export default abstract class HPStaticShapeActor extends HPActor {
 
-  get sprite() { return this._sprite; }
-  private _sprite: Graphics;
+  get _sprite() { return <Graphics>this.sprite; }
 
   private options: HPStaticShapeOptions;
 
   constructor(
     position: HPVector,
+    size: HPVector,
     _options: HPStaticShapeArgs,
   ) {
-    super(position);
+    super(
+      position,
+      size,
+      new Graphics(),
+      _options,
+    );
 
     this.options = Object.assign({}, defaultOptions, _options);
-    this._sprite = new Graphics();
   }
 
   init() {
