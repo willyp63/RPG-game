@@ -12,11 +12,19 @@ export default abstract class HPStaticImageActor extends HPActor {
 
   constructor(
     position: HPVector,
-    imageFile: string,
   ) {
     super(position);
 
-    this._sprite = new Sprite(loader.resources[imageFile].texture);
+    this._sprite = new Sprite();
     this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
   }
+
+  init() {
+    this._sprite.texture = loader.resources[this.imageFile].texture;
+  }
+
+  flipSprite(isFacingLeft = true) {
+    this._sprite.scale.x = isFacingLeft ? -1 : 1;
+  }
+
 }

@@ -4,6 +4,7 @@ import HPStage from "./stage";
 import HPAreaService from "../services/area-service";
 import HPAreaData from "../services/data/area-data";
 import HPActorFactory from "./actor-factory";
+import HPActor from "./actor";
 
 export default class HPApp {
 
@@ -22,6 +23,8 @@ export default class HPApp {
     private actorFactory: HPActorFactory, // function that turns actor data into actors
     private assets: Array<string>, // all required assets
     private areaFile: string, // the file name of the starting area
+    private hero: HPActor, // the hero
+    private heroStart: HPVector, // the hero's starting position
     gravityForce: HPVector, // universal force applied to all actors each tick
     airFrictionCoefficient: number, // number from 0 to 1, the higher the number the more resistance actors will feel when moving
   ) {
@@ -29,7 +32,8 @@ export default class HPApp {
     this.app = new Application({
       width: viewSize.x,
       height: viewSize.y,
-      transparent: false, 
+      transparent: false,
+      backgroundColor: 0x000000,
       antialias: false, // required for pixelated textures
       resolution: 3, // required for pixelated textures
     });
@@ -37,7 +41,13 @@ export default class HPApp {
     this.element = document.body.querySelector(elementSelector) ||
       (() => { throw new Error(`Can't find element with selector: ${elementSelector}`) })();
 
-    this.stage = new HPStage(this.app.stage, gravityForce, airFrictionCoefficient);
+    this.stage = new HPStage(
+      viewSize,
+      this.app.stage,
+      hero,
+      gravityForce,
+      airFrictionCoefficient,
+    );
 
     this.addPIXICanvasToScreen();
   }
@@ -45,6 +55,7 @@ export default class HPApp {
   async start() {
     await this.loadAssets();
     this.setAreaData(await this.loadAreaData()); 
+    this.addHero();
     this.startGameLoop();
   }
 
@@ -70,10 +81,17 @@ export default class HPApp {
   }
 
   private setAreaData(areaData: HPAreaData) {
+    this.stage.size = HPVector.fromData(areaData.size);
+
     this.stage.clearActors();
     areaData.actors.forEach(actorData => {
       this.stage.addActor(this.actorFactory.createFromData(actorData));
     });
+  }
+
+  private addHero() {
+    this.hero.position = this.heroStart;
+    this.stage.addActor(this.hero);
   }
 
   private startGameLoop() {

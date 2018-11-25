@@ -154,6 +154,58 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/engine/actors/static-image-actor.ts":
+/*!*************************************************!*\
+  !*** ./src/engine/actors/static-image-actor.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var HPStaticImageActor = /** @class */ (function (_super) {
+    __extends(HPStaticImageActor, _super);
+    function HPStaticImageActor(position) {
+        var _this = _super.call(this, position) || this;
+        _this._sprite = new pixi_js_1.Sprite();
+        _this._sprite.anchor = { x: 0.5, y: 0.5 };
+        return _this;
+    }
+    Object.defineProperty(HPStaticImageActor.prototype, "sprite", {
+        get: function () { return this._sprite; },
+        enumerable: true,
+        configurable: true
+    });
+    HPStaticImageActor.prototype.init = function () {
+        this._sprite.texture = pixi_js_1.loader.resources[this.imageFile].texture;
+    };
+    HPStaticImageActor.prototype.flipSprite = function (isFacingLeft) {
+        if (isFacingLeft === void 0) { isFacingLeft = true; }
+        this._sprite.scale.x = isFacingLeft ? -1 : 1;
+    };
+    return HPStaticImageActor;
+}(actor_1.default));
+exports.default = HPStaticImageActor;
+
+
+/***/ }),
+
 /***/ "./src/engine/actors/wall.ts":
 /*!***********************************!*\
   !*** ./src/engine/actors/wall.ts ***!
@@ -296,12 +348,12 @@ var HPActor = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "bounciness", {
-        get: function () { return 0.5; },
+        get: function () { return 0.2; },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(HPActor.prototype, "slipperiness", {
-        get: function () { return 0.5; },
+        get: function () { return 0.2; },
         enumerable: true,
         configurable: true
     });
@@ -316,16 +368,19 @@ var HPActor = /** @class */ (function () {
         configurable: true
     });
     /* @override */
-    HPActor.prototype.onTick = function () { };
+    HPActor.prototype.init = function () { };
+    HPActor.prototype.destroy = function () { };
     HPActor.prototype.onCollision = function (actor, collision) { };
+    /* @override */
+    HPActor.prototype.onTick = function () {
+        this.sprite.x = this.position.x;
+        this.sprite.y = this.position.y;
+    };
     HPActor.prototype.beforeTick = function () {
         this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
         this.position = this.position.plus(this.velocity);
         this.acceleration = vector_1.default.Zero;
         this.wallContact = new wall_contact_map_1.default();
-        // align sprite
-        this.sprite.x = this.position.x;
-        this.sprite.y = this.position.y;
     };
     HPActor.prototype.push = function (force) {
         this.acceleration = this.acceleration.plus(force.times(1 / this.weight));
@@ -386,6 +441,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
 var HPApp = /** @class */ (function () {
@@ -394,21 +450,26 @@ var HPApp = /** @class */ (function () {
     actorFactory, // function that turns actor data into actors
     assets, // all required assets
     areaFile, // the file name of the starting area
+    hero, // the hero
+    heroStart, // the hero's starting position
     gravityForce, // universal force applied to all actors each tick
     airFrictionCoefficient) {
         this.actorFactory = actorFactory;
         this.assets = assets;
         this.areaFile = areaFile;
+        this.hero = hero;
+        this.heroStart = heroStart;
         this.app = new pixi_js_1.Application({
             width: viewSize.x,
             height: viewSize.y,
             transparent: false,
+            backgroundColor: 0x000000,
             antialias: false,
             resolution: 3,
         });
         this.element = document.body.querySelector(elementSelector) ||
             (function () { throw new Error("Can't find element with selector: " + elementSelector); })();
-        this.stage = new stage_1.default(this.app.stage, gravityForce, airFrictionCoefficient);
+        this.stage = new stage_1.default(viewSize, this.app.stage, hero, gravityForce, airFrictionCoefficient);
         this.addPIXICanvasToScreen();
     }
     HPApp.prototype.start = function () {
@@ -423,6 +484,7 @@ var HPApp = /** @class */ (function () {
                         return [4 /*yield*/, this.loadAreaData()];
                     case 2:
                         _a.apply(this, [_b.sent()]);
+                        this.addHero();
                         this.startGameLoop();
                         return [2 /*return*/];
                 }
@@ -449,10 +511,15 @@ var HPApp = /** @class */ (function () {
     };
     HPApp.prototype.setAreaData = function (areaData) {
         var _this = this;
+        this.stage.size = vector_1.default.fromData(areaData.size);
         this.stage.clearActors();
         areaData.actors.forEach(function (actorData) {
             _this.stage.addActor(_this.actorFactory.createFromData(actorData));
         });
+    };
+    HPApp.prototype.addHero = function () {
+        this.hero.position = this.heroStart;
+        this.stage.addActor(this.hero);
     };
     HPApp.prototype.startGameLoop = function () {
         var _this = this;
@@ -479,19 +546,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var collision_detector_1 = __webpack_require__(/*! ../physics/collision-detector */ "./src/engine/physics/collision-detector.ts");
 var collision_handler_1 = __webpack_require__(/*! ../physics/collision-handler */ "./src/engine/physics/collision-handler.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var HPStage = /** @class */ (function () {
-    function HPStage(rootContainer, gravityForce, airFrictionCoefficient) {
+    function HPStage(viewSize, rootContainer, actorToFollow, gravityForce, airFrictionCoefficient) {
+        this.viewSize = viewSize;
         this.rootContainer = rootContainer;
+        this.actorToFollow = actorToFollow;
         this.gravityForce = gravityForce;
         this.airFrictionCoefficient = airFrictionCoefficient;
+        this.size = vector_1.default.Zero;
         this.actors = [];
     }
     HPStage.prototype.addActor = function (actor) {
         this.actors.push(actor);
+        actor.init();
         this.rootContainer.addChild(actor.sprite);
     };
     HPStage.prototype.removeActorAt = function (i) {
         this.rootContainer.removeChild(this.actors[i].sprite);
+        this.actors[i].destroy();
         this.actors.splice(i, 1);
     };
     HPStage.prototype.clearActors = function () {
@@ -502,6 +575,7 @@ var HPStage = /** @class */ (function () {
         var _this = this;
         this.actors.forEach(function (actor) { return actor.beforeTick(); });
         this.handleCollisions();
+        this.followActor();
         this.actors.forEach(function (actor) {
             _this.killIfSquished(actor);
             _this.applyGravity(actor);
@@ -552,9 +626,65 @@ var HPStage = /** @class */ (function () {
                 this.removeActorAt(i--);
         }
     };
+    HPStage.prototype.followActor = function () {
+        var stageX = this.viewSize.x / 2 - this.actorToFollow.position.x;
+        stageX = Math.min(stageX, 0);
+        stageX = Math.max(stageX, this.viewSize.x - this.size.x);
+        var stageY = this.viewSize.y / 2 - this.actorToFollow.position.y;
+        stageY = Math.min(stageY, 0);
+        stageY = Math.max(stageY, this.viewSize.y - this.size.y);
+        this.rootContainer.x = stageX;
+        this.rootContainer.y = stageY;
+    };
     return HPStage;
 }());
 exports.default = HPStage;
+
+
+/***/ }),
+
+/***/ "./src/engine/interaction/key-listener.ts":
+/*!************************************************!*\
+  !*** ./src/engine/interaction/key-listener.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var HPKeyListener = /** @class */ (function () {
+    function HPKeyListener(keyCode, onPress, onRelease) {
+        this._isDown = false;
+        this._code = keyCode;
+        this._onPress = onPress;
+        this._onRelease = onRelease;
+        this._downHandler = this._downHandler.bind(this);
+        this._upHandler = this._upHandler.bind(this);
+        window.addEventListener('keydown', this._downHandler, false);
+        window.addEventListener('keyup', this._upHandler, false);
+    }
+    HPKeyListener.prototype.destroy = function () {
+        window.removeEventListener('keydown', this._downHandler);
+        window.removeEventListener('keyup', this._upHandler);
+    };
+    HPKeyListener.prototype._downHandler = function (e) {
+        if (e.keyCode === this._code) {
+            if (!this._isDown && this._onPress)
+                this._onPress();
+            this._isDown = true;
+        }
+    };
+    HPKeyListener.prototype._upHandler = function (e) {
+        if (e.keyCode === this._code) {
+            if (this._isDown && this._onRelease)
+                this._onRelease();
+            this._isDown = false;
+        }
+    };
+    return HPKeyListener;
+}());
+exports.default = HPKeyListener;
 
 
 /***/ }),
@@ -625,6 +755,8 @@ var HPCollisionHandler = /** @class */ (function () {
         HPCollisionHandler.handleWithTargetEntity(e2, e1, collision);
     };
     HPCollisionHandler.handleWithTargetEntity = function (targetEntity, otherEntity, collision) {
+        if (!collision.hit)
+            return;
         HPCollisionHandler.handleWallCollision(targetEntity, otherEntity, collision);
     };
     HPCollisionHandler.handleWallCollision = function (targetEntity, otherEntity, collision) {
@@ -633,20 +765,20 @@ var HPCollisionHandler = /** @class */ (function () {
         HPCollisionHandler.recedeFromWall(targetEntity, otherEntity, collision);
         HPCollisionHandler.bounceOffWall(targetEntity, otherEntity, collision);
         HPCollisionHandler.applyFloorFriction(targetEntity, otherEntity, collision);
-        targetEntity.wallContact.setContact(collision.direction);
+        targetEntity.wallContact.setContact(collision.direction * -1);
     };
     HPCollisionHandler.recedeFromWall = function (entity, wall, collision) {
         var combinedHalfSize = entity.size.times(0.5).plus(wall.size.times(0.5));
-        if (collision.direction === direction_1.default.Up) {
+        if (collision.direction === direction_1.default.Down) {
             entity.position.y = wall.position.y + combinedHalfSize.y;
         }
-        else if (collision.direction === direction_1.default.Right) {
+        else if (collision.direction === direction_1.default.Left) {
             entity.position.x = wall.position.x - combinedHalfSize.x;
         }
-        else if (collision.direction === direction_1.default.Down) {
+        else if (collision.direction === direction_1.default.Up) {
             entity.position.y = wall.position.y - combinedHalfSize.y;
         }
-        else if (collision.direction === direction_1.default.Left) {
+        else if (collision.direction === direction_1.default.Right) {
             entity.position.x = wall.position.x + combinedHalfSize.x;
         }
     };
@@ -696,10 +828,10 @@ var HPCollision = /** @class */ (function () {
     function HPCollision(_direction) {
         if (_direction === void 0) { _direction = undefined; }
         this.hit = _direction !== undefined;
-        this.direction = _direction || direction_1.default.Down;
+        this.direction = _direction !== undefined ? _direction : direction_1.default.Down;
     }
     HPCollision.prototype.withOppositeDirection = function () {
-        return new HPCollision(this.direction ? this.direction * -1 : undefined);
+        return new HPCollision(this.hit ? this.direction * -1 : undefined);
     };
     return HPCollision;
 }());
@@ -799,7 +931,7 @@ var HPVector = /** @class */ (function () {
     HPVector.prototype.toUnitVector = function () {
         return new HPVector(this.x / this.length, this.y / this.length);
     };
-    HPVector.prototype.flippedHorizontally = function (isFlipped) {
+    HPVector.prototype.flipHorz = function (isFlipped) {
         if (isFlipped === void 0) { isFlipped = true; }
         return this.times(new HPVector(isFlipped ? -1 : 1, 1));
     };
@@ -929,6 +1061,96 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var actor_factory_1 = __webpack_require__(/*! ../engine/core/actor-factory */ "./src/engine/core/actor-factory.ts");
+var static_image_actor_1 = __webpack_require__(/*! ../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
+var key_listener_1 = __webpack_require__(/*! ../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
+var direction_1 = __webpack_require__(/*! ../engine/physics/direction */ "./src/engine/physics/direction.ts");
+var TGHero = /** @class */ (function (_super) {
+    __extends(TGHero, _super);
+    function TGHero() {
+        var _this = _super.call(this, vector_1.default.Zero) || this;
+        _this.keyListeners = [];
+        _this.leftKeyDown = false;
+        _this.rightKeyDown = false;
+        _this.runForce = vector_1.default.Zero;
+        _this.isOnGround = false;
+        _this.keyListeners.push(new key_listener_1.default(37 /* left arrow */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
+        _this.keyListeners.push(new key_listener_1.default(39 /* right arrow */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
+        _this.keyListeners.push(new key_listener_1.default(38 /* up arrow */, function () { return _this.jump(); }));
+        return _this;
+    }
+    Object.defineProperty(TGHero, "runForce", {
+        get: function () { return new vector_1.default(3, 0); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero, "jumpForce", {
+        get: function () { return new vector_1.default(0, -16); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "imageFile", {
+        get: function () { return 'public/imgs/barbarian.png'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "size", {
+        get: function () { return new vector_1.default(94, 107); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "isGravityBound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "isWallBound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    TGHero.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        this.isOnGround = this.wallContact.all([direction_1.default.Down]);
+        if (this.isOnGround)
+            this.push(this.runForce);
+    };
+    TGHero.prototype.destroy = function () {
+        this.keyListeners.forEach(function (listener) { return listener.destroy(); });
+    };
+    TGHero.prototype.runLeft = function () {
+        this.runForce = TGHero.runForce.flipHorz();
+        this.flipSprite();
+    };
+    TGHero.prototype.runRight = function () {
+        this.runForce = TGHero.runForce;
+        this.flipSprite(false);
+    };
+    TGHero.prototype.stopRunning = function () {
+        this.runForce = vector_1.default.Zero;
+    };
+    TGHero.prototype.onLeftDown = function () {
+        this.leftKeyDown = true;
+        this.runLeft();
+    };
+    TGHero.prototype.onLeftUp = function () {
+        this.leftKeyDown = false;
+        this.rightKeyDown ? this.runRight() : this.stopRunning();
+    };
+    TGHero.prototype.onRightDown = function () {
+        this.rightKeyDown = true;
+        this.runRight();
+    };
+    TGHero.prototype.onRightUp = function () {
+        this.rightKeyDown = false;
+        this.leftKeyDown ? this.runLeft() : this.stopRunning();
+    };
+    TGHero.prototype.jump = function () {
+        if (!this.isOnGround)
+            return;
+        this.push(TGHero.jumpForce);
+    };
+    return TGHero;
+}(static_image_actor_1.default));
 var TGActorFactory = /** @class */ (function (_super) {
     __extends(TGActorFactory, _super);
     function TGActorFactory() {
@@ -942,7 +1164,8 @@ var TGActorFactory = /** @class */ (function (_super) {
     };
     return TGActorFactory;
 }(actor_factory_1.default));
-var app = new app_1.default(new vector_1.default(825, 525), '#game-container', new TGActorFactory(), [], 'public/areas/test-1.json', new vector_1.default(0, 1), 0.01);
+var hero = new TGHero();
+var app = new app_1.default(new vector_1.default(825, 525), '#game-container', new TGActorFactory(), [hero.imageFile], 'public/areas/test-1.json', hero, new vector_1.default(200, 200), new vector_1.default(0, 1), 0.01);
 app.start();
 
 

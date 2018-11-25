@@ -54,7 +54,7 @@ export default class HPVector {
     return new HPVector(this.x / this.length, this.y / this.length);
   }
 
-  flippedHorizontally(isFlipped = true) {
+  flipHorz(isFlipped = true) {
     return this.times(new HPVector(isFlipped ? -1 : 1, 1));
   }
 

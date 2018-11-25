@@ -13,13 +13,14 @@ export default abstract class HPActor implements HPEntity {
   get isWallBound() { return false; }
   get isGravityBound() { return false; }
   get isAirFrictionBound() { return false; }
-  get bounciness() { return 0.5; }
-  get slipperiness() { return 0.5; }
+  get bounciness() { return 0.2; }
+  get slipperiness() { return 0.2; }
   get weight() { return 1; }
   get maxVelocity() { return 64; }
 
   /* @override */
-  onTick() { }
+  init() { }
+  destroy() { }
   onCollision(actor: HPActor, collision: HPCollision) { }
 
   velocity = HPVector.Zero;
@@ -34,15 +35,17 @@ export default abstract class HPActor implements HPEntity {
     public position: HPVector,
   ) { }
 
+  /* @override */
+  onTick() {
+    this.sprite.x = this.position.x;
+    this.sprite.y = this.position.y;
+  }
+
   beforeTick() {
     this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
     this.position = this.position.plus(this.velocity);
     this.acceleration = HPVector.Zero;
     this.wallContact = new HPWallContactMap();
-
-    // align sprite
-    this.sprite.x = this.position.x;
-    this.sprite.y = this.position.y;
   }
 
   push(force: HPVector) {

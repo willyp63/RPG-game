@@ -9,11 +9,11 @@ export default class HPCollision {
     _direction: HPDirection | undefined = undefined,
   ) {
     this.hit = _direction !== undefined;
-    this.direction = _direction || HPDirection.Down;
+    this.direction = _direction !== undefined ? _direction : HPDirection.Down;
   }
 
   withOppositeDirection() {
-    return new HPCollision(this.direction ? this.direction * -1 : undefined);
+    return new HPCollision(this.hit ? this.direction * -1 : undefined);
   }
 
 }

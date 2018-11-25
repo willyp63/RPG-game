@@ -19,6 +19,8 @@ export default class HPCollisionHandler {
     otherEntity: HPEntity,
     collision: HPCollision,
   ) {
+    if (!collision.hit) return;
+
     HPCollisionHandler.handleWallCollision(targetEntity, otherEntity, collision);
   }
 
@@ -32,7 +34,7 @@ export default class HPCollisionHandler {
     HPCollisionHandler.recedeFromWall(targetEntity, otherEntity, collision);
     HPCollisionHandler.bounceOffWall(targetEntity, otherEntity, collision);
     HPCollisionHandler.applyFloorFriction(targetEntity, otherEntity, collision);
-    targetEntity.wallContact.setContact(collision.direction);
+    targetEntity.wallContact.setContact(collision.direction * -1);
   }
 
   private static recedeFromWall(
@@ -42,13 +44,13 @@ export default class HPCollisionHandler {
   ) {
     const combinedHalfSize = entity.size.times(0.5).plus(wall.size.times(0.5));
 
-    if (collision.direction === HPDirection.Up) {
+    if (collision.direction === HPDirection.Down) {
       entity.position.y = wall.position.y + combinedHalfSize.y;
-    } else if (collision.direction === HPDirection.Right) {
-      entity.position.x = wall.position.x - combinedHalfSize.x;
-    } else if (collision.direction === HPDirection.Down) {
-      entity.position.y = wall.position.y - combinedHalfSize.y;
     } else if (collision.direction === HPDirection.Left) {
+      entity.position.x = wall.position.x - combinedHalfSize.x;
+    } else if (collision.direction === HPDirection.Up) {
+      entity.position.y = wall.position.y - combinedHalfSize.y;
+    } else if (collision.direction === HPDirection.Right) {
       entity.position.x = wall.position.x + combinedHalfSize.x;
     }
   }

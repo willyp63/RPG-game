@@ -6,22 +6,28 @@ import HPDirection from '../physics/direction';
 import HPVector from '../physics/vector';
 
 export default class HPStage {
+  
+  size = HPVector.Zero;
 
   private actors: Array<HPActor> = [];
 
   constructor(
+    private viewSize: HPVector,
     private rootContainer: Container,
+    private actorToFollow: HPActor,
     private gravityForce: HPVector,
     private airFrictionCoefficient: number,
   ) { }
 
   addActor(actor: HPActor) {
     this.actors.push(actor);
+    actor.init();
     this.rootContainer.addChild(actor.sprite);
   }
 
   removeActorAt(i: number) {
     this.rootContainer.removeChild(this.actors[i].sprite);
+    this.actors[i].destroy();
     this.actors.splice(i, 1);
   }
 
@@ -32,6 +38,7 @@ export default class HPStage {
   onTick() {
     this.actors.forEach(actor => actor.beforeTick());
     this.handleCollisions();
+    this.followActor();
 
     this.actors.forEach(actor => {
       this.killIfSquished(actor);
@@ -86,6 +93,19 @@ export default class HPStage {
     for (let i = 0; i < this.actors.length; i++) {
       if (this.actors[i].isDead) this.removeActorAt(i--);
     }
+  }
+
+  private followActor() {
+    let stageX = this.viewSize.x / 2 - this.actorToFollow.position.x;
+    stageX = Math.min(stageX, 0);
+    stageX = Math.max(stageX, this.viewSize.x - this.size.x);
+
+    let stageY = this.viewSize.y / 2 - this.actorToFollow.position.y;
+    stageY = Math.min(stageY, 0);
+    stageY = Math.max(stageY, this.viewSize.y - this.size.y);
+
+    this.rootContainer.x = stageX;
+    this.rootContainer.y = stageY;
   }
 
 }
