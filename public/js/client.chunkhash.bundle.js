@@ -154,6 +154,69 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/engine/actors/static-image-actor.ts":
+/*!*************************************************!*\
+  !*** ./src/engine/actors/static-image-actor.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var HPStaticImageActor = /** @class */ (function (_super) {
+    __extends(HPStaticImageActor, _super);
+    function HPStaticImageActor(position) {
+        return _super.call(this, position, new pixi_js_1.Sprite()) || this;
+    }
+    Object.defineProperty(HPStaticImageActor.prototype, "imageFile", {
+        /* @override */
+        get: function () { return ''; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPStaticImageActor.prototype, "imageScale", {
+        get: function () { return 1; },
+        enumerable: true,
+        configurable: true
+    });
+    HPStaticImageActor.prototype.init = function () {
+        this._sprite.texture = pixi_js_1.loader.resources[this.imageFile].texture;
+        this._sprite.anchor = { x: 0.5, y: 0.5 };
+        this._sprite.scale.x = this.imageScale;
+        this._sprite.scale.y = this.imageScale;
+    };
+    HPStaticImageActor.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        this._sprite.scale.x = (this.isFacingLeft ? -1 : 1) * this.imageScale;
+    };
+    Object.defineProperty(HPStaticImageActor.prototype, "_sprite", {
+        get: function () { return this.sprite; },
+        enumerable: true,
+        configurable: true
+    });
+    return HPStaticImageActor;
+}(actor_1.default));
+exports.default = HPStaticImageActor;
+
+
+/***/ }),
+
 /***/ "./src/engine/actors/static-shape-actor.ts":
 /*!*************************************************!*\
   !*** ./src/engine/actors/static-shape-actor.ts ***!
@@ -180,43 +243,60 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
-var defaultOptions = Object.assign({
-    color: 0xFFFFFF,
-    borderWidth: 0,
-    borderColor: 0x000000,
-    cornerRadius: 0,
-    isRound: false,
-}, actor_1.HPActorDefaultOptions);
 var HPStaticShapeActor = /** @class */ (function (_super) {
     __extends(HPStaticShapeActor, _super);
-    function HPStaticShapeActor(position, size, _options) {
-        var _this = _super.call(this, position, size, new pixi_js_1.Graphics(), _options) || this;
-        _this.options = Object.assign({}, defaultOptions, _options);
-        return _this;
+    function HPStaticShapeActor(position) {
+        return _super.call(this, position, new pixi_js_1.Graphics()) || this;
     }
+    Object.defineProperty(HPStaticShapeActor.prototype, "color", {
+        /* @override */
+        get: function () { return 0xFFFFFF; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPStaticShapeActor.prototype, "borderWidth", {
+        get: function () { return 0; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPStaticShapeActor.prototype, "borderColor", {
+        get: function () { return 0x000000; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPStaticShapeActor.prototype, "cornerRadius", {
+        get: function () { return 0; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPStaticShapeActor.prototype, "isRound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    HPStaticShapeActor.prototype.init = function () {
+        this._sprite.beginFill(this.color);
+        var adjustedSize = this.size;
+        if (this.borderWidth > 0) {
+            this._sprite.lineStyle(this.borderWidth, this.borderColor);
+            var borderSize = new vector_1.default(this.borderWidth, this.borderWidth);
+            adjustedSize = this.size.minus(borderSize);
+        }
+        if (this.isRound) {
+            this._sprite.drawEllipse(0, 0, adjustedSize.x / 2, adjustedSize.y / 2);
+        }
+        else {
+            this.cornerRadius > 0
+                ? this._sprite.drawRoundedRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y, this.cornerRadius)
+                : this._sprite.drawRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y);
+        }
+        this._sprite.endFill();
+    };
     Object.defineProperty(HPStaticShapeActor.prototype, "_sprite", {
         get: function () { return this.sprite; },
         enumerable: true,
         configurable: true
     });
-    HPStaticShapeActor.prototype.init = function () {
-        this._sprite.beginFill(this.options.color);
-        var adjustedSize = this.size;
-        if (this.options.borderWidth > 0) {
-            this._sprite.lineStyle(this.options.borderWidth, this.options.borderColor);
-            var borderSize = new vector_1.default(this.options.borderWidth, this.options.borderWidth);
-            adjustedSize = this.size.minus(borderSize);
-        }
-        if (this.options.isRound) {
-            this._sprite.drawEllipse(0, 0, adjustedSize.x / 2, adjustedSize.y / 2);
-        }
-        else {
-            this.options.cornerRadius > 0
-                ? this._sprite.drawRoundedRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y, this.options.cornerRadius)
-                : this._sprite.drawRect(adjustedSize.x / -2, adjustedSize.y / -2, adjustedSize.x, adjustedSize.y);
-        }
-        this._sprite.endFill();
-    };
     return HPStaticShapeActor;
 }(actor_1.default));
 exports.default = HPStaticShapeActor;
@@ -260,20 +340,10 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var wall_contact_map_1 = __webpack_require__(/*! ../physics/wall-contact-map */ "./src/engine/physics/wall-contact-map.ts");
 var actor_type_1 = __webpack_require__(/*! ./actor-type */ "./src/engine/core/actor-type.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
-exports.HPActorDefaultOptions = {
-    type: actor_type_1.default.Nuetral,
-    bounciness: 0.2,
-    slipperiness: 0.2,
-    weight: 1,
-    maxVelocity: 64,
-    isWall: false,
-    isWallBound: true,
-    isGravityBound: true,
-    isAirFrictionBound: true,
-    airWalkCoefficient: 0.066,
-};
 var HPActor = /** @class */ (function () {
-    function HPActor(_position, _size, _sprite, _options) {
+    function HPActor(position, sprite) {
+        this.position = position;
+        this.sprite = sprite;
         this.velocity = vector_1.default.Zero;
         this.acceleration = vector_1.default.Zero;
         this.moveForce = vector_1.default.Zero;
@@ -282,21 +352,63 @@ var HPActor = /** @class */ (function () {
         this.isOnGround = false;
         this.isDead = false;
         this.newBornActors = [];
-        this.position = _position;
-        this.size = _size;
-        this.sprite = _sprite;
-        var options = Object.assign({}, exports.HPActorDefaultOptions, _options);
-        this.type = options.type;
-        this.bounciness = options.bounciness;
-        this.slipperiness = options.slipperiness;
-        this.weight = options.weight;
-        this.maxVelocity = options.maxVelocity;
-        this.isWall = options.isWall;
-        this.isWallBound = options.isWallBound;
-        this.isGravityBound = options.isGravityBound;
-        this.isAirFrictionBound = options.isAirFrictionBound;
-        this.airWalkCoefficient = options.airWalkCoefficient;
     }
+    Object.defineProperty(HPActor.prototype, "type", {
+        /* @override */
+        get: function () { return actor_type_1.default.Nuetral; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "bounciness", {
+        get: function () { return 0.2; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "slipperiness", {
+        get: function () { return 0.2; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "size", {
+        get: function () { return vector_1.default.Zero; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "weight", {
+        get: function () { return 1; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "maxVelocity", {
+        get: function () { return 64; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "isWall", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "isWallBound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "isGravityBound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "isAirFrictionBound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "airWalkCoefficient", {
+        get: function () { return 0.066; },
+        enumerable: true,
+        configurable: true
+    });
     /* @override */
     HPActor.prototype.init = function () { };
     HPActor.prototype.destroy = function () { };
@@ -407,6 +519,8 @@ var HPApp = /** @class */ (function () {
         this.areaFile = options.areaFile;
         this.hero = options.hero;
         this.heroStart = options.heroStart;
+        // Disable interpolation when scaling, will make texture be pixelated
+        pixi_js_1.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         this.app = new pixi_js_1.Application({
             width: options.viewSize.x,
             height: options.viewSize.y,
@@ -1130,13 +1244,48 @@ var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./sr
 var TGFireBall = /** @class */ (function (_super) {
     __extends(TGFireBall, _super);
     function TGFireBall(position) {
-        return _super.call(this, position, new vector_1.default(20, 20), {
-            isGravityBound: false,
-            color: 0xFF7700,
-            borderWidth: 2,
-            borderColor: 0x000000,
-        }) || this;
+        return _super.call(this, position) || this;
     }
+    Object.defineProperty(TGFireBall.prototype, "size", {
+        get: function () { return new vector_1.default(20, 20); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isWallBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isGravityBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "color", {
+        get: function () { return 0xFF7700; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "borderWidth", {
+        get: function () { return 2; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "borderColor", {
+        get: function () { return 0x000000; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isRound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
     TGFireBall.prototype.onCollision = function (actor, collision) {
         if (!collision.hit)
             return;
@@ -1155,10 +1304,10 @@ exports.default = TGFireBall;
 
 /***/ }),
 
-/***/ "./src/game/actors/hero.ts":
-/*!*********************************!*\
-  !*** ./src/game/actors/hero.ts ***!
-  \*********************************/
+/***/ "./src/game/actors/heros/barbarian.ts":
+/*!********************************************!*\
+  !*** ./src/game/actors/heros/barbarian.ts ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1178,30 +1327,81 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var key_listener_1 = __webpack_require__(/*! ../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
-var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
-var fire_ball_1 = __webpack_require__(/*! ./fire-ball */ "./src/game/actors/fire-ball.ts");
-var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
-var destroyable_1 = __webpack_require__(/*! ../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
+var hero_1 = __webpack_require__(/*! ./hero */ "./src/game/actors/heros/hero.ts");
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var TGBarbarian = /** @class */ (function (_super) {
+    __extends(TGBarbarian, _super);
+    function TGBarbarian() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(TGBarbarian, "imageFile", {
+        get: function () { return 'public/imgs/barbarian.png'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGBarbarian.prototype, "size", {
+        get: function () { return new vector_1.default(33, 100); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGBarbarian.prototype, "imageFile", {
+        get: function () { return TGBarbarian.imageFile; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGBarbarian;
+}(hero_1.default));
+exports.default = TGBarbarian;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/heros/hero.ts":
+/*!***************************************!*\
+  !*** ./src/game/actors/heros/hero.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var key_listener_1 = __webpack_require__(/*! ../../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
+var fire_ball_1 = __webpack_require__(/*! ../fire-ball */ "./src/game/actors/fire-ball.ts");
+var actor_type_1 = __webpack_require__(/*! ../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
+var destroyable_1 = __webpack_require__(/*! ../../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
+var static_image_actor_1 = __webpack_require__(/*! ../../../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
 var RUN_FORCE = new vector_1.default(3, 0);
 var JUMP_FORCE = new vector_1.default(0, -16);
 var SHOOT_FORCE = new vector_1.default(16, 0);
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
-        var _this = _super.call(this, vector_1.default.Zero, new vector_1.default(40, 80), {
-            type: actor_type_1.default.Friendly,
-            color: 0x0000FF,
-            borderWidth: 2,
-            borderColor: 0x000000,
-            cornerRadius: 4,
-        }) || this;
+        var _this = _super.call(this, vector_1.default.Zero) || this;
         _this.destroyer = new destroyable_1.default();
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
         return _this;
     }
+    Object.defineProperty(TGHero.prototype, "type", {
+        get: function () { return actor_type_1.default.Friendly; },
+        enumerable: true,
+        configurable: true
+    });
     TGHero.prototype.init = function () {
         _super.prototype.init.call(this);
         this.addKeyListeners();
@@ -1251,8 +1451,60 @@ var TGHero = /** @class */ (function (_super) {
         this.newBornActors.push(fireBall);
     };
     return TGHero;
-}(static_shape_actor_1.default));
+}(static_image_actor_1.default));
 exports.default = TGHero;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/heros/wizard.ts":
+/*!*****************************************!*\
+  !*** ./src/game/actors/heros/wizard.ts ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var hero_1 = __webpack_require__(/*! ./hero */ "./src/game/actors/heros/hero.ts");
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var TGWizard = /** @class */ (function (_super) {
+    __extends(TGWizard, _super);
+    function TGWizard() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(TGWizard, "imageFile", {
+        get: function () { return 'public/imgs/wizard.png'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWizard.prototype, "size", {
+        get: function () { return new vector_1.default(28, 80); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWizard.prototype, "imageFile", {
+        get: function () { return TGWizard.imageFile; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGWizard;
+}(hero_1.default));
+exports.default = TGWizard;
 
 
 /***/ }),
@@ -1283,21 +1535,55 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var TGWall = /** @class */ (function (_super) {
     __extends(TGWall, _super);
-    function TGWall(position, size) {
-        return _super.call(this, 
+    function TGWall(position, _size) {
+        var _this = 
         // when creating a wall you specify the upper-left point, not the center
-        position.plus(size.times(0.5)), size, {
-            isWall: true,
-            isWallBound: false,
-            isGravityBound: false,
-            isAirFrictionBound: false,
-            color: 0x333333,
-            borderWidth: 2,
-            borderColor: 0x757575,
-        }) || this;
+        _super.call(this, position.plus(_size.times(0.5))) || this;
+        _this._size = _size;
+        return _this;
     }
     Object.defineProperty(TGWall, "id", {
         get: function () { return 'Wall'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "size", {
+        get: function () { return this._size; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isWall", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isWallBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isGravityBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "color", {
+        get: function () { return 0x333333; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "borderWidth", {
+        get: function () { return 2; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWall.prototype, "borderColor", {
+        get: function () { return 0x757575; },
         enumerable: true,
         configurable: true
     });
@@ -1331,26 +1617,45 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var set_ticks_out_1 = __webpack_require__(/*! ../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
 var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var random_1 = __webpack_require__(/*! ../../engine/util/random */ "./src/engine/util/random.ts");
+var static_image_actor_1 = __webpack_require__(/*! ../../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
 var WANDER_FORCE = new vector_1.default(1, 0);
 var JUMP_FORCE = new vector_1.default(0, -12);
 var TGWanderingTarget = /** @class */ (function (_super) {
     __extends(TGWanderingTarget, _super);
     function TGWanderingTarget(position) {
-        return _super.call(this, position, new vector_1.default(30, 60), {
-            type: actor_type_1.default.Unfriendly,
-            color: 0xFF0000,
-            borderWidth: 2,
-            borderColor: 0x000000,
-            cornerRadius: 4,
-        }) || this;
+        return _super.call(this, position) || this;
     }
     Object.defineProperty(TGWanderingTarget, "id", {
         get: function () { return 'WanderingTarget'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget, "imageFile", {
+        get: function () { return 'public/imgs/skeleton.png'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget.prototype, "size", {
+        get: function () { return new vector_1.default(26, 66); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget.prototype, "type", {
+        get: function () { return actor_type_1.default.Unfriendly; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget.prototype, "imageFile", {
+        get: function () { return TGWanderingTarget.imageFile; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget.prototype, "imageScale", {
+        get: function () { return 2; },
         enumerable: true,
         configurable: true
     });
@@ -1370,7 +1675,7 @@ var TGWanderingTarget = /** @class */ (function (_super) {
         set_ticks_out_1.default(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
     };
     return TGWanderingTarget;
-}(static_shape_actor_1.default));
+}(static_image_actor_1.default));
 exports.default = TGWanderingTarget;
 
 
@@ -1388,13 +1693,21 @@ exports.default = TGWanderingTarget;
 Object.defineProperty(exports, "__esModule", { value: true });
 var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var hero_1 = __webpack_require__(/*! ./actors/hero */ "./src/game/actors/hero.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
+var wandering_target_1 = __webpack_require__(/*! ./actors/wandering-target */ "./src/game/actors/wandering-target.ts");
+var wizard_1 = __webpack_require__(/*! ./actors/heros/wizard */ "./src/game/actors/heros/wizard.ts");
+var barbarian_1 = __webpack_require__(/*! ./actors/heros/barbarian */ "./src/game/actors/heros/barbarian.ts");
+var assets = [
+    wizard_1.default.imageFile,
+    barbarian_1.default.imageFile,
+    wandering_target_1.default.imageFile,
+];
 var app = new app_1.default({
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
-    hero: new hero_1.default(),
+    assets: assets,
+    hero: new wizard_1.default(),
     heroStart: new vector_1.default(200, 700),
 });
 app.start();

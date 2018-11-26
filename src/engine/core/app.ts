@@ -1,4 +1,4 @@
-import { Application, loader } from "pixi.js";
+import { Application, loader, settings } from "pixi.js";
 import HPVector from "../physics/vector";
 import HPStage from "./stage";
 import HPAreaService from "../services/area-service";
@@ -64,6 +64,9 @@ export default class HPApp {
     this.areaFile = options.areaFile;
     this.hero = options.hero;
     this.heroStart = options.heroStart;
+
+    // Disable interpolation when scaling, will make texture be pixelated
+    settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
     this.app = new Application({
       width: options.viewSize.x,

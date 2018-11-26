@@ -1,28 +1,20 @@
-import HPVector from "../../engine/physics/vector";
-import HPKeyListener from "../../engine/interaction/key-listener";
-import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
-import TGFireBall from "./fire-ball";
-import HPActorType from "../../engine/core/actor-type";
-import HPDestroyer from "../../engine/util/destroyable";
+import HPVector from "../../../engine/physics/vector";
+import HPKeyListener from "../../../engine/interaction/key-listener";
+import TGFireBall from "../fire-ball";
+import HPActorType from "../../../engine/core/actor-type";
+import HPDestroyer from "../../../engine/util/destroyable";
+import HPStaticImageActor from "../../../engine/actors/static-image-actor";
 
 const RUN_FORCE = new HPVector(3, 0);
 const JUMP_FORCE = new HPVector(0, -16);
 const SHOOT_FORCE = new HPVector(16, 0);
 
-export default class TGHero extends HPStaticShapeActor {
+export default abstract class TGHero extends HPStaticImageActor {
+
+  get type() { return HPActorType.Friendly; }
 
   constructor() {
-    super(
-      HPVector.Zero,
-      new HPVector(40, 80),
-      {
-        type: HPActorType.Friendly,
-        color: 0x0000FF,
-        borderWidth: 2,
-        borderColor: 0x000000,
-        cornerRadius: 4,
-      },
-    );
+    super(HPVector.Zero);
   }
 
   init() {
