@@ -25,6 +25,7 @@ import BONES from "./bones";
 import RESTING_FRAME from "./frames/resting";
 import RUN_ANIMATION from './animations/run';
 import TGWeapon from './weapon';
+import { HPMouseTracker } from '../../../engine/interaction/mouse-listener';
 
 export default abstract class TGHero extends HPSkeletalActor {
 
@@ -58,6 +59,14 @@ export default abstract class TGHero extends HPSkeletalActor {
 
   destroy() {
     this.destroyer.destroy();
+  }
+
+  get targetPosition() {
+    return HPMouseTracker.position;
+  }
+
+  get targetUnitVector() {
+    return HPMouseTracker.position.minus(this.position).toUnitVector();
   }
 
   private static get headTexture() { return HPTextureHelper.get(TGHero.textureFile, 'head.png'); }

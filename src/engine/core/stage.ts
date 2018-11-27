@@ -4,6 +4,7 @@ import HPCollisionDetector from '../physics/collision-detector';
 import HPCollisionHandler from '../physics/collision-handler';
 import HPDirection from '../physics/direction';
 import HPVector from '../physics/vector';
+import { HPMouseTracker } from '../interaction/mouse-listener';
 
 export default class HPStage {
   
@@ -17,7 +18,9 @@ export default class HPStage {
     private actorToFollow: HPActor,
     private gravityForce: HPVector,
     private airFrictionCoefficient: number,
-  ) { }
+  ) {
+    HPMouseTracker.setContainer(rootContainer);
+  }
 
   addActor(actor: HPActor) {
     this.actors.push(actor);

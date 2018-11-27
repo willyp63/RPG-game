@@ -673,6 +673,7 @@ var collision_detector_1 = __webpack_require__(/*! ../physics/collision-detector
 var collision_handler_1 = __webpack_require__(/*! ../physics/collision-handler */ "./src/engine/physics/collision-handler.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
+var mouse_listener_1 = __webpack_require__(/*! ../interaction/mouse-listener */ "./src/engine/interaction/mouse-listener.ts");
 var HPStage = /** @class */ (function () {
     function HPStage(viewSize, rootContainer, actorToFollow, gravityForce, airFrictionCoefficient) {
         this.viewSize = viewSize;
@@ -682,6 +683,7 @@ var HPStage = /** @class */ (function () {
         this.airFrictionCoefficient = airFrictionCoefficient;
         this.size = vector_1.default.Zero;
         this.actors = [];
+        mouse_listener_1.HPMouseTracker.setContainer(rootContainer);
     }
     HPStage.prototype.addActor = function (actor) {
         this.actors.push(actor);
@@ -811,6 +813,44 @@ var HPKeyListener = /** @class */ (function () {
     return HPKeyListener;
 }());
 exports.default = HPKeyListener;
+
+
+/***/ }),
+
+/***/ "./src/engine/interaction/mouse-listener.ts":
+/*!**************************************************!*\
+  !*** ./src/engine/interaction/mouse-listener.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var _HPMouseTracker = /** @class */ (function () {
+    function _HPMouseTracker() {
+        this.container = new pixi_js_1.Container();
+        this._position = vector_1.default.Zero;
+    }
+    Object.defineProperty(_HPMouseTracker.prototype, "position", {
+        get: function () { return this._position; },
+        enumerable: true,
+        configurable: true
+    });
+    _HPMouseTracker.prototype.setContainer = function (container) {
+        container.interactive = true;
+        container.on('pointermove', this.onMouseMove.bind(this));
+        this.container = container;
+    };
+    _HPMouseTracker.prototype.onMouseMove = function (event) {
+        var point = event.data.getLocalPosition(this.container);
+        this._position = new vector_1.default(point.x, point.y);
+    };
+    return _HPMouseTracker;
+}());
+exports.HPMouseTracker = new _HPMouseTracker();
 
 
 /***/ }),
@@ -1579,6 +1619,68 @@ exports.default = TGBarbarian;
 
 /***/ }),
 
+/***/ "./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts":
+/*!**********************************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var static_shape_actor_1 = __webpack_require__(/*! ../../../../../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
+var vector_1 = __webpack_require__(/*! ../../../../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var TGFireBall = /** @class */ (function (_super) {
+    __extends(TGFireBall, _super);
+    function TGFireBall(position) {
+        return _super.call(this, position) || this;
+    }
+    Object.defineProperty(TGFireBall.prototype, "size", {
+        get: function () { return new vector_1.default(20, 20); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "color", {
+        get: function () { return 0xEF6D09; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "borderWidth", {
+        get: function () { return 1; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "borderColor", {
+        get: function () { return 0x000000; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isRound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGFireBall;
+}(static_shape_actor_1.default));
+exports.default = TGFireBall;
+
+
+/***/ }),
+
 /***/ "./src/game/actors/hero/classes/wizard/wizard.ts":
 /*!*******************************************************!*\
   !*** ./src/game/actors/hero/classes/wizard/wizard.ts ***!
@@ -1605,13 +1707,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
 var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
+var fire_ball_1 = __webpack_require__(/*! ./projectiles/fire-ball */ "./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts");
+var FIRE_BALL_SHOOT_FORCE = 20;
 var TGWizard = /** @class */ (function (_super) {
     __extends(TGWizard, _super);
     function TGWizard() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.abilities = [
             function () { return console.log('arcane missiles'); },
-            function () { return console.log('fireball'); },
+            function () { return _this.shootFireBall(); },
             function () { return console.log('blink'); },
             function () { return console.log('frost nova'); },
             function () { return console.log('idk...'); },
@@ -1640,6 +1744,11 @@ var TGWizard = /** @class */ (function (_super) {
     });
     TGWizard.prototype.performAbility = function (abilityNum) {
         this.abilities[abilityNum]();
+    };
+    TGWizard.prototype.shootFireBall = function () {
+        var fireBall = new fire_ball_1.default(this.position);
+        fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE));
+        this.newBornActors.push(fireBall);
     };
     return TGWizard;
 }(hero_1.default));
@@ -1799,6 +1908,7 @@ var bones_1 = __webpack_require__(/*! ./bones */ "./src/game/actors/hero/bones.t
 var resting_1 = __webpack_require__(/*! ./frames/resting */ "./src/game/actors/hero/frames/resting.ts");
 var run_1 = __webpack_require__(/*! ./animations/run */ "./src/game/actors/hero/animations/run.ts");
 var weapon_1 = __webpack_require__(/*! ./weapon */ "./src/game/actors/hero/weapon.ts");
+var mouse_listener_1 = __webpack_require__(/*! ../../../engine/interaction/mouse-listener */ "./src/engine/interaction/mouse-listener.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
@@ -1849,6 +1959,20 @@ var TGHero = /** @class */ (function (_super) {
     TGHero.prototype.destroy = function () {
         this.destroyer.destroy();
     };
+    Object.defineProperty(TGHero.prototype, "targetPosition", {
+        get: function () {
+            return mouse_listener_1.HPMouseTracker.position;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "targetUnitVector", {
+        get: function () {
+            return mouse_listener_1.HPMouseTracker.position.minus(this.position).toUnitVector();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGHero, "headTexture", {
         get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'head.png'); },
         enumerable: true,
