@@ -10,7 +10,7 @@ export interface HPAppOptions {
   viewSize: HPVector,
   elementSelector: string,
   actorFactory: HPActorFactory,
-  assets: Array<string>,
+  textures: Array<string>,
   areaFile: string,
   hero: HPActor | undefined,
   heroStart: HPVector,
@@ -22,7 +22,7 @@ export interface HPAppArgs {
   viewSize?: HPVector,
   elementSelector: string,
   actorFactory: HPActorFactory,
-  assets?: Array<string>,
+  textures?: Array<string>,
   areaFile: string,
   hero: HPActor,
   heroStart?: HPVector,
@@ -34,7 +34,7 @@ export const HPAppDefaultOptions: HPAppOptions = {
   viewSize: new HPVector(850, 550),
   elementSelector: '',
   actorFactory: {},
-  assets: [],
+  textures: [],
   areaFile: '',
   hero: undefined,
   heroStart: HPVector.Zero,
@@ -49,7 +49,7 @@ export default class HPApp {
   private stage: HPStage;
 
   private actorFactory: HPActorFactory;
-  private assets: Array<string>;
+  private textures: Array<string>;
   private areaFile: string;
   private hero: HPActor;
   private heroStart: HPVector;
@@ -60,7 +60,7 @@ export default class HPApp {
     const options = Object.assign({}, HPAppDefaultOptions, _options);
 
     this.actorFactory = options.actorFactory;
-    this.assets = options.assets;
+    this.textures = options.textures;
     this.areaFile = options.areaFile;
     this.hero = options.hero;
     this.heroStart = options.heroStart;
@@ -92,7 +92,7 @@ export default class HPApp {
   }
 
   async start() {
-    await this.loadAssets();
+    await this.loadTextures();
     this.setAreaData(await this.loadAreaData()); 
     this.addHero();
     this.startGameLoop();
@@ -111,8 +111,8 @@ export default class HPApp {
     this.app.view.style.transform = `scale(${scale})`;
   }
 
-  private loadAssets() {
-    return new Promise(resolve => loader.add(this.assets).load(resolve));
+  private loadTextures() {
+    return new Promise(resolve => loader.add(this.textures).load(resolve));
   }
 
   private loadAreaData() {

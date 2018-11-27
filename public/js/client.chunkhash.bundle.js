@@ -565,7 +565,7 @@ exports.HPAppDefaultOptions = {
     viewSize: new vector_1.default(850, 550),
     elementSelector: '',
     actorFactory: {},
-    assets: [],
+    textures: [],
     areaFile: '',
     hero: undefined,
     heroStart: vector_1.default.Zero,
@@ -576,7 +576,7 @@ var HPApp = /** @class */ (function () {
     function HPApp(_options) {
         var options = Object.assign({}, exports.HPAppDefaultOptions, _options);
         this.actorFactory = options.actorFactory;
-        this.assets = options.assets;
+        this.textures = options.textures;
         this.areaFile = options.areaFile;
         this.hero = options.hero;
         this.heroStart = options.heroStart;
@@ -600,7 +600,7 @@ var HPApp = /** @class */ (function () {
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.loadAssets()];
+                    case 0: return [4 /*yield*/, this.loadTextures()];
                     case 1:
                         _b.sent();
                         _a = this.setAreaData;
@@ -625,9 +625,9 @@ var HPApp = /** @class */ (function () {
         var scale = Math.min(scaleX, scaleY);
         this.app.view.style.transform = "scale(" + scale + ")";
     };
-    HPApp.prototype.loadAssets = function () {
+    HPApp.prototype.loadTextures = function () {
         var _this = this;
-        return new Promise(function (resolve) { return pixi_js_1.loader.add(_this.assets).load(resolve); });
+        return new Promise(function (resolve) { return pixi_js_1.loader.add(_this.textures).load(resolve); });
     };
     HPApp.prototype.loadAreaData = function () {
         return area_service_1.default.getAreaData(this.areaFile);
@@ -2004,7 +2004,7 @@ var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/act
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actors/hero/weapon.ts");
 var barbarian_1 = __webpack_require__(/*! ./actors/hero/classes/barbarian/barbarian */ "./src/game/actors/hero/classes/barbarian/barbarian.ts");
-var assets = [
+var textures = [
     hero_1.default.textureFile,
     weapon_1.default.textureFile,
 ];
@@ -2012,7 +2012,7 @@ var app = new app_1.default({
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
-    assets: assets,
+    textures: textures,
     hero: new barbarian_1.default(),
     heroStart: new vector_1.default(200, 700),
 });

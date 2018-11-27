@@ -5,7 +5,7 @@ import TGHero from './actors/hero/hero';
 import TGWeapon from './actors/hero/weapon';
 import TGBarbarian from './actors/hero/classes/barbarian/barbarian';
 
-const assets = [
+const textures = [
   TGHero.textureFile,
   TGWeapon.textureFile,
 ];
@@ -14,7 +14,7 @@ const app = new HPApp({
   elementSelector: '#game-container',
   actorFactory: TGActorFactory,
   areaFile: 'public/areas/test-1.json',
-  assets,
+  textures,
   hero: new TGBarbarian(),
   heroStart: new HPVector(200, 700),
 });
