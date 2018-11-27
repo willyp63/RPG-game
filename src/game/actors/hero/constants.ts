@@ -1,5 +1,6 @@
 import HPVector from "../../../engine/physics/vector";
 
+export const SIZE = new HPVector(15, 55);
 export const RUN_FORCE = new HPVector(2, 0);
 export const JUMP_FORCE = new HPVector(0, -13);
 

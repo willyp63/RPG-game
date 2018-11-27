@@ -9,7 +9,7 @@ import HPDestroyable from "../util/destroyer";
 
 export default abstract class HPActor implements HPEntity, HPDestroyable {
 
-  /* @override */
+  /** @override */
   get type() { return HPActorType.Nuetral; }
   get bounciness() { return 0.2; }
   get slipperiness() { return 0.2; }
@@ -36,12 +36,12 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
     public sprite: Container,
   ) { }
 
-  /* @override */
+  /** @override */
   init() { }
   destroy() { }
   onCollision(actor: HPActor, collision: HPCollision) { }
 
-  /* @override */
+  /** @override */
   onTick() {
     this.sprite.x = this.position.x;
     this.sprite.y = this.position.y;

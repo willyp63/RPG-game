@@ -4,7 +4,7 @@ import { Sprite, loader, ObservablePoint } from "pixi.js";
 
 export default abstract class HPStaticImageActor extends HPActor {
 
-  /* @override */
+  /** @override */
   get imageFile() { return ''; }
 
   constructor(

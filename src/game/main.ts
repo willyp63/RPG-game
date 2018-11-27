@@ -3,7 +3,7 @@ import HPVector from '../engine/physics/vector';
 import TGActorFactory from './actor-factory';
 import TGHero from './actors/hero/hero';
 import TGWeapon from './actors/hero/weapon';
-import TGBarbarian from './actors/hero/classes/barbarian/barbarian';
+import TGWizard from './actors/hero/classes/wizard/wizard';
 
 const textures = [
   TGHero.textureFile,
@@ -15,7 +15,7 @@ const app = new HPApp({
   actorFactory: TGActorFactory,
   areaFile: 'public/areas/test-1.json',
   textures,
-  hero: new TGBarbarian(),
+  hero: new TGWizard(),
   heroStart: new HPVector(200, 700),
 });
 

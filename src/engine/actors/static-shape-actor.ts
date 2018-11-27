@@ -4,7 +4,7 @@ import { Graphics } from "pixi.js";
 
 export default abstract class HPStaticShapeActor extends HPActor {
 
-  /* @override */
+  /** @override */
   get color() { return 0xFFFFFF; }
   get borderWidth() { return 0; }
   get borderColor() { return 0x000000; }

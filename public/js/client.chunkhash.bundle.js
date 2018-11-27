@@ -310,7 +310,7 @@ var HPStaticShapeActor = /** @class */ (function (_super) {
         return _super.call(this, position, new pixi_js_1.Graphics()) || this;
     }
     Object.defineProperty(HPStaticShapeActor.prototype, "color", {
-        /* @override */
+        /** @override */
         get: function () { return 0xFFFFFF; },
         enumerable: true,
         configurable: true
@@ -415,7 +415,7 @@ var HPActor = /** @class */ (function () {
         this.newBornActors = [];
     }
     Object.defineProperty(HPActor.prototype, "type", {
-        /* @override */
+        /** @override */
         get: function () { return actor_type_1.default.Nuetral; },
         enumerable: true,
         configurable: true
@@ -470,11 +470,11 @@ var HPActor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /* @override */
+    /** @override */
     HPActor.prototype.init = function () { };
     HPActor.prototype.destroy = function () { };
     HPActor.prototype.onCollision = function (actor, collision) { };
-    /* @override */
+    /** @override */
     HPActor.prototype.onTick = function () {
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
@@ -1510,10 +1510,10 @@ exports.default = BONES;
 
 /***/ }),
 
-/***/ "./src/game/actors/hero/classes/barbarian/barbarian.ts":
-/*!*************************************************************!*\
-  !*** ./src/game/actors/hero/classes/barbarian/barbarian.ts ***!
-  \*************************************************************/
+/***/ "./src/game/actors/hero/classes/wizard/wizard.ts":
+/*!*******************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/wizard.ts ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1535,19 +1535,30 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
-var TGBarbarian = /** @class */ (function (_super) {
-    __extends(TGBarbarian, _super);
-    function TGBarbarian() {
+var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
+var TGWizard = /** @class */ (function (_super) {
+    __extends(TGWizard, _super);
+    function TGWizard() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Object.defineProperty(TGBarbarian.prototype, "weapon", {
-        get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Sword); },
+    Object.defineProperty(TGWizard.prototype, "weapon", {
+        get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Staff); },
         enumerable: true,
         configurable: true
     });
-    return TGBarbarian;
+    Object.defineProperty(TGWizard.prototype, "jumpForce", {
+        get: function () { return constants_1.JUMP_FORCE.times(0.9); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWizard.prototype, "runForce", {
+        get: function () { return constants_1.RUN_FORCE.times(0.9); },
+        enumerable: true,
+        configurable: true
+    });
+    return TGWizard;
 }(hero_1.default));
-exports.default = TGBarbarian;
+exports.default = TGWizard;
 
 
 /***/ }),
@@ -1563,6 +1574,7 @@ exports.default = TGBarbarian;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+exports.SIZE = new vector_1.default(15, 55);
 exports.RUN_FORCE = new vector_1.default(2, 0);
 exports.JUMP_FORCE = new vector_1.default(0, -13);
 exports.BACK_UPPER_ARM_ID = 'back-upper-arm';
@@ -1701,6 +1713,7 @@ var texture_helper_1 = __webpack_require__(/*! ../../../engine/util/texture-help
 var bones_1 = __webpack_require__(/*! ./bones */ "./src/game/actors/hero/bones.ts");
 var resting_1 = __webpack_require__(/*! ./frames/resting */ "./src/game/actors/hero/frames/resting.ts");
 var run_1 = __webpack_require__(/*! ./animations/run */ "./src/game/actors/hero/animations/run.ts");
+var weapon_1 = __webpack_require__(/*! ./weapon */ "./src/game/actors/hero/weapon.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
@@ -1715,13 +1728,29 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TGHero.prototype, "weapon", {
+        /** @override */
+        get: function () { return new weapon_1.default(); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "jumpForce", {
+        get: function () { return constants_1.JUMP_FORCE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "runForce", {
+        get: function () { return constants_1.RUN_FORCE; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGHero.prototype, "type", {
         get: function () { return actor_type_1.default.Friendly; },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(TGHero.prototype, "size", {
-        get: function () { return new vector_1.default(15, 55); },
+        get: function () { return constants_1.SIZE; },
         enumerable: true,
         configurable: true
     });
@@ -1784,11 +1813,11 @@ var TGHero = /** @class */ (function (_super) {
         this.destroyer.add(new key_listener_1.default(38, function () { return _this.jump(); }));
     };
     TGHero.prototype.runLeft = function () {
-        this.move(constants_1.RUN_FORCE.flipHorz());
+        this.move(this.runForce.flipHorz());
         this.playAnimation(run_1.default);
     };
     TGHero.prototype.runRight = function () {
-        this.move(constants_1.RUN_FORCE);
+        this.move(this.runForce);
         this.playAnimation(run_1.default);
     };
     TGHero.prototype.stopRunning = function () {
@@ -1818,7 +1847,7 @@ var TGHero = /** @class */ (function (_super) {
     TGHero.prototype.jump = function () {
         if (!this.isOnGround)
             return;
-        this.push(constants_1.JUMP_FORCE);
+        this.push(this.jumpForce);
     };
     return TGHero;
 }(skeletal_actor_1.default));
@@ -2003,7 +2032,7 @@ var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actors/hero/weapon.ts");
-var barbarian_1 = __webpack_require__(/*! ./actors/hero/classes/barbarian/barbarian */ "./src/game/actors/hero/classes/barbarian/barbarian.ts");
+var wizard_1 = __webpack_require__(/*! ./actors/hero/classes/wizard/wizard */ "./src/game/actors/hero/classes/wizard/wizard.ts");
 var textures = [
     hero_1.default.textureFile,
     weapon_1.default.textureFile,
@@ -2013,7 +2042,7 @@ var app = new app_1.default({
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
     textures: textures,
-    hero: new barbarian_1.default(),
+    hero: new wizard_1.default(),
     heroStart: new vector_1.default(200, 700),
 });
 app.start();

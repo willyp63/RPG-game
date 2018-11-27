@@ -13,6 +13,7 @@ import {
   FRONT_LOWER_LEG_ID,
   WEAPON_ID,
   FRONT_LOWER_ARM_CLONE_ID,
+  SIZE,
 } from './constants';
 import HPVector from "../../../engine/physics/vector";
 import HPKeyListener from "../../../engine/interaction/key-listener";
@@ -29,10 +30,13 @@ export default abstract class TGHero extends HPSkeletalActor {
 
   static get textureFile() { return 'public/imgs/person.json'; }
 
-  abstract get weapon(): TGWeapon;
+  /** @override */
+  get weapon() { return new TGWeapon(); }
+  get jumpForce() { return JUMP_FORCE; }
+  get runForce() { return RUN_FORCE; }
 
   get type() { return HPActorType.Friendly; }
-  get size() { return new HPVector(15, 55); }
+  get size() { return SIZE; }
 
   constructor() {
     super(
@@ -103,12 +107,12 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   private runLeft() {
-    this.move(RUN_FORCE.flipHorz());
+    this.move(this.runForce.flipHorz());
     this.playAnimation(RUN_ANIMATION);
   }
 
   private runRight() {
-    this.move(RUN_FORCE);
+    this.move(this.runForce);
     this.playAnimation(RUN_ANIMATION);
   }
 
@@ -143,7 +147,7 @@ export default abstract class TGHero extends HPSkeletalActor {
 
   private jump() {
     if (!this.isOnGround) return;
-    this.push(JUMP_FORCE);
+    this.push(this.jumpForce);
   }
   
 }
