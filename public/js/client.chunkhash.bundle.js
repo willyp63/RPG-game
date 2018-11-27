@@ -1510,6 +1510,75 @@ exports.default = BONES;
 
 /***/ }),
 
+/***/ "./src/game/actors/hero/classes/barbarian/barbarian.ts":
+/*!*************************************************************!*\
+  !*** ./src/game/actors/hero/classes/barbarian/barbarian.ts ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
+var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
+var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
+var TGBarbarian = /** @class */ (function (_super) {
+    __extends(TGBarbarian, _super);
+    function TGBarbarian() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.abilities = [
+            function () { return console.log('slash'); },
+            function () { return console.log('whirlwind'); },
+            function () { return console.log('jump'); },
+            function () { return console.log('shields up'); },
+            function () { return console.log('idk...'); },
+        ];
+        return _this;
+    }
+    Object.defineProperty(TGBarbarian, "id", {
+        get: function () { return 'Barbarian'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGBarbarian.prototype, "weapon", {
+        get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Sword); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGBarbarian.prototype, "jumpForce", {
+        get: function () { return constants_1.JUMP_FORCE.times(1.1); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGBarbarian.prototype, "runForce", {
+        get: function () { return constants_1.RUN_FORCE.times(1.1); },
+        enumerable: true,
+        configurable: true
+    });
+    TGBarbarian.prototype.performAbility = function (abilityNum) {
+        this.abilities[abilityNum]();
+    };
+    return TGBarbarian;
+}(hero_1.default));
+exports.default = TGBarbarian;
+
+
+/***/ }),
+
 /***/ "./src/game/actors/hero/classes/wizard/wizard.ts":
 /*!*******************************************************!*\
   !*** ./src/game/actors/hero/classes/wizard/wizard.ts ***!
@@ -1539,8 +1608,21 @@ var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/
 var TGWizard = /** @class */ (function (_super) {
     __extends(TGWizard, _super);
     function TGWizard() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.abilities = [
+            function () { return console.log('arcane missiles'); },
+            function () { return console.log('fireball'); },
+            function () { return console.log('blink'); },
+            function () { return console.log('frost nova'); },
+            function () { return console.log('idk...'); },
+        ];
+        return _this;
     }
+    Object.defineProperty(TGWizard, "id", {
+        get: function () { return 'Wizard'; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGWizard.prototype, "weapon", {
         get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Staff); },
         enumerable: true,
@@ -1556,6 +1638,9 @@ var TGWizard = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TGWizard.prototype.performAbility = function (abilityNum) {
+        this.abilities[abilityNum]();
+    };
     return TGWizard;
 }(hero_1.default));
 exports.default = TGWizard;
@@ -1754,6 +1839,8 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    /** @override */
+    TGHero.prototype.performAbility = function (abilityNum) { };
     TGHero.prototype.init = function () {
         _super.prototype.init.call(this);
         this.initSprite();
@@ -1811,6 +1898,12 @@ var TGHero = /** @class */ (function (_super) {
         this.destroyer.add(new key_listener_1.default(39, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
         // up arrow
         this.destroyer.add(new key_listener_1.default(38, function () { return _this.jump(); }));
+        // abilities
+        this.destroyer.add(new key_listener_1.default(49 /* 1 */, function () { return _this.performAbility(0); }));
+        this.destroyer.add(new key_listener_1.default(50 /* 2 */, function () { return _this.performAbility(1); }));
+        this.destroyer.add(new key_listener_1.default(51 /* 3 */, function () { return _this.performAbility(2); }));
+        this.destroyer.add(new key_listener_1.default(52 /* 4 */, function () { return _this.performAbility(3); }));
+        this.destroyer.add(new key_listener_1.default(53 /* 5 */, function () { return _this.performAbility(4); }));
     };
     TGHero.prototype.runLeft = function () {
         this.move(this.runForce.flipHorz());
@@ -2027,12 +2120,23 @@ exports.default = TGWall;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
 var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actors/hero/weapon.ts");
+var barbarian_1 = __webpack_require__(/*! ./actors/hero/classes/barbarian/barbarian */ "./src/game/actors/hero/classes/barbarian/barbarian.ts");
 var wizard_1 = __webpack_require__(/*! ./actors/hero/classes/wizard/wizard */ "./src/game/actors/hero/classes/wizard/wizard.ts");
+var urlParams = new URLSearchParams(window.location.search);
+var classId = urlParams.get('class') || barbarian_1.default.id;
+var heroFactory = (_a = {},
+    _a[barbarian_1.default.id] = function () { return new barbarian_1.default(); },
+    _a[wizard_1.default.id] = function () { return new wizard_1.default(); },
+    _a);
+if (!heroFactory[classId])
+    throw new Error("No hero class with id: " + classId);
+var hero = heroFactory[classId]();
 var textures = [
     hero_1.default.textureFile,
     weapon_1.default.textureFile,
@@ -2042,7 +2146,7 @@ var app = new app_1.default({
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
     textures: textures,
-    hero: new wizard_1.default(),
+    hero: hero,
     heroStart: new vector_1.default(200, 700),
 });
 app.start();
