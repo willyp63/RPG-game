@@ -25,7 +25,7 @@ import BONES from "./bones";
 import RESTING_FRAME from "./frames/resting";
 import RUN_ANIMATION from './animations/run';
 import TGWeapon from './weapon';
-import { HPMouseTracker } from '../../../engine/interaction/mouse-listener';
+import { HPMouseTracker } from '../../../engine/interaction/mouse-tracker';
 
 export default abstract class TGHero extends HPSkeletalActor {
 
@@ -89,8 +89,8 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   private destroyer = new HPDestroyer();
-  private leftKeyDown = false;
-  private rightKeyDown = false;
+  private isLeftDown = false;
+  private isRightDown = false;
 
   private initSprite() {
     this.setTextureMap(TGHero.skeletalTextureMap);
@@ -100,29 +100,47 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   private addKeyListeners() {
-    // left arrow
-    this.destroyer.add(new HPKeyListener(37,
+    // move
+    this.destroyer.add(new HPKeyListener(65/* a */,
       () => this.onLeftDown(),
       () => this.onLeftUp(),
     ));
-
-    // right arrow
-    this.destroyer.add(new HPKeyListener(39,
+    this.destroyer.add(new HPKeyListener(68/* d */,
       () => this.onRightDown(),
       () => this.onRightUp(),
     ));
 
-    // up arrow
-    this.destroyer.add(new HPKeyListener(38,
+    // jump
+    this.destroyer.add(new HPKeyListener(87/* w */,
       () => this.jump(),
     ));
 
     // abilities
-    this.destroyer.add(new HPKeyListener(49/* 1 */, () => this.performAbility(0)));
-    this.destroyer.add(new HPKeyListener(50/* 2 */, () => this.performAbility(1)));
-    this.destroyer.add(new HPKeyListener(51/* 3 */, () => this.performAbility(2)));
-    this.destroyer.add(new HPKeyListener(52/* 4 */, () => this.performAbility(3)));
-    this.destroyer.add(new HPKeyListener(53/* 5 */, () => this.performAbility(4)));
+    this.destroyer.add(new HPKeyListener(81/* q */, () => this.performAbility(0)));
+    this.destroyer.add(new HPKeyListener(69/* e */, () => this.performAbility(1)));
+    this.destroyer.add(new HPKeyListener(82/* r */, () => this.performAbility(2)));
+    this.destroyer.add(new HPKeyListener(70/* f */, () => this.performAbility(3)));
+    this.destroyer.add(new HPKeyListener(67/* c */, () => this.performAbility(4)));
+  }
+
+  private onLeftDown() {
+    this.isLeftDown = true;
+    this.runLeft();
+  }
+
+  private onLeftUp() {
+    this.isLeftDown = false;
+    this.isRightDown ? this.runRight() : this.stopRunning();
+  }
+
+  private onRightDown() {
+    this.isRightDown = true;
+    this.runRight();
+  }
+
+  private onRightUp() {
+    this.isRightDown = false;
+    this.isLeftDown ? this.runLeft() : this.stopRunning();
   }
 
   private runLeft() {
@@ -138,30 +156,6 @@ export default abstract class TGHero extends HPSkeletalActor {
   private stopRunning() {
     this.move(HPVector.Zero);
     this.cancelAnimation();
-  }
-
-  private onLeftDown() {
-    this.leftKeyDown = true;
-    this.runLeft();
-  }
-
-  private onLeftUp() {
-    this.leftKeyDown = false;
-    this.rightKeyDown
-      ? this.runRight()
-      : this.stopRunning();
-  }
-
-  private onRightDown() {
-    this.rightKeyDown = true;
-    this.runRight();
-  }
-
-  private onRightUp() {
-    this.rightKeyDown = false;
-    this.leftKeyDown
-      ? this.runLeft()
-      : this.stopRunning();
   }
 
   private jump() {

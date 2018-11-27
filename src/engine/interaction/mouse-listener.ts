@@ -1,23 +1,21 @@
-import HPVector from "../physics/vector";
-import { Container, interaction } from "pixi.js";
+import HPDestroyable from "../util/destroyer";
 
-class _HPMouseTracker {
+export default class HPMouseListener implements HPDestroyable {
 
-  get position() { return this._position; }
-
-  setContainer(container: Container) {
-    container.interactive = true;
-    container.on('pointermove', this.onMouseMove.bind(this));
-    this.container = container;
+  constructor(private options: {
+    onDown?: () => void,
+    onMove?: () => void,
+    onUp?: () => void,
+  } = {}) {
+    if (options.onDown) window.addEventListener('mousedown', options.onDown);
+    if (options.onMove) window.addEventListener('mousemove', options.onMove);
+    if (options.onUp) window.addEventListener('mouseup', options.onUp);
   }
 
-  private container = new Container();
-  private _position = HPVector.Zero;
-
-  private onMouseMove(event: interaction.InteractionEvent) {
-    const point = event.data.getLocalPosition(this.container);
-    this._position = new HPVector(point.x, point.y);
+  destroy() {
+    if (this.options.onDown) window.removeEventListener('mousedown', this.options.onDown);
+    if (this.options.onMove) window.removeEventListener('mousemove', this.options.onMove);
+    if (this.options.onUp) window.removeEventListener('mouseup', this.options.onUp);
   }
 
 }
-export const HPMouseTracker = new _HPMouseTracker();

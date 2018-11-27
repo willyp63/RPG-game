@@ -4,7 +4,7 @@ import HPCollisionDetector from '../physics/collision-detector';
 import HPCollisionHandler from '../physics/collision-handler';
 import HPDirection from '../physics/direction';
 import HPVector from '../physics/vector';
-import { HPMouseTracker } from '../interaction/mouse-listener';
+import { HPMouseTracker } from '../interaction/mouse-tracker';
 
 export default class HPStage {
   

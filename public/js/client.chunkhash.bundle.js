@@ -673,7 +673,7 @@ var collision_detector_1 = __webpack_require__(/*! ../physics/collision-detector
 var collision_handler_1 = __webpack_require__(/*! ../physics/collision-handler */ "./src/engine/physics/collision-handler.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
-var mouse_listener_1 = __webpack_require__(/*! ../interaction/mouse-listener */ "./src/engine/interaction/mouse-listener.ts");
+var mouse_tracker_1 = __webpack_require__(/*! ../interaction/mouse-tracker */ "./src/engine/interaction/mouse-tracker.ts");
 var HPStage = /** @class */ (function () {
     function HPStage(viewSize, rootContainer, actorToFollow, gravityForce, airFrictionCoefficient) {
         this.viewSize = viewSize;
@@ -683,7 +683,7 @@ var HPStage = /** @class */ (function () {
         this.airFrictionCoefficient = airFrictionCoefficient;
         this.size = vector_1.default.Zero;
         this.actors = [];
-        mouse_listener_1.HPMouseTracker.setContainer(rootContainer);
+        mouse_tracker_1.HPMouseTracker.setContainer(rootContainer);
     }
     HPStage.prototype.addActor = function (actor) {
         this.actors.push(actor);
@@ -817,10 +817,10 @@ exports.default = HPKeyListener;
 
 /***/ }),
 
-/***/ "./src/engine/interaction/mouse-listener.ts":
-/*!**************************************************!*\
-  !*** ./src/engine/interaction/mouse-listener.ts ***!
-  \**************************************************/
+/***/ "./src/engine/interaction/mouse-tracker.ts":
+/*!*************************************************!*\
+  !*** ./src/engine/interaction/mouse-tracker.ts ***!
+  \*************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1908,14 +1908,14 @@ var bones_1 = __webpack_require__(/*! ./bones */ "./src/game/actors/hero/bones.t
 var resting_1 = __webpack_require__(/*! ./frames/resting */ "./src/game/actors/hero/frames/resting.ts");
 var run_1 = __webpack_require__(/*! ./animations/run */ "./src/game/actors/hero/animations/run.ts");
 var weapon_1 = __webpack_require__(/*! ./weapon */ "./src/game/actors/hero/weapon.ts");
-var mouse_listener_1 = __webpack_require__(/*! ../../../engine/interaction/mouse-listener */ "./src/engine/interaction/mouse-listener.ts");
+var mouse_tracker_1 = __webpack_require__(/*! ../../../engine/interaction/mouse-tracker */ "./src/engine/interaction/mouse-tracker.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
         var _this = _super.call(this, vector_1.default.Zero, bones_1.default, resting_1.default) || this;
         _this.destroyer = new destroyable_1.default();
-        _this.leftKeyDown = false;
-        _this.rightKeyDown = false;
+        _this.isLeftDown = false;
+        _this.isRightDown = false;
         return _this;
     }
     Object.defineProperty(TGHero, "textureFile", {
@@ -1961,14 +1961,14 @@ var TGHero = /** @class */ (function (_super) {
     };
     Object.defineProperty(TGHero.prototype, "targetPosition", {
         get: function () {
-            return mouse_listener_1.HPMouseTracker.position;
+            return mouse_tracker_1.HPMouseTracker.position;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(TGHero.prototype, "targetUnitVector", {
         get: function () {
-            return mouse_listener_1.HPMouseTracker.position.minus(this.position).toUnitVector();
+            return mouse_tracker_1.HPMouseTracker.position.minus(this.position).toUnitVector();
         },
         enumerable: true,
         configurable: true
@@ -2016,18 +2016,33 @@ var TGHero = /** @class */ (function (_super) {
     };
     TGHero.prototype.addKeyListeners = function () {
         var _this = this;
-        // left arrow
-        this.destroyer.add(new key_listener_1.default(37, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
-        // right arrow
-        this.destroyer.add(new key_listener_1.default(39, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
-        // up arrow
-        this.destroyer.add(new key_listener_1.default(38, function () { return _this.jump(); }));
+        // move
+        this.destroyer.add(new key_listener_1.default(65 /* a */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
+        this.destroyer.add(new key_listener_1.default(68 /* d */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
+        // jump
+        this.destroyer.add(new key_listener_1.default(87 /* w */, function () { return _this.jump(); }));
         // abilities
-        this.destroyer.add(new key_listener_1.default(49 /* 1 */, function () { return _this.performAbility(0); }));
-        this.destroyer.add(new key_listener_1.default(50 /* 2 */, function () { return _this.performAbility(1); }));
-        this.destroyer.add(new key_listener_1.default(51 /* 3 */, function () { return _this.performAbility(2); }));
-        this.destroyer.add(new key_listener_1.default(52 /* 4 */, function () { return _this.performAbility(3); }));
-        this.destroyer.add(new key_listener_1.default(53 /* 5 */, function () { return _this.performAbility(4); }));
+        this.destroyer.add(new key_listener_1.default(81 /* q */, function () { return _this.performAbility(0); }));
+        this.destroyer.add(new key_listener_1.default(69 /* e */, function () { return _this.performAbility(1); }));
+        this.destroyer.add(new key_listener_1.default(82 /* r */, function () { return _this.performAbility(2); }));
+        this.destroyer.add(new key_listener_1.default(70 /* f */, function () { return _this.performAbility(3); }));
+        this.destroyer.add(new key_listener_1.default(67 /* c */, function () { return _this.performAbility(4); }));
+    };
+    TGHero.prototype.onLeftDown = function () {
+        this.isLeftDown = true;
+        this.runLeft();
+    };
+    TGHero.prototype.onLeftUp = function () {
+        this.isLeftDown = false;
+        this.isRightDown ? this.runRight() : this.stopRunning();
+    };
+    TGHero.prototype.onRightDown = function () {
+        this.isRightDown = true;
+        this.runRight();
+    };
+    TGHero.prototype.onRightUp = function () {
+        this.isRightDown = false;
+        this.isLeftDown ? this.runLeft() : this.stopRunning();
     };
     TGHero.prototype.runLeft = function () {
         this.move(this.runForce.flipHorz());
@@ -2040,26 +2055,6 @@ var TGHero = /** @class */ (function (_super) {
     TGHero.prototype.stopRunning = function () {
         this.move(vector_1.default.Zero);
         this.cancelAnimation();
-    };
-    TGHero.prototype.onLeftDown = function () {
-        this.leftKeyDown = true;
-        this.runLeft();
-    };
-    TGHero.prototype.onLeftUp = function () {
-        this.leftKeyDown = false;
-        this.rightKeyDown
-            ? this.runRight()
-            : this.stopRunning();
-    };
-    TGHero.prototype.onRightDown = function () {
-        this.rightKeyDown = true;
-        this.runRight();
-    };
-    TGHero.prototype.onRightUp = function () {
-        this.rightKeyDown = false;
-        this.leftKeyDown
-            ? this.runLeft()
-            : this.stopRunning();
     };
     TGHero.prototype.jump = function () {
         if (!this.isOnGround)
