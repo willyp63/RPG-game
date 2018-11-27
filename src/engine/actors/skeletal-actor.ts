@@ -5,7 +5,7 @@ import setTicksOut, { clearTicksOut } from "../util/set-ticks-out";
 
 export interface HPSkeletalBone {
   id: string;
-  anchor: HPVector;
+  anchor?: HPVector;
   position: HPVector;
   children?: Array<HPSkeletalBone>;
 }
@@ -41,6 +41,10 @@ export default abstract class HPSkeletalActor extends HPActor {
     Object.keys(textureMap).forEach(boneId => {
       this.getBone(boneId).texture = textureMap[boneId];
     });
+  }
+
+  setAnchor(boneId: string, anchor: HPVector) {
+    this.getBone(boneId).anchor = <ObservablePoint>{ x: anchor.x, y: anchor.y };
   }
 
   playAnimation(animation: HPSkeletalAnimation) {
@@ -81,7 +85,9 @@ export default abstract class HPSkeletalActor extends HPActor {
 
     sprite.x = bone.position.x;
     sprite.y = bone.position.y;
-    sprite.anchor = <ObservablePoint>{ x: bone.anchor.x, y: bone.anchor.y };
+    sprite.anchor = bone.anchor
+      ? <ObservablePoint>{ x: bone.anchor.x, y: bone.anchor.y }
+      : <ObservablePoint>{ x: 0.5, y: 0.5 };
 
     this.boneIdToBoneSprite[bone.id] = sprite;
 

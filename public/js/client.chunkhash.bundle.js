@@ -195,6 +195,9 @@ var HPSkeletalActor = /** @class */ (function (_super) {
             _this.getBone(boneId).texture = textureMap[boneId];
         });
     };
+    HPSkeletalActor.prototype.setAnchor = function (boneId, anchor) {
+        this.getBone(boneId).anchor = { x: anchor.x, y: anchor.y };
+    };
     HPSkeletalActor.prototype.playAnimation = function (animation) {
         this._cancelAnimation();
         this._playAnimation(animation);
@@ -226,7 +229,9 @@ var HPSkeletalActor = /** @class */ (function (_super) {
         var sprite = new pixi_js_1.Sprite();
         sprite.x = bone.position.x;
         sprite.y = bone.position.y;
-        sprite.anchor = { x: bone.anchor.x, y: bone.anchor.y };
+        sprite.anchor = bone.anchor
+            ? { x: bone.anchor.x, y: bone.anchor.y }
+            : { x: 0.5, y: 0.5 };
         this.boneIdToBoneSprite[bone.id] = sprite;
         // ensure a pivot value for every bone in resting frame
         if (this.restingFrame.pivots[bone.id] === undefined) {
@@ -1428,6 +1433,7 @@ exports.default = RUN_ANIMATION;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/game/actors/hero/constants.ts");
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var BONES = [
     {
         id: constants_1.BACK_UPPER_ARM_ID,
@@ -1484,11 +1490,64 @@ var BONES = [
                 id: constants_1.FRONT_LOWER_ARM_ID,
                 anchor: constants_1.LIMB_ANCHOR,
                 position: constants_1.LOWER_LIMB_POSITION,
+                children: [
+                    {
+                        id: constants_1.WEAPON_ID,
+                        position: constants_1.WEAPON_POSITION,
+                    },
+                    {
+                        id: constants_1.FRONT_LOWER_ARM_CLONE_ID,
+                        anchor: constants_1.LIMB_ANCHOR,
+                        position: vector_1.default.Zero,
+                    },
+                ],
             },
         ]
     },
 ];
 exports.default = BONES;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/classes/barbarian/barbarian.ts":
+/*!*************************************************************!*\
+  !*** ./src/game/actors/hero/classes/barbarian/barbarian.ts ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
+var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
+var TGBarbarian = /** @class */ (function (_super) {
+    __extends(TGBarbarian, _super);
+    function TGBarbarian() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(TGBarbarian.prototype, "weapon", {
+        get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Sword); },
+        enumerable: true,
+        configurable: true
+    });
+    return TGBarbarian;
+}(hero_1.default));
+exports.default = TGBarbarian;
 
 
 /***/ }),
@@ -1514,8 +1573,10 @@ exports.CHEST_ID = 'chest';
 exports.HEAD_ID = 'head';
 exports.FRONT_UPPER_ARM_ID = 'front-upper-arm';
 exports.FRONT_LOWER_ARM_ID = 'front-lower-arm';
+exports.FRONT_LOWER_ARM_CLONE_ID = 'front-lower-arm-clone';
 exports.FRONT_UPPER_LEG_ID = 'front-upper-leg';
 exports.FRONT_LOWER_LEG_ID = 'front-lower-leg';
+exports.WEAPON_ID = 'weapon';
 exports.CHEST_POSITION = new vector_1.default(0, -4);
 exports.HEAD_POSITION = new vector_1.default(0, -26);
 exports.BACK_LEG_POSITION = new vector_1.default(3, 7);
@@ -1523,6 +1584,7 @@ exports.FRONT_LEG_POSITION = new vector_1.default(-3, 8);
 exports.BACK_ARM_POSITION = new vector_1.default(7, -14);
 exports.FRONT_ARM_POSITION = new vector_1.default(-7, -13);
 exports.LOWER_LIMB_POSITION = new vector_1.default(0, 9);
+exports.WEAPON_POSITION = new vector_1.default(0, 9);
 exports.CHEST_ANCHOR = new vector_1.default(0.5, 0.5);
 exports.HEAD_ANCHOR = new vector_1.default(0.5, 0.5);
 exports.LIMB_ANCHOR = new vector_1.default(0.5, 0.2);
@@ -1665,7 +1727,7 @@ var TGHero = /** @class */ (function (_super) {
     });
     TGHero.prototype.init = function () {
         _super.prototype.init.call(this);
-        this.setTextureMap(TGHero.skeletalTextureMap);
+        this.initSprite();
         this.addKeyListeners();
     };
     TGHero.prototype.destroy = function () {
@@ -1695,6 +1757,7 @@ var TGHero = /** @class */ (function (_super) {
                 _a[constants_1.FRONT_UPPER_ARM_ID] = TGHero.limbTexture,
                 _a[constants_1.BACK_UPPER_ARM_ID] = TGHero.limbTexture,
                 _a[constants_1.FRONT_LOWER_ARM_ID] = TGHero.limbTexture,
+                _a[constants_1.FRONT_LOWER_ARM_CLONE_ID] = TGHero.limbTexture,
                 _a[constants_1.BACK_LOWER_ARM_ID] = TGHero.limbTexture,
                 _a[constants_1.FRONT_UPPER_LEG_ID] = TGHero.limbTexture,
                 _a[constants_1.BACK_UPPER_LEG_ID] = TGHero.limbTexture,
@@ -1705,6 +1768,12 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TGHero.prototype.initSprite = function () {
+        var _a;
+        this.setTextureMap(TGHero.skeletalTextureMap);
+        this.setTextureMap((_a = {}, _a[constants_1.WEAPON_ID] = this.weapon.getTexture(), _a));
+        this.setAnchor(constants_1.WEAPON_ID, this.weapon.getAnchor());
+    };
     TGHero.prototype.addKeyListeners = function () {
         var _this = this;
         // left arrow
@@ -1754,6 +1823,82 @@ var TGHero = /** @class */ (function (_super) {
     return TGHero;
 }(skeletal_actor_1.default));
 exports.default = TGHero;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/weapon.ts":
+/*!****************************************!*\
+  !*** ./src/game/actors/hero/weapon.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var texture_helper_1 = __webpack_require__(/*! ../../../engine/util/texture-helper */ "./src/engine/util/texture-helper.ts");
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var TGWeaponType;
+(function (TGWeaponType) {
+    TGWeaponType[TGWeaponType["Fist"] = 0] = "Fist";
+    TGWeaponType[TGWeaponType["Staff"] = 1] = "Staff";
+    TGWeaponType[TGWeaponType["Sword"] = 2] = "Sword";
+})(TGWeaponType = exports.TGWeaponType || (exports.TGWeaponType = {}));
+var TGWeapon = /** @class */ (function () {
+    function TGWeapon(type) {
+        if (type === void 0) { type = TGWeaponType.Fist; }
+        this.type = type;
+    }
+    Object.defineProperty(TGWeapon, "textureFile", {
+        get: function () { return 'public/imgs/weapons.json'; },
+        enumerable: true,
+        configurable: true
+    });
+    TGWeapon.prototype.setType = function (type) {
+        this.type = type;
+    };
+    TGWeapon.prototype.getTexture = function () {
+        return TGWeapon.textureMap[this.type];
+    };
+    TGWeapon.prototype.getAnchor = function () {
+        return TGWeapon.anchorMap[this.type];
+    };
+    Object.defineProperty(TGWeapon, "staffTexture", {
+        get: function () { return texture_helper_1.default.get(TGWeapon.textureFile, 'staff.png'); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWeapon, "swordTexture", {
+        get: function () { return texture_helper_1.default.get(TGWeapon.textureFile, 'sword.png'); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWeapon, "textureMap", {
+        get: function () {
+            var _a;
+            return _a = {},
+                _a[TGWeaponType.Staff] = TGWeapon.staffTexture,
+                _a[TGWeaponType.Sword] = TGWeapon.swordTexture,
+                _a;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWeapon, "anchorMap", {
+        get: function () {
+            var _a;
+            return _a = {},
+                _a[TGWeaponType.Staff] = new vector_1.default(0.333, 0.5),
+                _a[TGWeaponType.Sword] = new vector_1.default(0.0667, 0.5),
+                _a;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return TGWeapon;
+}());
+exports.default = TGWeapon;
 
 
 /***/ }),
@@ -1857,15 +2002,18 @@ var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
+var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actors/hero/weapon.ts");
+var barbarian_1 = __webpack_require__(/*! ./actors/hero/classes/barbarian/barbarian */ "./src/game/actors/hero/classes/barbarian/barbarian.ts");
 var assets = [
     hero_1.default.textureFile,
+    weapon_1.default.textureFile,
 ];
 var app = new app_1.default({
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
     assets: assets,
-    hero: new hero_1.default(),
+    hero: new barbarian_1.default(),
     heroStart: new vector_1.default(200, 700),
 });
 app.start();

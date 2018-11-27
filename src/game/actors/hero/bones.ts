@@ -20,7 +20,11 @@ import {
   CHEST_ANCHOR,
   HEAD_ANCHOR,
   LIMB_ANCHOR,
+  WEAPON_POSITION,
+  WEAPON_ID,
+  FRONT_LOWER_ARM_CLONE_ID,
 } from './constants';
+import HPVector from "../../../engine/physics/vector";
 
 const BONES: Array<HPSkeletalBone> = [
   {
@@ -78,6 +82,17 @@ const BONES: Array<HPSkeletalBone> = [
         id: FRONT_LOWER_ARM_ID,
         anchor: LIMB_ANCHOR,
         position: LOWER_LIMB_POSITION,
+        children: [
+          {
+            id: WEAPON_ID,
+            position: WEAPON_POSITION,
+          },
+          {
+            id: FRONT_LOWER_ARM_CLONE_ID,
+            anchor: LIMB_ANCHOR,
+            position: HPVector.Zero,
+          },
+        ],
       },
     ]
   },

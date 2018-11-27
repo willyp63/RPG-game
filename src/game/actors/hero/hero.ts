@@ -11,6 +11,8 @@ import {
   FRONT_LOWER_ARM_ID,
   FRONT_UPPER_LEG_ID,
   FRONT_LOWER_LEG_ID,
+  WEAPON_ID,
+  FRONT_LOWER_ARM_CLONE_ID,
 } from './constants';
 import HPVector from "../../../engine/physics/vector";
 import HPKeyListener from "../../../engine/interaction/key-listener";
@@ -21,10 +23,13 @@ import HPTextureHelper from "../../../engine/util/texture-helper";
 import BONES from "./bones";
 import RESTING_FRAME from "./frames/resting";
 import RUN_ANIMATION from './animations/run';
+import TGWeapon from './weapon';
 
-export default class TGHero extends HPSkeletalActor {
+export default abstract class TGHero extends HPSkeletalActor {
 
   static get textureFile() { return 'public/imgs/person.json'; }
+
+  abstract get weapon(): TGWeapon;
 
   get type() { return HPActorType.Friendly; }
   get size() { return new HPVector(15, 55); }
@@ -39,7 +44,8 @@ export default class TGHero extends HPSkeletalActor {
 
   init() {
     super.init();
-    this.setTextureMap(TGHero.skeletalTextureMap);
+    
+    this.initSprite();
     this.addKeyListeners();
   }
 
@@ -57,6 +63,7 @@ export default class TGHero extends HPSkeletalActor {
       [FRONT_UPPER_ARM_ID]: TGHero.limbTexture,
       [BACK_UPPER_ARM_ID]: TGHero.limbTexture,
       [FRONT_LOWER_ARM_ID]: TGHero.limbTexture,
+      [FRONT_LOWER_ARM_CLONE_ID]: TGHero.limbTexture,
       [BACK_LOWER_ARM_ID]: TGHero.limbTexture,
       [FRONT_UPPER_LEG_ID]: TGHero.limbTexture,
       [BACK_UPPER_LEG_ID]: TGHero.limbTexture,
@@ -68,6 +75,13 @@ export default class TGHero extends HPSkeletalActor {
   private destroyer = new HPDestroyer();
   private leftKeyDown = false;
   private rightKeyDown = false;
+
+  private initSprite() {
+    this.setTextureMap(TGHero.skeletalTextureMap);
+
+    this.setTextureMap({ [WEAPON_ID]: this.weapon.getTexture() });
+    this.setAnchor(WEAPON_ID, this.weapon.getAnchor());
+  }
 
   private addKeyListeners() {
     // left arrow
