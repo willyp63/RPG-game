@@ -1,7 +1,6 @@
 import {
   RUN_FORCE,
   JUMP_FORCE,
-  SHOOT_FORCE,
   BACK_UPPER_ARM_ID,
   BACK_LOWER_ARM_ID,
   BACK_UPPER_LEG_ID,
@@ -15,7 +14,6 @@ import {
 } from './constants';
 import HPVector from "../../../engine/physics/vector";
 import HPKeyListener from "../../../engine/interaction/key-listener";
-import TGFireBall from "../fire-ball";
 import HPActorType from "../../../engine/core/actor-type";
 import HPDestroyer from "../../../engine/util/destroyable";
 import HPSkeletalActor, { HPSkeletalTextureMap } from "../../../engine/actors/skeletal-actor";
@@ -24,7 +22,7 @@ import BONES from "./bones";
 import RESTING_FRAME from "./frames/resting";
 import RUN_ANIMATION from './animations/run';
 
-export default abstract class TGHero extends HPSkeletalActor {
+export default class TGHero extends HPSkeletalActor {
 
   static get textureFile() { return 'public/imgs/person.json'; }
 
@@ -88,11 +86,6 @@ export default abstract class TGHero extends HPSkeletalActor {
     this.destroyer.add(new HPKeyListener(38,
       () => this.jump(),
     ));
-
-    // Z
-    this.destroyer.add(new HPKeyListener(90,
-      () => this.shootFireBall(),
-    ));
   }
 
   private runLeft() {
@@ -137,12 +130,6 @@ export default abstract class TGHero extends HPSkeletalActor {
   private jump() {
     if (!this.isOnGround) return;
     this.push(JUMP_FORCE);
-  }
-
-  private shootFireBall() {
-    const fireBall = new TGFireBall(this.position);
-    fireBall.push(SHOOT_FORCE.flipHorz(this.isFacingLeft));
-    this.newBornActors.push(fireBall);
   }
   
 }

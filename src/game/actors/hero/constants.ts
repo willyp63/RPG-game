@@ -2,7 +2,6 @@ import HPVector from "../../../engine/physics/vector";
 
 export const RUN_FORCE = new HPVector(2, 0);
 export const JUMP_FORCE = new HPVector(0, -13);
-export const SHOOT_FORCE = new HPVector(12, 0);
 
 export const BACK_UPPER_ARM_ID = 'back-upper-arm';
 export const BACK_LOWER_ARM_ID = 'back-lower-arm';

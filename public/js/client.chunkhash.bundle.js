@@ -273,62 +273,6 @@ exports.default = HPSkeletalActor;
 
 /***/ }),
 
-/***/ "./src/engine/actors/static-image-actor.ts":
-/*!*************************************************!*\
-  !*** ./src/engine/actors/static-image-actor.ts ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
-var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
-var HPStaticImageActor = /** @class */ (function (_super) {
-    __extends(HPStaticImageActor, _super);
-    function HPStaticImageActor(position) {
-        return _super.call(this, position, new pixi_js_1.Sprite()) || this;
-    }
-    Object.defineProperty(HPStaticImageActor.prototype, "imageFile", {
-        /* @override */
-        get: function () { return ''; },
-        enumerable: true,
-        configurable: true
-    });
-    HPStaticImageActor.prototype.init = function () {
-        this._sprite.texture = pixi_js_1.loader.resources[this.imageFile].texture;
-        this._sprite.anchor = { x: 0.5, y: 0.5 };
-    };
-    HPStaticImageActor.prototype.onTick = function () {
-        _super.prototype.onTick.call(this);
-        this._sprite.scale.x = (this.isFacingLeft ? -1 : 1);
-    };
-    Object.defineProperty(HPStaticImageActor.prototype, "_sprite", {
-        get: function () { return this.sprite; },
-        enumerable: true,
-        configurable: true
-    });
-    return HPStaticImageActor;
-}(actor_1.default));
-exports.default = HPStaticImageActor;
-
-
-/***/ }),
-
 /***/ "./src/engine/actors/static-shape-actor.ts":
 /*!*************************************************!*\
   !*** ./src/engine/actors/static-shape-actor.ts ***!
@@ -613,7 +557,7 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
 exports.HPAppDefaultOptions = {
-    viewSize: new vector_1.default(412, 262),
+    viewSize: new vector_1.default(850, 550),
     elementSelector: '',
     actorFactory: {},
     assets: [],
@@ -1338,9 +1282,9 @@ exports.default = HPTextureHelper;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
-var wall_1 = __webpack_require__(/*! ./actors/wall */ "./src/game/actors/wall.ts");
+var wall_1 = __webpack_require__(/*! ./actors/walls/wall */ "./src/game/actors/walls/wall.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var wandering_target_1 = __webpack_require__(/*! ./actors/wandering-target */ "./src/game/actors/wandering-target.ts");
+var wandering_target_1 = __webpack_require__(/*! ./actors/enemies/wandering-target */ "./src/game/actors/enemies/wandering-target.ts");
 var TGActorFactory = (_a = {},
     _a[wall_1.default.id] = function (data) {
         return new wall_1.default(vector_1.default.fromData(data.position), vector_1.default.fromData(data.props['size']));
@@ -1354,10 +1298,10 @@ exports.default = TGActorFactory;
 
 /***/ }),
 
-/***/ "./src/game/actors/fire-ball.ts":
-/*!**************************************!*\
-  !*** ./src/game/actors/fire-ball.ts ***!
-  \**************************************/
+/***/ "./src/game/actors/enemies/wandering-target.ts":
+/*!*****************************************************!*\
+  !*** ./src/game/actors/enemies/wandering-target.ts ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1377,68 +1321,71 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
-var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
-var TGFireBall = /** @class */ (function (_super) {
-    __extends(TGFireBall, _super);
-    function TGFireBall(position) {
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var set_ticks_out_1 = __webpack_require__(/*! ../../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
+var actor_type_1 = __webpack_require__(/*! ../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
+var random_1 = __webpack_require__(/*! ../../../engine/util/random */ "./src/engine/util/random.ts");
+var static_shape_actor_1 = __webpack_require__(/*! ../../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
+var WANDER_FORCE = new vector_1.default(1, 0);
+var JUMP_FORCE = new vector_1.default(0, -12);
+var TGWanderingTarget = /** @class */ (function (_super) {
+    __extends(TGWanderingTarget, _super);
+    function TGWanderingTarget(position) {
         return _super.call(this, position) || this;
     }
-    Object.defineProperty(TGFireBall.prototype, "size", {
-        get: function () { return new vector_1.default(10, 10); },
+    Object.defineProperty(TGWanderingTarget, "id", {
+        get: function () { return 'WanderingTarget'; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "isWallBound", {
-        get: function () { return false; },
+    Object.defineProperty(TGWanderingTarget.prototype, "size", {
+        get: function () { return new vector_1.default(20, 50); },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "isGravityBound", {
-        get: function () { return false; },
+    Object.defineProperty(TGWanderingTarget.prototype, "type", {
+        get: function () { return actor_type_1.default.Unfriendly; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "isAirFrictionBound", {
-        get: function () { return false; },
+    Object.defineProperty(TGWanderingTarget.prototype, "color", {
+        get: function () { return 0xFF0000; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "color", {
-        get: function () { return 0xFF7700; },
+    Object.defineProperty(TGWanderingTarget.prototype, "borderWidth", {
+        get: function () { return 1; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "borderWidth", {
-        get: function () { return 2; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGFireBall.prototype, "borderColor", {
+    Object.defineProperty(TGWanderingTarget.prototype, "borderColor", {
         get: function () { return 0x000000; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGFireBall.prototype, "isRound", {
-        get: function () { return true; },
+    Object.defineProperty(TGWanderingTarget.prototype, "cornerRadius", {
+        get: function () { return 2; },
         enumerable: true,
         configurable: true
     });
-    TGFireBall.prototype.onCollision = function (actor, collision) {
-        if (!collision.hit)
-            return;
-        if (actor.isWall) {
-            this.kill();
-        }
-        else if (actor.type === actor_type_1.default.Unfriendly) {
-            actor.kill();
-            this.kill();
-        }
+    TGWanderingTarget.prototype.init = function () {
+        _super.prototype.init.call(this);
+        this.move(WANDER_FORCE.flipHorz(random_1.default.chance(0.5)));
+        this.changeDirection();
     };
-    return TGFireBall;
+    TGWanderingTarget.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        if (this.isOnGround && random_1.default.chance(0.005))
+            this.push(JUMP_FORCE);
+    };
+    TGWanderingTarget.prototype.changeDirection = function () {
+        var _this = this;
+        this.move(this.moveForce.flipHorz());
+        set_ticks_out_1.default(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
+    };
+    return TGWanderingTarget;
 }(static_shape_actor_1.default));
-exports.default = TGFireBall;
+exports.default = TGWanderingTarget;
 
 
 /***/ }),
@@ -1559,7 +1506,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 exports.RUN_FORCE = new vector_1.default(2, 0);
 exports.JUMP_FORCE = new vector_1.default(0, -13);
-exports.SHOOT_FORCE = new vector_1.default(12, 0);
 exports.BACK_UPPER_ARM_ID = 'back-upper-arm';
 exports.BACK_LOWER_ARM_ID = 'back-lower-arm';
 exports.BACK_UPPER_LEG_ID = 'back-upper-leg';
@@ -1686,7 +1632,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/game/actors/hero/constants.ts");
 var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var key_listener_1 = __webpack_require__(/*! ../../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
-var fire_ball_1 = __webpack_require__(/*! ../fire-ball */ "./src/game/actors/fire-ball.ts");
 var actor_type_1 = __webpack_require__(/*! ../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var destroyable_1 = __webpack_require__(/*! ../../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
 var skeletal_actor_1 = __webpack_require__(/*! ../../../engine/actors/skeletal-actor */ "./src/engine/actors/skeletal-actor.ts");
@@ -1768,8 +1713,6 @@ var TGHero = /** @class */ (function (_super) {
         this.destroyer.add(new key_listener_1.default(39, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
         // up arrow
         this.destroyer.add(new key_listener_1.default(38, function () { return _this.jump(); }));
-        // Z
-        this.destroyer.add(new key_listener_1.default(90, function () { return _this.shootFireBall(); }));
     };
     TGHero.prototype.runLeft = function () {
         this.move(constants_1.RUN_FORCE.flipHorz());
@@ -1808,11 +1751,6 @@ var TGHero = /** @class */ (function (_super) {
             return;
         this.push(constants_1.JUMP_FORCE);
     };
-    TGHero.prototype.shootFireBall = function () {
-        var fireBall = new fire_ball_1.default(this.position);
-        fireBall.push(constants_1.SHOOT_FORCE.flipHorz(this.isFacingLeft));
-        this.newBornActors.push(fireBall);
-    };
     return TGHero;
 }(skeletal_actor_1.default));
 exports.default = TGHero;
@@ -1820,10 +1758,10 @@ exports.default = TGHero;
 
 /***/ }),
 
-/***/ "./src/game/actors/heros/wizard.ts":
-/*!*****************************************!*\
-  !*** ./src/game/actors/heros/wizard.ts ***!
-  \*****************************************/
+/***/ "./src/game/actors/walls/wall.ts":
+/*!***************************************!*\
+  !*** ./src/game/actors/walls/wall.ts ***!
+  \***************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1843,43 +1781,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var hero_1 = __webpack_require__(/*! ../hero/hero */ "./src/game/actors/hero/hero.ts");
-var TGWizard = /** @class */ (function (_super) {
-    __extends(TGWizard, _super);
-    function TGWizard() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return TGWizard;
-}(hero_1.default));
-exports.default = TGWizard;
-
-
-/***/ }),
-
-/***/ "./src/game/actors/wall.ts":
-/*!*********************************!*\
-  !*** ./src/game/actors/wall.ts ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var static_shape_actor_1 = __webpack_require__(/*! ../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
+var static_shape_actor_1 = __webpack_require__(/*! ../../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var TGWall = /** @class */ (function (_super) {
     __extends(TGWall, _super);
     function TGWall(position, _size) {
@@ -1941,88 +1843,6 @@ exports.default = TGWall;
 
 /***/ }),
 
-/***/ "./src/game/actors/wandering-target.ts":
-/*!*********************************************!*\
-  !*** ./src/game/actors/wandering-target.ts ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var set_ticks_out_1 = __webpack_require__(/*! ../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
-var actor_type_1 = __webpack_require__(/*! ../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
-var random_1 = __webpack_require__(/*! ../../engine/util/random */ "./src/engine/util/random.ts");
-var static_image_actor_1 = __webpack_require__(/*! ../../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
-var WANDER_FORCE = new vector_1.default(1, 0);
-var JUMP_FORCE = new vector_1.default(0, -12);
-var TGWanderingTarget = /** @class */ (function (_super) {
-    __extends(TGWanderingTarget, _super);
-    function TGWanderingTarget(position) {
-        return _super.call(this, position) || this;
-    }
-    Object.defineProperty(TGWanderingTarget, "id", {
-        get: function () { return 'WanderingTarget'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget, "imageFile", {
-        get: function () { return 'public/imgs/skeleton.png'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "size", {
-        get: function () { return new vector_1.default(13, 30); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "type", {
-        get: function () { return actor_type_1.default.Unfriendly; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "imageFile", {
-        get: function () { return TGWanderingTarget.imageFile; },
-        enumerable: true,
-        configurable: true
-    });
-    TGWanderingTarget.prototype.init = function () {
-        _super.prototype.init.call(this);
-        this.move(WANDER_FORCE.flipHorz(random_1.default.chance(0.5)));
-        this.changeDirection();
-    };
-    TGWanderingTarget.prototype.onTick = function () {
-        _super.prototype.onTick.call(this);
-        if (this.isOnGround && random_1.default.chance(0.005))
-            this.push(JUMP_FORCE);
-    };
-    TGWanderingTarget.prototype.changeDirection = function () {
-        var _this = this;
-        this.move(this.moveForce.flipHorz());
-        set_ticks_out_1.default(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
-    };
-    return TGWanderingTarget;
-}(static_image_actor_1.default));
-exports.default = TGWanderingTarget;
-
-
-/***/ }),
-
 /***/ "./src/game/main.ts":
 /*!**************************!*\
   !*** ./src/game/main.ts ***!
@@ -2036,19 +1856,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var app_1 = __webpack_require__(/*! ../engine/core/app */ "./src/engine/core/app.ts");
 var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
-var wandering_target_1 = __webpack_require__(/*! ./actors/wandering-target */ "./src/game/actors/wandering-target.ts");
-var wizard_1 = __webpack_require__(/*! ./actors/heros/wizard */ "./src/game/actors/heros/wizard.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var assets = [
     hero_1.default.textureFile,
-    wandering_target_1.default.imageFile,
 ];
 var app = new app_1.default({
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
     assets: assets,
-    hero: new wizard_1.default(),
+    hero: new hero_1.default(),
     heroStart: new vector_1.default(200, 700),
 });
 app.start();

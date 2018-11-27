@@ -1,7 +1,7 @@
 import HPActorData from "../engine/services/data/actor-data";
-import TGWall from "./actors/wall";
+import TGWall from "./actors/walls/wall";
 import HPVector from "../engine/physics/vector";
-import TGWanderingTarget from "./actors/wandering-target";
+import TGWanderingTarget from "./actors/enemies/wandering-target";
 import HPActorFactory from "../engine/core/actor-factory";
 
 const TGActorFactory: HPActorFactory = {

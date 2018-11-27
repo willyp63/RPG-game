@@ -31,7 +31,7 @@ export interface HPAppArgs {
 }
 
 export const HPAppDefaultOptions: HPAppOptions = {
-  viewSize: new HPVector(412, 262),
+  viewSize: new HPVector(850, 550),
   elementSelector: '',
   actorFactory: {},
   assets: [],

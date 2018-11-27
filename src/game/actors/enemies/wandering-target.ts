@@ -1,20 +1,23 @@
-import HPVector from "../../engine/physics/vector";
-import setTicksOut from "../../engine/util/set-ticks-out";
-import HPActorType from "../../engine/core/actor-type";
-import HPRandom from "../../engine/util/random";
-import HPStaticImageActor from "../../engine/actors/static-image-actor";
+import HPVector from "../../../engine/physics/vector";
+import setTicksOut from "../../../engine/util/set-ticks-out";
+import HPActorType from "../../../engine/core/actor-type";
+import HPRandom from "../../../engine/util/random";
+import HPStaticShapeActor from "../../../engine/actors/static-shape-actor";
 
 const WANDER_FORCE = new HPVector(1, 0);
 const JUMP_FORCE = new HPVector(0, -12);
 
-export default class TGWanderingTarget extends HPStaticImageActor {
+export default class TGWanderingTarget extends HPStaticShapeActor {
 
   static get id() { return 'WanderingTarget'; }
-  static get imageFile() { return 'public/imgs/skeleton.png'; }
 
-  get size() { return new HPVector(13, 30); }
+  get size() { return new HPVector(20, 50); }
   get type() { return HPActorType.Unfriendly; }
-  get imageFile() { return TGWanderingTarget.imageFile; }
+
+  get color() { return 0xFF0000; }
+  get borderWidth() { return 1; }
+  get borderColor() { return 0x000000; }
+  get cornerRadius() { return 2; }
 
   constructor(position: HPVector) {
     super(position);

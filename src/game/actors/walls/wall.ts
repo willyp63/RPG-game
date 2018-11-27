@@ -1,5 +1,5 @@
-import HPVector from "../../engine/physics/vector";
-import HPStaticShapeActor from "../../engine/actors/static-shape-actor";
+import HPVector from "../../../engine/physics/vector";
+import HPStaticShapeActor from "../../../engine/actors/static-shape-actor";
 
 export default class TGWall extends HPStaticShapeActor {
 
