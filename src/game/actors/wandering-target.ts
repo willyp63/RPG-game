@@ -12,10 +12,9 @@ export default class TGWanderingTarget extends HPStaticImageActor {
   static get id() { return 'WanderingTarget'; }
   static get imageFile() { return 'public/imgs/skeleton.png'; }
 
-  get size() { return new HPVector(26, 66); }
+  get size() { return new HPVector(13, 30); }
   get type() { return HPActorType.Unfriendly; }
   get imageFile() { return TGWanderingTarget.imageFile; }
-  get imageScale() { return 2; }
 
   constructor(position: HPVector) {
     super(position);

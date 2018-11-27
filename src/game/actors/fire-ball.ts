@@ -6,7 +6,7 @@ import HPActorType from "../../engine/core/actor-type";
 
 export default class TGFireBall extends HPStaticShapeActor {
 
-  get size() { return new HPVector(20, 20); }
+  get size() { return new HPVector(10, 10); }
   get isWallBound() { return false; }
   get isGravityBound() { return false; }
   get isAirFrictionBound() { return false; }

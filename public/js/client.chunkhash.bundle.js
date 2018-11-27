@@ -154,6 +154,125 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/engine/actors/skeletal-actor.ts":
+/*!*********************************************!*\
+  !*** ./src/engine/actors/skeletal-actor.ts ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var actor_1 = __webpack_require__(/*! ../core/actor */ "./src/engine/core/actor.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var set_ticks_out_1 = __webpack_require__(/*! ../util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
+var HPSkeletalActor = /** @class */ (function (_super) {
+    __extends(HPSkeletalActor, _super);
+    function HPSkeletalActor(position, bones, restingFrame) {
+        var _this = _super.call(this, position, new pixi_js_1.Container()) || this;
+        _this.bones = bones;
+        _this.restingFrame = restingFrame;
+        _this.boneIdToBoneSprite = {};
+        return _this;
+    }
+    HPSkeletalActor.prototype.setTextureMap = function (textureMap) {
+        var _this = this;
+        Object.keys(textureMap).forEach(function (boneId) {
+            _this.getBone(boneId).texture = textureMap[boneId];
+        });
+    };
+    HPSkeletalActor.prototype.playAnimation = function (animation) {
+        this._cancelAnimation();
+        this._playAnimation(animation);
+    };
+    HPSkeletalActor.prototype.cancelAnimation = function () {
+        this._cancelAnimation();
+        this.performPivots(this.restingFrame);
+    };
+    HPSkeletalActor.prototype.init = function () {
+        var _this = this;
+        this.bones.forEach(function (bone) {
+            var sprite = _this.initBone(bone);
+            _this.sprite.addChild(sprite);
+        });
+        this.performPivots(this.restingFrame);
+    };
+    HPSkeletalActor.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        this.sprite.scale.x = (this.isFacingLeft ? -1 : 1);
+    };
+    HPSkeletalActor.prototype.getBone = function (id) {
+        var bone = this.boneIdToBoneSprite[id];
+        if (bone === undefined)
+            throw new Error("Can't find bone with id: " + id);
+        return bone;
+    };
+    HPSkeletalActor.prototype.initBone = function (bone) {
+        var _this = this;
+        var sprite = new pixi_js_1.Sprite();
+        sprite.x = bone.position.x;
+        sprite.y = bone.position.y;
+        sprite.anchor = { x: bone.anchor.x, y: bone.anchor.y };
+        this.boneIdToBoneSprite[bone.id] = sprite;
+        // ensure a pivot value for every bone in resting frame
+        if (this.restingFrame.pivots[bone.id] === undefined) {
+            this.restingFrame.pivots[bone.id] = 0;
+        }
+        if (bone.children) {
+            bone.children.forEach(function (childBone) {
+                var childSprite = _this.initBone(childBone);
+                sprite.addChild(childSprite);
+            });
+        }
+        return sprite;
+    };
+    HPSkeletalActor.prototype._playAnimation = function (animation, i) {
+        var _this = this;
+        if (i === void 0) { i = 0; }
+        this.setFrame(animation.frames[i]);
+        var nextIndex = i + 1;
+        if (nextIndex >= animation.frames.length)
+            nextIndex = 0;
+        this.animationTicksOut = set_ticks_out_1.default(function () {
+            _this._playAnimation(animation, nextIndex);
+        }, 1 / animation.speed);
+    };
+    HPSkeletalActor.prototype._cancelAnimation = function () {
+        if (this.animationTicksOut)
+            set_ticks_out_1.clearTicksOut(this.animationTicksOut);
+    };
+    HPSkeletalActor.prototype.setFrame = function (frame) {
+        this.performPivots(this.restingFrame);
+        this.performPivots(frame);
+    };
+    HPSkeletalActor.prototype.performPivots = function (frame) {
+        var _this = this;
+        this.sprite.rotation = frame.rootPivot === undefined ? 0 : frame.rootPivot;
+        Object.keys(frame.pivots).forEach(function (boneId) {
+            _this.getBone(boneId).rotation = frame.pivots[boneId];
+        });
+    };
+    return HPSkeletalActor;
+}(actor_1.default));
+exports.default = HPSkeletalActor;
+
+
+/***/ }),
+
 /***/ "./src/engine/actors/static-image-actor.ts":
 /*!*************************************************!*\
   !*** ./src/engine/actors/static-image-actor.ts ***!
@@ -190,20 +309,13 @@ var HPStaticImageActor = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(HPStaticImageActor.prototype, "imageScale", {
-        get: function () { return 1; },
-        enumerable: true,
-        configurable: true
-    });
     HPStaticImageActor.prototype.init = function () {
         this._sprite.texture = pixi_js_1.loader.resources[this.imageFile].texture;
         this._sprite.anchor = { x: 0.5, y: 0.5 };
-        this._sprite.scale.x = this.imageScale;
-        this._sprite.scale.y = this.imageScale;
     };
     HPStaticImageActor.prototype.onTick = function () {
         _super.prototype.onTick.call(this);
-        this._sprite.scale.x = (this.isFacingLeft ? -1 : 1) * this.imageScale;
+        this._sprite.scale.x = (this.isFacingLeft ? -1 : 1);
     };
     Object.defineProperty(HPStaticImageActor.prototype, "_sprite", {
         get: function () { return this.sprite; },
@@ -501,7 +613,7 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
 exports.HPAppDefaultOptions = {
-    viewSize: new vector_1.default(825, 525),
+    viewSize: new vector_1.default(412, 262),
     elementSelector: '',
     actorFactory: {},
     assets: [],
@@ -1188,6 +1300,33 @@ exports.clearTicksOut = function (onTick) {
 
 /***/ }),
 
+/***/ "./src/engine/util/texture-helper.ts":
+/*!*******************************************!*\
+  !*** ./src/engine/util/texture-helper.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var HPTextureHelper = /** @class */ (function () {
+    function HPTextureHelper() {
+    }
+    HPTextureHelper.get = function (sheetName, spriteName) {
+        var sheet = pixi_js_1.loader.resources[sheetName];
+        if (!sheet || !sheet.textures)
+            throw "Error fetching texture: " + sheetName + " -> " + spriteName;
+        return sheet.textures[spriteName];
+    };
+    return HPTextureHelper;
+}());
+exports.default = HPTextureHelper;
+
+
+/***/ }),
+
 /***/ "./src/game/actor-factory.ts":
 /*!***********************************!*\
   !*** ./src/game/actor-factory.ts ***!
@@ -1247,7 +1386,7 @@ var TGFireBall = /** @class */ (function (_super) {
         return _super.call(this, position) || this;
     }
     Object.defineProperty(TGFireBall.prototype, "size", {
-        get: function () { return new vector_1.default(20, 20); },
+        get: function () { return new vector_1.default(10, 10); },
         enumerable: true,
         configurable: true
     });
@@ -1304,67 +1443,232 @@ exports.default = TGFireBall;
 
 /***/ }),
 
-/***/ "./src/game/actors/heros/barbarian.ts":
-/*!********************************************!*\
-  !*** ./src/game/actors/heros/barbarian.ts ***!
-  \********************************************/
+/***/ "./src/game/actors/hero/animations/run.ts":
+/*!************************************************!*\
+  !*** ./src/game/actors/hero/animations/run.ts ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var hero_1 = __webpack_require__(/*! ./hero */ "./src/game/actors/heros/hero.ts");
-var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var TGBarbarian = /** @class */ (function (_super) {
-    __extends(TGBarbarian, _super);
-    function TGBarbarian() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Object.defineProperty(TGBarbarian, "imageFile", {
-        get: function () { return 'public/imgs/barbarian.png'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGBarbarian.prototype, "size", {
-        get: function () { return new vector_1.default(33, 100); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGBarbarian.prototype, "imageFile", {
-        get: function () { return TGBarbarian.imageFile; },
-        enumerable: true,
-        configurable: true
-    });
-    return TGBarbarian;
-}(hero_1.default));
-exports.default = TGBarbarian;
+var run_1_1 = __webpack_require__(/*! ../frames/run-1 */ "./src/game/actors/hero/frames/run-1.ts");
+var resting_1 = __webpack_require__(/*! ../frames/resting */ "./src/game/actors/hero/frames/resting.ts");
+var run_2_1 = __webpack_require__(/*! ../frames/run-2 */ "./src/game/actors/hero/frames/run-2.ts");
+var RUN_ANIMATION = {
+    frames: [
+        run_1_1.default,
+        resting_1.default,
+        run_2_1.default,
+        resting_1.default,
+    ],
+    speed: 0.1,
+};
+exports.default = RUN_ANIMATION;
 
 
 /***/ }),
 
-/***/ "./src/game/actors/heros/hero.ts":
+/***/ "./src/game/actors/hero/bones.ts":
 /*!***************************************!*\
-  !*** ./src/game/actors/heros/hero.ts ***!
+  !*** ./src/game/actors/hero/bones.ts ***!
   \***************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var constants_1 = __webpack_require__(/*! ./constants */ "./src/game/actors/hero/constants.ts");
+var BONES = [
+    {
+        id: constants_1.BACK_UPPER_ARM_ID,
+        anchor: constants_1.LIMB_ANCHOR,
+        position: constants_1.BACK_ARM_POSITION,
+        children: [
+            {
+                id: constants_1.BACK_LOWER_ARM_ID,
+                anchor: constants_1.LIMB_ANCHOR,
+                position: constants_1.LOWER_LIMB_POSITION,
+            },
+        ]
+    },
+    {
+        id: constants_1.BACK_UPPER_LEG_ID,
+        anchor: constants_1.LIMB_ANCHOR,
+        position: constants_1.BACK_LEG_POSITION,
+        children: [
+            {
+                id: constants_1.BACK_LOWER_LEG_ID,
+                anchor: constants_1.LIMB_ANCHOR,
+                position: constants_1.LOWER_LIMB_POSITION,
+            },
+        ]
+    },
+    {
+        id: constants_1.CHEST_ID,
+        anchor: constants_1.CHEST_ANCHOR,
+        position: constants_1.CHEST_POSITION,
+    },
+    {
+        id: constants_1.HEAD_ID,
+        anchor: constants_1.HEAD_ANCHOR,
+        position: constants_1.HEAD_POSITION,
+    },
+    {
+        id: constants_1.FRONT_UPPER_LEG_ID,
+        anchor: constants_1.LIMB_ANCHOR,
+        position: constants_1.FRONT_LEG_POSITION,
+        children: [
+            {
+                id: constants_1.FRONT_LOWER_LEG_ID,
+                anchor: constants_1.LIMB_ANCHOR,
+                position: constants_1.LOWER_LIMB_POSITION,
+            },
+        ]
+    },
+    {
+        id: constants_1.FRONT_UPPER_ARM_ID,
+        anchor: constants_1.LIMB_ANCHOR,
+        position: constants_1.FRONT_ARM_POSITION,
+        children: [
+            {
+                id: constants_1.FRONT_LOWER_ARM_ID,
+                anchor: constants_1.LIMB_ANCHOR,
+                position: constants_1.LOWER_LIMB_POSITION,
+            },
+        ]
+    },
+];
+exports.default = BONES;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/constants.ts":
+/*!*******************************************!*\
+  !*** ./src/game/actors/hero/constants.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+exports.RUN_FORCE = new vector_1.default(2, 0);
+exports.JUMP_FORCE = new vector_1.default(0, -13);
+exports.SHOOT_FORCE = new vector_1.default(12, 0);
+exports.BACK_UPPER_ARM_ID = 'back-upper-arm';
+exports.BACK_LOWER_ARM_ID = 'back-lower-arm';
+exports.BACK_UPPER_LEG_ID = 'back-upper-leg';
+exports.BACK_LOWER_LEG_ID = 'back-lower-leg';
+exports.CHEST_ID = 'chest';
+exports.HEAD_ID = 'head';
+exports.FRONT_UPPER_ARM_ID = 'front-upper-arm';
+exports.FRONT_LOWER_ARM_ID = 'front-lower-arm';
+exports.FRONT_UPPER_LEG_ID = 'front-upper-leg';
+exports.FRONT_LOWER_LEG_ID = 'front-lower-leg';
+exports.CHEST_POSITION = new vector_1.default(0, -4);
+exports.HEAD_POSITION = new vector_1.default(0, -26);
+exports.BACK_LEG_POSITION = new vector_1.default(3, 7);
+exports.FRONT_LEG_POSITION = new vector_1.default(-3, 8);
+exports.BACK_ARM_POSITION = new vector_1.default(7, -14);
+exports.FRONT_ARM_POSITION = new vector_1.default(-7, -13);
+exports.LOWER_LIMB_POSITION = new vector_1.default(0, 9);
+exports.CHEST_ANCHOR = new vector_1.default(0.5, 0.5);
+exports.HEAD_ANCHOR = new vector_1.default(0.5, 0.5);
+exports.LIMB_ANCHOR = new vector_1.default(0.5, 0.2);
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/frames/resting.ts":
+/*!************************************************!*\
+  !*** ./src/game/actors/hero/frames/resting.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var RESTING_FRAME = {
+    pivots: {},
+};
+exports.default = RESTING_FRAME;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/frames/run-1.ts":
+/*!**********************************************!*\
+  !*** ./src/game/actors/hero/frames/run-1.ts ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
+var constants_1 = __webpack_require__(/*! ../constants */ "./src/game/actors/hero/constants.ts");
+var RUN_FRAME_1 = {
+    pivots: (_a = {},
+        _a[constants_1.FRONT_UPPER_ARM_ID] = Math.PI / 3,
+        _a[constants_1.FRONT_LOWER_ARM_ID] = Math.PI / -2,
+        _a[constants_1.BACK_UPPER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.BACK_LOWER_ARM_ID] = Math.PI / -2,
+        _a[constants_1.FRONT_UPPER_LEG_ID] = Math.PI / -3,
+        _a[constants_1.FRONT_LOWER_LEG_ID] = Math.PI / 3,
+        _a[constants_1.BACK_UPPER_LEG_ID] = Math.PI / 3,
+        _a[constants_1.BACK_LOWER_LEG_ID] = Math.PI / 3,
+        _a),
+};
+exports.default = RUN_FRAME_1;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/frames/run-2.ts":
+/*!**********************************************!*\
+  !*** ./src/game/actors/hero/frames/run-2.ts ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
+var constants_1 = __webpack_require__(/*! ../constants */ "./src/game/actors/hero/constants.ts");
+var RUN_FRAME_2 = {
+    pivots: (_a = {},
+        _a[constants_1.FRONT_UPPER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.FRONT_LOWER_ARM_ID] = Math.PI / -2,
+        _a[constants_1.BACK_UPPER_ARM_ID] = Math.PI / 3,
+        _a[constants_1.BACK_LOWER_ARM_ID] = Math.PI / -2,
+        _a[constants_1.FRONT_UPPER_LEG_ID] = Math.PI / 3,
+        _a[constants_1.FRONT_LOWER_LEG_ID] = Math.PI / 3,
+        _a[constants_1.BACK_UPPER_LEG_ID] = Math.PI / -3,
+        _a[constants_1.BACK_LOWER_LEG_ID] = Math.PI / 3,
+        _a),
+};
+exports.default = RUN_FRAME_2;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/hero.ts":
+/*!**************************************!*\
+  !*** ./src/game/actors/hero/hero.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1379,36 +1683,83 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var constants_1 = __webpack_require__(/*! ./constants */ "./src/game/actors/hero/constants.ts");
 var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
 var key_listener_1 = __webpack_require__(/*! ../../../engine/interaction/key-listener */ "./src/engine/interaction/key-listener.ts");
 var fire_ball_1 = __webpack_require__(/*! ../fire-ball */ "./src/game/actors/fire-ball.ts");
 var actor_type_1 = __webpack_require__(/*! ../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
 var destroyable_1 = __webpack_require__(/*! ../../../engine/util/destroyable */ "./src/engine/util/destroyable.ts");
-var static_image_actor_1 = __webpack_require__(/*! ../../../engine/actors/static-image-actor */ "./src/engine/actors/static-image-actor.ts");
-var RUN_FORCE = new vector_1.default(3, 0);
-var JUMP_FORCE = new vector_1.default(0, -16);
-var SHOOT_FORCE = new vector_1.default(16, 0);
+var skeletal_actor_1 = __webpack_require__(/*! ../../../engine/actors/skeletal-actor */ "./src/engine/actors/skeletal-actor.ts");
+var texture_helper_1 = __webpack_require__(/*! ../../../engine/util/texture-helper */ "./src/engine/util/texture-helper.ts");
+var bones_1 = __webpack_require__(/*! ./bones */ "./src/game/actors/hero/bones.ts");
+var resting_1 = __webpack_require__(/*! ./frames/resting */ "./src/game/actors/hero/frames/resting.ts");
+var run_1 = __webpack_require__(/*! ./animations/run */ "./src/game/actors/hero/animations/run.ts");
 var TGHero = /** @class */ (function (_super) {
     __extends(TGHero, _super);
     function TGHero() {
-        var _this = _super.call(this, vector_1.default.Zero) || this;
+        var _this = _super.call(this, vector_1.default.Zero, bones_1.default, resting_1.default) || this;
         _this.destroyer = new destroyable_1.default();
         _this.leftKeyDown = false;
         _this.rightKeyDown = false;
         return _this;
     }
+    Object.defineProperty(TGHero, "textureFile", {
+        get: function () { return 'public/imgs/person.json'; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGHero.prototype, "type", {
         get: function () { return actor_type_1.default.Friendly; },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TGHero.prototype, "size", {
+        get: function () { return new vector_1.default(15, 55); },
+        enumerable: true,
+        configurable: true
+    });
     TGHero.prototype.init = function () {
         _super.prototype.init.call(this);
+        this.setTextureMap(TGHero.skeletalTextureMap);
         this.addKeyListeners();
     };
     TGHero.prototype.destroy = function () {
         this.destroyer.destroy();
     };
+    Object.defineProperty(TGHero, "headTexture", {
+        get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'head.png'); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero, "chestTexture", {
+        get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'body.png'); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero, "limbTexture", {
+        get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'limb.png'); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero, "skeletalTextureMap", {
+        get: function () {
+            var _a;
+            return _a = {},
+                _a[constants_1.HEAD_ID] = TGHero.headTexture,
+                _a[constants_1.CHEST_ID] = TGHero.chestTexture,
+                _a[constants_1.FRONT_UPPER_ARM_ID] = TGHero.limbTexture,
+                _a[constants_1.BACK_UPPER_ARM_ID] = TGHero.limbTexture,
+                _a[constants_1.FRONT_LOWER_ARM_ID] = TGHero.limbTexture,
+                _a[constants_1.BACK_LOWER_ARM_ID] = TGHero.limbTexture,
+                _a[constants_1.FRONT_UPPER_LEG_ID] = TGHero.limbTexture,
+                _a[constants_1.BACK_UPPER_LEG_ID] = TGHero.limbTexture,
+                _a[constants_1.FRONT_LOWER_LEG_ID] = TGHero.limbTexture,
+                _a[constants_1.BACK_LOWER_LEG_ID] = TGHero.limbTexture,
+                _a;
+        },
+        enumerable: true,
+        configurable: true
+    });
     TGHero.prototype.addKeyListeners = function () {
         var _this = this;
         // left arrow
@@ -1420,38 +1771,50 @@ var TGHero = /** @class */ (function (_super) {
         // Z
         this.destroyer.add(new key_listener_1.default(90, function () { return _this.shootFireBall(); }));
     };
+    TGHero.prototype.runLeft = function () {
+        this.move(constants_1.RUN_FORCE.flipHorz());
+        this.playAnimation(run_1.default);
+    };
+    TGHero.prototype.runRight = function () {
+        this.move(constants_1.RUN_FORCE);
+        this.playAnimation(run_1.default);
+    };
+    TGHero.prototype.stopRunning = function () {
+        this.move(vector_1.default.Zero);
+        this.cancelAnimation();
+    };
     TGHero.prototype.onLeftDown = function () {
         this.leftKeyDown = true;
-        this.move(RUN_FORCE.flipHorz());
+        this.runLeft();
     };
     TGHero.prototype.onLeftUp = function () {
         this.leftKeyDown = false;
         this.rightKeyDown
-            ? this.move(RUN_FORCE)
-            : this.move(vector_1.default.Zero);
+            ? this.runRight()
+            : this.stopRunning();
     };
     TGHero.prototype.onRightDown = function () {
         this.rightKeyDown = true;
-        this.move(RUN_FORCE);
+        this.runRight();
     };
     TGHero.prototype.onRightUp = function () {
         this.rightKeyDown = false;
         this.leftKeyDown
-            ? this.move(RUN_FORCE.flipHorz())
-            : this.move(vector_1.default.Zero);
+            ? this.runLeft()
+            : this.stopRunning();
     };
     TGHero.prototype.jump = function () {
         if (!this.isOnGround)
             return;
-        this.push(JUMP_FORCE);
+        this.push(constants_1.JUMP_FORCE);
     };
     TGHero.prototype.shootFireBall = function () {
         var fireBall = new fire_ball_1.default(this.position);
-        fireBall.push(SHOOT_FORCE.flipHorz(this.isFacingLeft));
+        fireBall.push(constants_1.SHOOT_FORCE.flipHorz(this.isFacingLeft));
         this.newBornActors.push(fireBall);
     };
     return TGHero;
-}(static_image_actor_1.default));
+}(skeletal_actor_1.default));
 exports.default = TGHero;
 
 
@@ -1480,28 +1843,12 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var hero_1 = __webpack_require__(/*! ./hero */ "./src/game/actors/heros/hero.ts");
-var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var hero_1 = __webpack_require__(/*! ../hero/hero */ "./src/game/actors/hero/hero.ts");
 var TGWizard = /** @class */ (function (_super) {
     __extends(TGWizard, _super);
     function TGWizard() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Object.defineProperty(TGWizard, "imageFile", {
-        get: function () { return 'public/imgs/wizard.png'; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWizard.prototype, "size", {
-        get: function () { return new vector_1.default(28, 80); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWizard.prototype, "imageFile", {
-        get: function () { return TGWizard.imageFile; },
-        enumerable: true,
-        configurable: true
-    });
     return TGWizard;
 }(hero_1.default));
 exports.default = TGWizard;
@@ -1640,7 +1987,7 @@ var TGWanderingTarget = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(TGWanderingTarget.prototype, "size", {
-        get: function () { return new vector_1.default(26, 66); },
+        get: function () { return new vector_1.default(13, 30); },
         enumerable: true,
         configurable: true
     });
@@ -1651,11 +1998,6 @@ var TGWanderingTarget = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGWanderingTarget.prototype, "imageFile", {
         get: function () { return TGWanderingTarget.imageFile; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TGWanderingTarget.prototype, "imageScale", {
-        get: function () { return 2; },
         enumerable: true,
         configurable: true
     });
@@ -1696,10 +2038,9 @@ var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var wandering_target_1 = __webpack_require__(/*! ./actors/wandering-target */ "./src/game/actors/wandering-target.ts");
 var wizard_1 = __webpack_require__(/*! ./actors/heros/wizard */ "./src/game/actors/heros/wizard.ts");
-var barbarian_1 = __webpack_require__(/*! ./actors/heros/barbarian */ "./src/game/actors/heros/barbarian.ts");
+var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var assets = [
-    wizard_1.default.imageFile,
-    barbarian_1.default.imageFile,
+    hero_1.default.textureFile,
     wandering_target_1.default.imageFile,
 ];
 var app = new app_1.default({
