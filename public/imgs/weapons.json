@@ -1,8 +1,16 @@
 {"frames": {
 
+"crossbow.png":
+{
+	"frame": {"x":0,"y":0,"w":28,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":28,"h":29},
+	"sourceSize": {"w":28,"h":29}
+},
 "staff.png":
 {
-	"frame": {"x":0,"y":0,"w":75,"h":9},
+	"frame": {"x":0,"y":31,"w":75,"h":9},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":75,"h":9},
@@ -10,7 +18,7 @@
 },
 "sword.png":
 {
-	"frame": {"x":77,"y":0,"w":58,"h":11},
+	"frame": {"x":30,"y":0,"w":58,"h":11},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":58,"h":11},
@@ -21,8 +29,8 @@
 	"version": "1.0",
 	"image": "weapons.png",
 	"format": "RGBA8888",
-	"size": {"w":135,"h":11},
+	"size": {"w":88,"h":40},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c6bf299eb6ee503568ebc6044833dd1a:00c2c146aed48f52fff52b9acfd0102c:ba48453f8b2235fdb166a51105f49255$"
+	"smartupdate": "$TexturePacker:SmartUpdate:91f1732ea0c8b28007f736499fb59b46:a9eced5d79ed2fa98a82e49f7aacc3e0:ba48453f8b2235fdb166a51105f49255$"
 }
 }

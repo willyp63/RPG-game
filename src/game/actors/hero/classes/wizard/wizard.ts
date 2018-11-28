@@ -14,7 +14,7 @@ export default class TGWizard extends TGHero {
   static get id() { return 'Wizard'; }
 
   get weapon() { return new TGWeapon(TGWeaponType.Staff); }
-  get jumpForce() { return JUMP_FORCE.times(0.9); }
+  get jumpForce() { return JUMP_FORCE.times(1.0); }
   get runForce() { return RUN_FORCE.times(0.9); }
 
   performAbility(abilityNum: number) {

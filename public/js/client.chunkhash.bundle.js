@@ -1566,10 +1566,10 @@ exports.default = BONES;
 
 /***/ }),
 
-/***/ "./src/game/actors/hero/classes/barbarian/barbarian.ts":
-/*!*************************************************************!*\
-  !*** ./src/game/actors/hero/classes/barbarian/barbarian.ts ***!
-  \*************************************************************/
+/***/ "./src/game/actors/hero/classes/rouge/rouge.ts":
+/*!*****************************************************!*\
+  !*** ./src/game/actors/hero/classes/rouge/rouge.ts ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1592,9 +1592,78 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
 var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
-var TGBarbarian = /** @class */ (function (_super) {
-    __extends(TGBarbarian, _super);
-    function TGBarbarian() {
+var TGRouge = /** @class */ (function (_super) {
+    __extends(TGRouge, _super);
+    function TGRouge() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.abilities = [
+            function () { return console.log('shoot crossbow'); },
+            function () { return console.log('backstab'); },
+            function () { return console.log('evasion'); },
+            function () { return console.log('idk...'); },
+            function () { return console.log('idk...'); },
+        ];
+        return _this;
+    }
+    Object.defineProperty(TGRouge, "id", {
+        get: function () { return 'Rouge'; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGRouge.prototype, "weapon", {
+        get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Crossbow); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGRouge.prototype, "jumpForce", {
+        get: function () { return constants_1.JUMP_FORCE.times(1.1); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGRouge.prototype, "runForce", {
+        get: function () { return constants_1.RUN_FORCE.times(1.2); },
+        enumerable: true,
+        configurable: true
+    });
+    TGRouge.prototype.performAbility = function (abilityNum) {
+        this.abilities[abilityNum]();
+    };
+    return TGRouge;
+}(hero_1.default));
+exports.default = TGRouge;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/classes/warrior/warrior.ts":
+/*!*********************************************************!*\
+  !*** ./src/game/actors/hero/classes/warrior/warrior.ts ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.ts");
+var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
+var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
+var TGWarrior = /** @class */ (function (_super) {
+    __extends(TGWarrior, _super);
+    function TGWarrior() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.abilities = [
             function () { return console.log('slash'); },
@@ -1605,32 +1674,32 @@ var TGBarbarian = /** @class */ (function (_super) {
         ];
         return _this;
     }
-    Object.defineProperty(TGBarbarian, "id", {
-        get: function () { return 'Barbarian'; },
+    Object.defineProperty(TGWarrior, "id", {
+        get: function () { return 'Warrior'; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGBarbarian.prototype, "weapon", {
+    Object.defineProperty(TGWarrior.prototype, "weapon", {
         get: function () { return new weapon_1.default(weapon_1.TGWeaponType.Sword); },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGBarbarian.prototype, "jumpForce", {
-        get: function () { return constants_1.JUMP_FORCE.times(1.1); },
+    Object.defineProperty(TGWarrior.prototype, "jumpForce", {
+        get: function () { return constants_1.JUMP_FORCE.times(1.0); },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGBarbarian.prototype, "runForce", {
+    Object.defineProperty(TGWarrior.prototype, "runForce", {
         get: function () { return constants_1.RUN_FORCE.times(1.1); },
         enumerable: true,
         configurable: true
     });
-    TGBarbarian.prototype.performAbility = function (abilityNum) {
+    TGWarrior.prototype.performAbility = function (abilityNum) {
         this.abilities[abilityNum]();
     };
-    return TGBarbarian;
+    return TGWarrior;
 }(hero_1.default));
-exports.default = TGBarbarian;
+exports.default = TGWarrior;
 
 
 /***/ }),
@@ -1904,7 +1973,7 @@ var TGWizard = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(TGWizard.prototype, "jumpForce", {
-        get: function () { return constants_1.JUMP_FORCE.times(0.9); },
+        get: function () { return constants_1.JUMP_FORCE.times(1.0); },
         enumerable: true,
         configurable: true
     });
@@ -2285,6 +2354,7 @@ var TGWeaponType;
     TGWeaponType[TGWeaponType["Fist"] = 0] = "Fist";
     TGWeaponType[TGWeaponType["Staff"] = 1] = "Staff";
     TGWeaponType[TGWeaponType["Sword"] = 2] = "Sword";
+    TGWeaponType[TGWeaponType["Crossbow"] = 3] = "Crossbow";
 })(TGWeaponType = exports.TGWeaponType || (exports.TGWeaponType = {}));
 var TGWeapon = /** @class */ (function () {
     function TGWeapon(type) {
@@ -2315,12 +2385,18 @@ var TGWeapon = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TGWeapon, "crossbowTexture", {
+        get: function () { return texture_helper_1.default.get(TGWeapon.textureFile, 'crossbow.png'); },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGWeapon, "textureMap", {
         get: function () {
             var _a;
             return _a = {},
                 _a[TGWeaponType.Staff] = TGWeapon.staffTexture,
                 _a[TGWeaponType.Sword] = TGWeapon.swordTexture,
+                _a[TGWeaponType.Crossbow] = TGWeapon.crossbowTexture,
                 _a;
         },
         enumerable: true,
@@ -2332,6 +2408,7 @@ var TGWeapon = /** @class */ (function () {
             return _a = {},
                 _a[TGWeaponType.Staff] = new vector_1.default(0.333, 0.5),
                 _a[TGWeaponType.Sword] = new vector_1.default(0.0667, 0.5),
+                _a[TGWeaponType.Crossbow] = new vector_1.default(0.25, 0.5),
                 _a;
         },
         enumerable: true,
@@ -2445,13 +2522,15 @@ var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine
 var actor_factory_1 = __webpack_require__(/*! ./actor-factory */ "./src/game/actor-factory.ts");
 var hero_1 = __webpack_require__(/*! ./actors/hero/hero */ "./src/game/actors/hero/hero.ts");
 var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actors/hero/weapon.ts");
-var barbarian_1 = __webpack_require__(/*! ./actors/hero/classes/barbarian/barbarian */ "./src/game/actors/hero/classes/barbarian/barbarian.ts");
 var wizard_1 = __webpack_require__(/*! ./actors/hero/classes/wizard/wizard */ "./src/game/actors/hero/classes/wizard/wizard.ts");
+var warrior_1 = __webpack_require__(/*! ./actors/hero/classes/warrior/warrior */ "./src/game/actors/hero/classes/warrior/warrior.ts");
+var rouge_1 = __webpack_require__(/*! ./actors/hero/classes/rouge/rouge */ "./src/game/actors/hero/classes/rouge/rouge.ts");
 var urlParams = new URLSearchParams(window.location.search);
-var classId = urlParams.get('class') || barbarian_1.default.id;
+var classId = urlParams.get('class') || warrior_1.default.id;
 var heroFactory = (_a = {},
-    _a[barbarian_1.default.id] = function () { return new barbarian_1.default(); },
+    _a[warrior_1.default.id] = function () { return new warrior_1.default(); },
     _a[wizard_1.default.id] = function () { return new wizard_1.default(); },
+    _a[rouge_1.default.id] = function () { return new rouge_1.default(); },
     _a);
 if (!heroFactory[classId])
     throw new Error("No hero class with id: " + classId);

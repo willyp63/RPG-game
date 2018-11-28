@@ -3,15 +3,17 @@ import HPVector from '../engine/physics/vector';
 import TGActorFactory from './actor-factory';
 import TGHero from './actors/hero/hero';
 import TGWeapon from './actors/hero/weapon';
-import TGBarbarian from './actors/hero/classes/barbarian/barbarian';
 import TGWizard from './actors/hero/classes/wizard/wizard';
+import TGWarrior from './actors/hero/classes/warrior/warrior';
+import TGRouge from './actors/hero/classes/rouge/rouge';
 
 const urlParams = new URLSearchParams(window.location.search);
-const classId = urlParams.get('class') || TGBarbarian.id;
+const classId = urlParams.get('class') || TGWarrior.id;
 
 const heroFactory = {
-  [TGBarbarian.id]: () => new TGBarbarian(),
+  [TGWarrior.id]: () => new TGWarrior(),
   [TGWizard.id]: () => new TGWizard(),
+  [TGRouge.id]: () => new TGRouge(),
 };
 
 if (!heroFactory[classId]) throw new Error(`No hero class with id: ${classId}`);
