@@ -6,41 +6,13 @@ import HPAreaData from "../services/data/area-data";
 import HPActorFactory from "./actor-factory";
 import HPActor from "./actor";
 
-export interface HPAppOptions {
-  viewSize: HPVector,
-  elementSelector: string,
-  actorFactory: HPActorFactory,
-  textures: Array<string>,
-  areaFile: string,
-  hero: HPActor | undefined,
-  heroStart: HPVector,
-  gravityForce: HPVector,
-  airFrictionCoefficient: number,
-}
-
-export interface HPAppArgs {
-  viewSize?: HPVector,
-  elementSelector: string,
-  actorFactory: HPActorFactory,
-  textures?: Array<string>,
-  areaFile: string,
-  hero: HPActor,
-  heroStart?: HPVector,
-  gravityForce?: HPVector,
-  airFrictionCoefficient?: number,
-}
-
-export const HPAppDefaultOptions: HPAppOptions = {
+const DEFAULTS = {
   viewSize: new HPVector(850, 550),
-  elementSelector: '',
-  actorFactory: {},
   textures: [],
-  areaFile: '',
-  hero: undefined,
   heroStart: HPVector.Zero,
   gravityForce: new HPVector(0, .667),
   airFrictionCoefficient: 0.033,
-}
+};
 
 export default class HPApp {
 
@@ -55,9 +27,19 @@ export default class HPApp {
   private heroStart: HPVector;
   
   constructor(
-    _options: HPAppArgs,
+    _options: {
+      viewSize?: HPVector,
+      elementSelector: string,
+      actorFactory: HPActorFactory,
+      textures?: Array<string>,
+      areaFile: string,
+      hero: HPActor,
+      heroStart?: HPVector,
+      gravityForce?: HPVector,
+      airFrictionCoefficient?: number,
+    },
   ) {
-    const options = Object.assign({}, HPAppDefaultOptions, _options);
+    const options = Object.assign({}, DEFAULTS, _options);
 
     this.actorFactory = options.actorFactory;
     this.textures = options.textures;

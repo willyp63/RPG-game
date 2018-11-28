@@ -565,20 +565,16 @@ var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/i
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
-exports.HPAppDefaultOptions = {
+var DEFAULTS = {
     viewSize: new vector_1.default(850, 550),
-    elementSelector: '',
-    actorFactory: {},
     textures: [],
-    areaFile: '',
-    hero: undefined,
     heroStart: vector_1.default.Zero,
     gravityForce: new vector_1.default(0, .667),
     airFrictionCoefficient: 0.033,
 };
 var HPApp = /** @class */ (function () {
     function HPApp(_options) {
-        var options = Object.assign({}, exports.HPAppDefaultOptions, _options);
+        var options = Object.assign({}, DEFAULTS, _options);
         this.actorFactory = options.actorFactory;
         this.textures = options.textures;
         this.areaFile = options.areaFile;
