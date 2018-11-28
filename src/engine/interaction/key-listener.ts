@@ -1,4 +1,6 @@
-export default class KeyListener {
+import HPDestroyable from "../util/destroyer";
+
+export default class HPKeyListener implements HPDestroyable {
   private _code: number;
   private _onPress: Function;
   private _onRelease?: Function;

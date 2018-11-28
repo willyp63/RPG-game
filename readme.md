@@ -1,9 +1,14 @@
 ## What it is?
 2D platform, rpg game using PIXI.js
 
-**Install & build**  
-- **`npm i`** - Install dependencies
-- **`npm run build`** - Build once
-- **`npm run build:watch`** - Build and watch files
+### How to Start
+- `npm i` - Install dependencies
+- `npm run build:watch` - Build and watch files
+- `npm start` - Start the dev server
+- navigate to `http://localhost:8080/`
 
-**Now open the public/index.html in browser!**
+### All Commands
+- `npm i` - Install dependencies
+- `npm run build` - Build once
+- `npm run build:watch` - Build and watch files
+- `npm start` - Start the dev server

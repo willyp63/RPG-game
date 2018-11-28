@@ -1,0 +1,36 @@
+{"frames": {
+
+"body.png":
+{
+	"frame": {"x":0,"y":0,"w":15,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":15,"h":30},
+	"sourceSize": {"w":15,"h":30}
+},
+"head.png":
+{
+	"frame": {"x":0,"y":32,"w":13,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":15},
+	"sourceSize": {"w":13,"h":15}
+},
+"limb.png":
+{
+	"frame": {"x":0,"y":49,"w":9,"h":15},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":9,"h":15},
+	"sourceSize": {"w":9,"h":15}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "person.png",
+	"format": "RGBA8888",
+	"size": {"w":15,"h":64},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:36265aedb2ca84018f493b7d0a6eb5a6:642e007d26b79c8072589ad20de05e3f:0f05216b91dca4a5cb4ffec69e53abd2$"
+}
+}
