@@ -67,7 +67,7 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   get targetUnitVector() {
-    return HPMouseTracker.position.minus(this.position).toUnitVector();
+    return HPMouseTracker.position.minus(this.position).toUnit();
   }
 
   private static get headTexture() { return HPTextureHelper.get(TGHero.textureFile, 'head.png'); }

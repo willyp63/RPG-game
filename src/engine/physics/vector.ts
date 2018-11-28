@@ -1,16 +1,31 @@
 export default class HPVector {
 
-  static get Zero() { return new HPVector(0, 0); }
+  static get Zero() { return new HPVector(0); }
 
-  static fromData(data: { x: number, y: number }) { return new HPVector(data.x, data.y); }
+  static from(data: { x: number, y: number }) {
+    return new HPVector(data.x, data.y);
+  }
+
+  public get x() { return this._x; }
+  public get y() { return this._y; }
+
+  private _y: number;
 
   constructor(
-    public x: number,
-    public y: number,
-  ) { }
+    private _x: number,
+    _y?: number,
+  ) {
+    // if only one arg is provided, use that value for both x and y
+    this._y = _y !== undefined ? _y : _x;
+  }
 
-  get length() { return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2)); }
-  get angle() { return Math.atan2(this.y, this.x); }
+  get length() {
+    return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+  }
+
+  get angle() {
+    return Math.atan2(this.y, this.x);
+  }
 
   plus(otherVector: HPVector) {
     return new HPVector(this.x + otherVector.x, this.y + otherVector.y);
@@ -21,41 +36,43 @@ export default class HPVector {
   }
 
   times(scaleVector: HPVector | number) {
-    if (typeof scaleVector === 'number') {
-      scaleVector = new HPVector(scaleVector, scaleVector);
-    }
-
-    return new HPVector(this.x * scaleVector.x, this.y * scaleVector.y);
+    return typeof scaleVector === 'number'
+      ? new HPVector(this.x * scaleVector, this.y * scaleVector)
+      : new HPVector(this.x * scaleVector.x, this.y * scaleVector.y);
   }
 
   dot(scaleVector: HPVector) {
     return this.x * scaleVector.x + this.y * scaleVector.y;
   }
 
-  capped(capVector: HPVector | number) {
-    if (typeof capVector === 'number') {
-      capVector = new HPVector(capVector, capVector);
+  limit(limitVector: HPVector | number) {
+    if (typeof limitVector === 'number') {
+      limitVector = new HPVector(limitVector);
     }
 
-    const newX = this.x > 0 ? Math.min(this.x, capVector.x) : Math.max(this.x, -capVector.x);
-    const newY = this.y > 0 ? Math.min(this.y, capVector.y) : Math.max(this.y, -capVector.y);
+    const newX = this.x > 0 ? Math.min(this.x, limitVector.x) : Math.max(this.x, -limitVector.x);
+    const newY = this.y > 0 ? Math.min(this.y, limitVector.y) : Math.max(this.y, -limitVector.y);
     return new HPVector(newX, newY);
   }
 
-  withNewX(newX: number) {
+  newX(newX: number) {
     return new HPVector(newX, this.y);
   }
 
-  withNewY(newY: number) {
+  newY(newY: number) {
     return new HPVector(this.x, newY);
   }
 
-  toUnitVector() {
+  toUnit() {
     return new HPVector(this.x / this.length, this.y / this.length);
   }
 
   flipHorz(isFlipped = true) {
     return this.times(new HPVector(isFlipped ? -1 : 1, 1));
+  }
+
+  flipVert(isFlipped = true) {
+    return this.times(new HPVector(1, isFlipped ? -1 : 1));
   }
 
 }

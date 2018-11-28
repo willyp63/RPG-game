@@ -7,13 +7,13 @@ import HPActorFactory from "../engine/core/actor-factory";
 const TGActorFactory: HPActorFactory = {
   [TGWall.id]: (data: HPActorData) => {
     return new TGWall(
-      HPVector.fromData(data.position),
-      HPVector.fromData(data.props['size']),
+      HPVector.from(data.position),
+      HPVector.from(data.props['size']),
     );
   },
   [TGWanderingTarget.id]: (data: HPActorData) => {
     return new TGWanderingTarget(
-      HPVector.fromData(data.position),
+      HPVector.from(data.position),
     );
   },
 };

@@ -102,7 +102,7 @@ export default class HPApp {
   }
 
   private setAreaData(areaData: HPAreaData) {
-    this.stage.size = HPVector.fromData(areaData.size);
+    this.stage.size = HPVector.from(areaData.size);
 
     this.stage.clearActors();
     areaData.actors.forEach(data => {

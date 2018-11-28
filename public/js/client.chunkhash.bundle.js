@@ -486,7 +486,7 @@ var HPActor = /** @class */ (function () {
         this.push(this.isOnGround ? this.moveForce : this.moveForce.times(this.airWalkCoefficient));
     };
     HPActor.prototype.beforeTick = function () {
-        this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
+        this.velocity = this.velocity.plus(this.acceleration).limit(this.maxVelocity);
         this.position = this.position.plus(this.velocity);
         this.acceleration = vector_1.default.Zero;
         this.wallContact = new wall_contact_map_1.default();
@@ -634,7 +634,7 @@ var HPApp = /** @class */ (function () {
     };
     HPApp.prototype.setAreaData = function (areaData) {
         var _this = this;
-        this.stage.size = vector_1.default.fromData(areaData.size);
+        this.stage.size = vector_1.default.from(areaData.size);
         this.stage.clearActors();
         areaData.actors.forEach(function (data) {
             var actor = _this.actorFactory[data.id](data);
@@ -935,31 +935,31 @@ var HPCollisionHandler = /** @class */ (function () {
     HPCollisionHandler.recedeFromWall = function (entity, wall, collision) {
         var combinedHalfSize = entity.size.times(0.5).plus(wall.size.times(0.5));
         if (collision.direction === direction_1.default.Down) {
-            entity.position.y = wall.position.y + combinedHalfSize.y;
+            entity.position = entity.position.newY(wall.position.y + combinedHalfSize.y);
         }
         else if (collision.direction === direction_1.default.Left) {
-            entity.position.x = wall.position.x - combinedHalfSize.x;
+            entity.position = entity.position.newX(wall.position.x - combinedHalfSize.x);
         }
         else if (collision.direction === direction_1.default.Up) {
-            entity.position.y = wall.position.y - combinedHalfSize.y;
+            entity.position = entity.position.newY(wall.position.y - combinedHalfSize.y);
         }
         else if (collision.direction === direction_1.default.Right) {
-            entity.position.x = wall.position.x + combinedHalfSize.x;
+            entity.position = entity.position.newX(wall.position.x + combinedHalfSize.x);
         }
     };
     HPCollisionHandler.bounceOffWall = function (entity, wall, collision) {
         var combinedBounciness = (wall.bounciness + entity.bounciness) / 2;
         if (collision.direction === direction_1.default.Up) {
-            entity.velocity.y = Math.min(wall.velocity.y, entity.velocity.y * -combinedBounciness);
+            entity.velocity = entity.velocity.newY(Math.min(wall.velocity.y, entity.velocity.y * -combinedBounciness));
         }
         else if (collision.direction === direction_1.default.Right) {
-            entity.velocity.x = Math.max(wall.velocity.x, entity.velocity.x * -combinedBounciness);
+            entity.velocity = entity.velocity.newX(Math.max(wall.velocity.x, entity.velocity.x * -combinedBounciness));
         }
         else if (collision.direction === direction_1.default.Down) {
-            entity.velocity.y = Math.max(wall.velocity.y, entity.velocity.y * -combinedBounciness);
+            entity.velocity = entity.velocity.newY(Math.max(wall.velocity.y, entity.velocity.y * -combinedBounciness));
         }
         else if (collision.direction === direction_1.default.Left) {
-            entity.velocity.x = Math.min(wall.velocity.x, entity.velocity.x * -combinedBounciness);
+            entity.velocity = entity.velocity.newX(Math.min(wall.velocity.x, entity.velocity.x * -combinedBounciness));
         }
     };
     HPCollisionHandler.applyFloorFriction = function (entity, wall, collision) {
@@ -969,7 +969,7 @@ var HPCollisionHandler = /** @class */ (function () {
         entity.push(new vector_1.default(velocityDiff.x * (1 - wall.slipperiness), 0));
         // stick to floor when going down elevators
         if (wall.velocity.y > 0)
-            entity.velocity.y = wall.velocity.y;
+            entity.velocity = entity.velocity.newY(wall.velocity.y);
     };
     return HPCollisionHandler;
 }());
@@ -1044,23 +1044,40 @@ exports.default = HPDirection;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var HPVector = /** @class */ (function () {
-    function HPVector(x, y) {
-        this.x = x;
-        this.y = y;
+    function HPVector(_x, _y) {
+        this._x = _x;
+        // if only one arg is provided, use that value for both x and y
+        this._y = _y !== undefined ? _y : _x;
     }
     Object.defineProperty(HPVector, "Zero", {
-        get: function () { return new HPVector(0, 0); },
+        get: function () { return new HPVector(0); },
         enumerable: true,
         configurable: true
     });
-    HPVector.fromData = function (data) { return new HPVector(data.x, data.y); };
+    HPVector.from = function (data) {
+        return new HPVector(data.x, data.y);
+    };
+    Object.defineProperty(HPVector.prototype, "x", {
+        get: function () { return this._x; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPVector.prototype, "y", {
+        get: function () { return this._y; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(HPVector.prototype, "length", {
-        get: function () { return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2)); },
+        get: function () {
+            return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(HPVector.prototype, "angle", {
-        get: function () { return Math.atan2(this.y, this.x); },
+        get: function () {
+            return Math.atan2(this.y, this.x);
+        },
         enumerable: true,
         configurable: true
     });
@@ -1071,34 +1088,37 @@ var HPVector = /** @class */ (function () {
         return new HPVector(this.x - otherVector.x, this.y - otherVector.y);
     };
     HPVector.prototype.times = function (scaleVector) {
-        if (typeof scaleVector === 'number') {
-            scaleVector = new HPVector(scaleVector, scaleVector);
-        }
-        return new HPVector(this.x * scaleVector.x, this.y * scaleVector.y);
+        return typeof scaleVector === 'number'
+            ? new HPVector(this.x * scaleVector, this.y * scaleVector)
+            : new HPVector(this.x * scaleVector.x, this.y * scaleVector.y);
     };
     HPVector.prototype.dot = function (scaleVector) {
         return this.x * scaleVector.x + this.y * scaleVector.y;
     };
-    HPVector.prototype.capped = function (capVector) {
-        if (typeof capVector === 'number') {
-            capVector = new HPVector(capVector, capVector);
+    HPVector.prototype.limit = function (limitVector) {
+        if (typeof limitVector === 'number') {
+            limitVector = new HPVector(limitVector);
         }
-        var newX = this.x > 0 ? Math.min(this.x, capVector.x) : Math.max(this.x, -capVector.x);
-        var newY = this.y > 0 ? Math.min(this.y, capVector.y) : Math.max(this.y, -capVector.y);
+        var newX = this.x > 0 ? Math.min(this.x, limitVector.x) : Math.max(this.x, -limitVector.x);
+        var newY = this.y > 0 ? Math.min(this.y, limitVector.y) : Math.max(this.y, -limitVector.y);
         return new HPVector(newX, newY);
     };
-    HPVector.prototype.withNewX = function (newX) {
+    HPVector.prototype.newX = function (newX) {
         return new HPVector(newX, this.y);
     };
-    HPVector.prototype.withNewY = function (newY) {
+    HPVector.prototype.newY = function (newY) {
         return new HPVector(this.x, newY);
     };
-    HPVector.prototype.toUnitVector = function () {
+    HPVector.prototype.toUnit = function () {
         return new HPVector(this.x / this.length, this.y / this.length);
     };
     HPVector.prototype.flipHorz = function (isFlipped) {
         if (isFlipped === void 0) { isFlipped = true; }
         return this.times(new HPVector(isFlipped ? -1 : 1, 1));
+    };
+    HPVector.prototype.flipVert = function (isFlipped) {
+        if (isFlipped === void 0) { isFlipped = true; }
+        return this.times(new HPVector(1, isFlipped ? -1 : 1));
     };
     return HPVector;
 }());
@@ -1344,10 +1364,10 @@ var vector_1 = __webpack_require__(/*! ../engine/physics/vector */ "./src/engine
 var wandering_target_1 = __webpack_require__(/*! ./actors/enemies/wandering-target */ "./src/game/actors/enemies/wandering-target.ts");
 var TGActorFactory = (_a = {},
     _a[wall_1.default.id] = function (data) {
-        return new wall_1.default(vector_1.default.fromData(data.position), vector_1.default.fromData(data.props['size']));
+        return new wall_1.default(vector_1.default.from(data.position), vector_1.default.from(data.props['size']));
     },
     _a[wandering_target_1.default.id] = function (data) {
-        return new wandering_target_1.default(vector_1.default.fromData(data.position));
+        return new wandering_target_1.default(vector_1.default.from(data.position));
     },
     _a);
 exports.default = TGActorFactory;
@@ -2233,7 +2253,7 @@ var TGHero = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGHero.prototype, "targetUnitVector", {
         get: function () {
-            return mouse_tracker_1.HPMouseTracker.position.minus(this.position).toUnitVector();
+            return mouse_tracker_1.HPMouseTracker.position.minus(this.position).toUnit();
         },
         enumerable: true,
         configurable: true

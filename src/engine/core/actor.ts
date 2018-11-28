@@ -51,7 +51,7 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   }
 
   beforeTick() {
-    this.velocity = this.velocity.plus(this.acceleration).capped(this.maxVelocity);
+    this.velocity = this.velocity.plus(this.acceleration).limit(this.maxVelocity);
     this.position = this.position.plus(this.velocity);
     this.acceleration = HPVector.Zero;
     this.wallContact = new HPWallContactMap();

@@ -45,13 +45,13 @@ export default class HPCollisionHandler {
     const combinedHalfSize = entity.size.times(0.5).plus(wall.size.times(0.5));
 
     if (collision.direction === HPDirection.Down) {
-      entity.position.y = wall.position.y + combinedHalfSize.y;
+      entity.position = entity.position.newY(wall.position.y + combinedHalfSize.y);
     } else if (collision.direction === HPDirection.Left) {
-      entity.position.x = wall.position.x - combinedHalfSize.x;
+      entity.position = entity.position.newX(wall.position.x - combinedHalfSize.x);
     } else if (collision.direction === HPDirection.Up) {
-      entity.position.y = wall.position.y - combinedHalfSize.y;
+      entity.position = entity.position.newY(wall.position.y - combinedHalfSize.y);
     } else if (collision.direction === HPDirection.Right) {
-      entity.position.x = wall.position.x + combinedHalfSize.x;
+      entity.position = entity.position.newX(wall.position.x + combinedHalfSize.x);
     }
   }
 
@@ -63,13 +63,13 @@ export default class HPCollisionHandler {
     const combinedBounciness = (wall.bounciness + entity.bounciness) / 2;
 
     if (collision.direction === HPDirection.Up) {
-      entity.velocity.y = Math.min(wall.velocity.y, entity.velocity.y * -combinedBounciness);
+      entity.velocity = entity.velocity.newY(Math.min(wall.velocity.y, entity.velocity.y * -combinedBounciness));
     } else if (collision.direction === HPDirection.Right) {
-      entity.velocity.x = Math.max(wall.velocity.x, entity.velocity.x * -combinedBounciness);
+      entity.velocity = entity.velocity.newX(Math.max(wall.velocity.x, entity.velocity.x * -combinedBounciness));
     } else if (collision.direction === HPDirection.Down) {
-      entity.velocity.y = Math.max(wall.velocity.y, entity.velocity.y * -combinedBounciness);
+      entity.velocity = entity.velocity.newY(Math.max(wall.velocity.y, entity.velocity.y * -combinedBounciness));
     } else if (collision.direction === HPDirection.Left) {
-      entity.velocity.x = Math.min(wall.velocity.x, entity.velocity.x * -combinedBounciness);
+      entity.velocity = entity.velocity.newX(Math.min(wall.velocity.x, entity.velocity.x * -combinedBounciness));
     }
   }
 
@@ -84,7 +84,7 @@ export default class HPCollisionHandler {
     entity.push(new HPVector(velocityDiff.x * (1 - wall.slipperiness), 0));
 
     // stick to floor when going down elevators
-    if (wall.velocity.y > 0) entity.velocity.y = wall.velocity.y;
+    if (wall.velocity.y > 0) entity.velocity = entity.velocity.newY(wall.velocity.y);
   }
 
 }
