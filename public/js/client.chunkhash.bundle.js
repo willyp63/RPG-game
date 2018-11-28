@@ -1720,6 +1720,106 @@ exports.default = TGWarrior;
 
 /***/ }),
 
+/***/ "./src/game/actors/hero/classes/wizard/animations/channeling-missiles.ts":
+/*!*******************************************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/animations/channeling-missiles.ts ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var channeling_missiles_1_1 = __webpack_require__(/*! ../frames/channeling-missiles-1 */ "./src/game/actors/hero/classes/wizard/frames/channeling-missiles-1.ts");
+var channeling_missiles_2_1 = __webpack_require__(/*! ../frames/channeling-missiles-2 */ "./src/game/actors/hero/classes/wizard/frames/channeling-missiles-2.ts");
+var constants_1 = __webpack_require__(/*! ../constants */ "./src/game/actors/hero/classes/wizard/constants.ts");
+var CHANNELING_MISSILES_ANIMATION = {
+    frames: [
+        channeling_missiles_1_1.default,
+        channeling_missiles_2_1.default,
+    ],
+    speed: 2 / constants_1.ARCANE_MISSILE_SHOOT_INTERVAL,
+};
+exports.default = CHANNELING_MISSILES_ANIMATION;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/classes/wizard/constants.ts":
+/*!**********************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/constants.ts ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FIRE_BALL_SHOOT_FORCE = 16;
+exports.ARCANE_MISSILE_SHOOT_FORCE = 16;
+exports.ARCANE_MISSILE_SHOOT_INTERVAL = 32;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/classes/wizard/frames/channeling-missiles-1.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/frames/channeling-missiles-1.ts ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
+var constants_1 = __webpack_require__(/*! ../../../constants */ "./src/game/actors/hero/constants.ts");
+var CHANNELING_MISSILES_1 = {
+    pivots: (_a = {},
+        _a[constants_1.FRONT_UPPER_ARM_ID] = Math.PI / -6,
+        _a[constants_1.FRONT_LOWER_ARM_ID] = Math.PI * -2 / 3,
+        _a[constants_1.BACK_UPPER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.BACK_LOWER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.FRONT_UPPER_LEG_ID] = Math.PI / 6,
+        _a[constants_1.FRONT_LOWER_LEG_ID] = Math.PI / -6,
+        _a[constants_1.BACK_UPPER_LEG_ID] = Math.PI / -6,
+        _a[constants_1.BACK_LOWER_LEG_ID] = Math.PI / 6,
+        _a),
+};
+exports.default = CHANNELING_MISSILES_1;
+
+
+/***/ }),
+
+/***/ "./src/game/actors/hero/classes/wizard/frames/channeling-missiles-2.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/frames/channeling-missiles-2.ts ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
+var constants_1 = __webpack_require__(/*! ../../../constants */ "./src/game/actors/hero/constants.ts");
+var CHANNELING_MISSILES_2 = {
+    pivots: (_a = {},
+        _a[constants_1.FRONT_UPPER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.FRONT_LOWER_ARM_ID] = Math.PI / -3,
+        _a[constants_1.BACK_UPPER_ARM_ID] = Math.PI / -6,
+        _a[constants_1.BACK_LOWER_ARM_ID] = Math.PI * -2 / 3,
+        _a[constants_1.FRONT_UPPER_LEG_ID] = Math.PI / 6,
+        _a[constants_1.FRONT_LOWER_LEG_ID] = Math.PI / -6,
+        _a[constants_1.BACK_UPPER_LEG_ID] = Math.PI / -6,
+        _a[constants_1.BACK_LOWER_LEG_ID] = Math.PI / 6,
+        _a),
+};
+exports.default = CHANNELING_MISSILES_2;
+
+
+/***/ }),
+
 /***/ "./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts":
 /*!***************************************************************************!*\
   !*** ./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts ***!
@@ -1954,9 +2054,8 @@ var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/
 var fire_ball_1 = __webpack_require__(/*! ./projectiles/fire-ball */ "./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts");
 var arcane_missile_1 = __webpack_require__(/*! ./projectiles/arcane-missile */ "./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts");
 var set_ticks_out_1 = __webpack_require__(/*! ../../../../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
-var FIRE_BALL_SHOOT_FORCE = 16;
-var ARCANE_MISSILE_SHOOT_FORCE = 16;
-var ARCANE_MISSILE_SHOOT_INTERVAL = 32;
+var channeling_missiles_1 = __webpack_require__(/*! ./animations/channeling-missiles */ "./src/game/actors/hero/classes/wizard/animations/channeling-missiles.ts");
+var constants_2 = __webpack_require__(/*! ./constants */ "./src/game/actors/hero/classes/wizard/constants.ts");
 var TGWizard = /** @class */ (function (_super) {
     __extends(TGWizard, _super);
     function TGWizard() {
@@ -2012,27 +2111,32 @@ var TGWizard = /** @class */ (function (_super) {
         var _this = this;
         this.arcaneMissileTicksOut = set_ticks_out_1.setTicksInterval(function () {
             _this.shootArcaneMissile();
-        }, ARCANE_MISSILE_SHOOT_INTERVAL);
+        }, constants_2.ARCANE_MISSILE_SHOOT_INTERVAL);
+        this.playAnimation(channeling_missiles_1.default);
+        this.preventRunning();
     };
     TGWizard.prototype.shootArcaneMissile = function () {
         var missile = new arcane_missile_1.default(this.position);
-        missile.push(this.targetUnitVector.times(ARCANE_MISSILE_SHOOT_FORCE));
+        missile.push(this.targetUnitVector.times(constants_2.ARCANE_MISSILE_SHOOT_FORCE));
         this.newBornActors.push(missile);
     };
     TGWizard.prototype.stopChannelingArcaneMissiles = function () {
         if (this.arcaneMissileTicksOut)
             set_ticks_out_1.clearTicksInterval(this.arcaneMissileTicksOut);
+        this.allowRunning();
     };
     TGWizard.prototype.channelFireBall = function () {
         this.fireBall = new fire_ball_1.default(this.position);
         this.fireBall.channel();
         this.newBornActors.push(this.fireBall);
+        this.preventRunning();
     };
     TGWizard.prototype.shootFireBall = function () {
         if (!this.fireBall)
             return;
         this.fireBall.stopChanneling();
-        this.fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE));
+        this.fireBall.push(this.targetUnitVector.times(constants_2.FIRE_BALL_SHOOT_FORCE));
+        this.allowRunning();
     };
     return TGWizard;
 }(hero_1.default));
@@ -2052,7 +2156,7 @@ exports.default = TGWizard;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var vector_1 = __webpack_require__(/*! ../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-exports.SIZE = new vector_1.default(15, 55);
+exports.SIZE = new vector_1.default(15, 50);
 exports.RUN_FORCE = new vector_1.default(2, 0);
 exports.JUMP_FORCE = new vector_1.default(0, -13);
 exports.BACK_UPPER_ARM_ID = 'back-upper-arm';
@@ -2200,6 +2304,7 @@ var TGHero = /** @class */ (function (_super) {
         _this.destroyer = new destroyable_1.default();
         _this.isLeftDown = false;
         _this.isRightDown = false;
+        _this.canRun = true;
         return _this;
     }
     Object.defineProperty(TGHero, "textureFile", {
@@ -2258,6 +2363,16 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TGHero.prototype.preventRunning = function () {
+        this.canRun = false;
+        this.move(vector_1.default.Zero);
+    };
+    TGHero.prototype.allowRunning = function () {
+        this.canRun = true;
+        this.isFacingLeft
+            ? this.isLeftDown ? this.runLeft() : this.stopRunning()
+            : this.isRightDown ? this.runRight() : this.stopRunning();
+    };
     Object.defineProperty(TGHero, "headTexture", {
         get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'head.png'); },
         enumerable: true,
@@ -2330,14 +2445,20 @@ var TGHero = /** @class */ (function (_super) {
         this.isLeftDown ? this.runLeft() : this.stopRunning();
     };
     TGHero.prototype.runLeft = function () {
+        if (!this.canRun)
+            return;
         this.move(this.runForce.flipHorz());
         this.playAnimation(run_1.default);
     };
     TGHero.prototype.runRight = function () {
+        if (!this.canRun)
+            return;
         this.move(this.runForce);
         this.playAnimation(run_1.default);
     };
     TGHero.prototype.stopRunning = function () {
+        if (!this.canRun)
+            return;
         this.move(vector_1.default.Zero);
         this.cancelAnimation();
     };

@@ -4,10 +4,8 @@ import { JUMP_FORCE, RUN_FORCE } from "../../constants";
 import TGFireBall from "./projectiles/fire-ball";
 import TGArcaneMissile from "./projectiles/arcane-missile";
 import { setTicksInterval, clearTicksInterval } from "../../../../../engine/util/set-ticks-out";
-
-const FIRE_BALL_SHOOT_FORCE = 16;
-const ARCANE_MISSILE_SHOOT_FORCE = 16;
-const ARCANE_MISSILE_SHOOT_INTERVAL = 32;
+import CHANNELING_MISSILES_ANIMATION from "./animations/channeling-missiles";
+import { ARCANE_MISSILE_SHOOT_INTERVAL, ARCANE_MISSILE_SHOOT_FORCE, FIRE_BALL_SHOOT_FORCE } from "./constants";
 
 export default class TGWizard extends TGHero {
 
@@ -50,6 +48,8 @@ export default class TGWizard extends TGHero {
     this.arcaneMissileTicksOut = setTicksInterval(() => {
       this.shootArcaneMissile();
     }, ARCANE_MISSILE_SHOOT_INTERVAL);
+    this.playAnimation(CHANNELING_MISSILES_ANIMATION);
+    this.preventRunning();
   }
 
   private shootArcaneMissile() {
@@ -60,19 +60,22 @@ export default class TGWizard extends TGHero {
 
   private stopChannelingArcaneMissiles() {
     if (this.arcaneMissileTicksOut) clearTicksInterval(this.arcaneMissileTicksOut);
+    this.allowRunning();
   }
 
   private channelFireBall() {
     this.fireBall = new TGFireBall(this.position);
     this.fireBall.channel();
     this.newBornActors.push(this.fireBall);
+    this.preventRunning();
   }
 
   private shootFireBall() {
     if (!this.fireBall) return;
 
     this.fireBall.stopChanneling();
-    this.fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE))
+    this.fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE));
+    this.allowRunning();
   }
   
 }

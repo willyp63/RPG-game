@@ -70,6 +70,18 @@ export default abstract class TGHero extends HPSkeletalActor {
     return HPMouseTracker.position.minus(this.position).toUnit();
   }
 
+  preventRunning() {
+    this.canRun = false;
+    this.move(HPVector.Zero);
+  }
+
+  allowRunning() {
+    this.canRun = true;
+    this.isFacingLeft
+      ? this.isLeftDown ? this.runLeft() : this.stopRunning()
+      : this.isRightDown ? this.runRight() : this.stopRunning();
+  }
+
   private static get headTexture() { return HPTextureHelper.get(TGHero.textureFile, 'head.png'); }
   private static get chestTexture() { return HPTextureHelper.get(TGHero.textureFile, 'body.png'); }
   private static get limbTexture() { return HPTextureHelper.get(TGHero.textureFile, 'limb.png'); }
@@ -92,6 +104,7 @@ export default abstract class TGHero extends HPSkeletalActor {
   private destroyer = new HPDestroyer();
   private isLeftDown = false;
   private isRightDown = false;
+  private canRun = true;
 
   private initSprite() {
     this.setTextureMap(TGHero.skeletalTextureMap);
@@ -145,16 +158,19 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   private runLeft() {
+    if (!this.canRun) return;
     this.move(this.runForce.flipHorz());
     this.playAnimation(RUN_ANIMATION);
   }
 
   private runRight() {
+    if (!this.canRun) return;
     this.move(this.runForce);
     this.playAnimation(RUN_ANIMATION);
   }
 
   private stopRunning() {
+    if (!this.canRun) return;
     this.move(HPVector.Zero);
     this.cancelAnimation();
   }

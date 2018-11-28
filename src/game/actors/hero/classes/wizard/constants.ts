@@ -1,0 +1,3 @@
+export const FIRE_BALL_SHOOT_FORCE = 16;
+export const ARCANE_MISSILE_SHOOT_FORCE = 16;
+export const ARCANE_MISSILE_SHOOT_INTERVAL = 32;
