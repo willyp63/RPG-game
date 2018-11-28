@@ -8,7 +8,7 @@ export default class TGWall extends HPStaticShapeActor {
   get size() { return this._size; }
   get isWall() { return true; }
   get isWallBound() { return false; }
-  get isGravityBound() { return false; }
+  get gravityBoundCoefficient() { return 0; }
   get isAirFrictionBound() { return false; }
   get color() { return 0x333333; }
   get borderWidth() { return 2; }

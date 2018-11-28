@@ -1,5 +1,5 @@
 import HPVector from "../../../engine/physics/vector";
-import setTicksOut from "../../../engine/util/set-ticks-out";
+import { setTicksOut } from "../../../engine/util/set-ticks-out";
 import HPActorType from "../../../engine/core/actor-type";
 import HPRandom from "../../../engine/util/random";
 import HPStaticShapeActor from "../../../engine/actors/static-shape-actor";

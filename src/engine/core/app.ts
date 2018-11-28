@@ -38,7 +38,7 @@ export const HPAppDefaultOptions: HPAppOptions = {
   areaFile: '',
   hero: undefined,
   heroStart: HPVector.Zero,
-  gravityForce: new HPVector(0, 1),
+  gravityForce: new HPVector(0, .667),
   airFrictionCoefficient: 0.033,
 }
 

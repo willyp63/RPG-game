@@ -9,7 +9,7 @@ export default interface HPEntity {
 
   isWall: boolean;
   isWallBound: boolean;
-  isGravityBound: boolean;
+  gravityBoundCoefficient: number;
   isAirFrictionBound: boolean;
 
   bounciness: number;

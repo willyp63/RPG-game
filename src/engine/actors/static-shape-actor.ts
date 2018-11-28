@@ -21,6 +21,12 @@ export default abstract class HPStaticShapeActor extends HPActor {
   }
 
   init() {
+    this.paint();
+  }
+
+  paint() {
+    this._sprite.clear();
+
     this._sprite.beginFill(this.color);
 
     let adjustedSize = this.size;

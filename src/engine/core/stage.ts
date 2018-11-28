@@ -76,7 +76,7 @@ export default class HPStage {
   }
 
   private applyGravity(actor: HPActor) {
-    if (actor.isGravityBound) actor.push(this.gravityForce);
+    actor.push(this.gravityForce.times(actor.gravityBoundCoefficient));
   }
 
   private applyAirFriction(actor: HPActor) {

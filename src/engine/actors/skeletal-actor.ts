@@ -1,7 +1,7 @@
 import HPActor from "../core/actor";
 import HPVector from "../physics/vector";
 import { Container, Sprite, ObservablePoint, Texture } from "pixi.js";
-import setTicksOut, { clearTicksOut } from "../util/set-ticks-out";
+import { setTicksOut, clearTicksOut } from "../util/set-ticks-out";
 
 export interface HPSkeletalBone {
   id: string;
@@ -72,7 +72,7 @@ export default abstract class HPSkeletalActor extends HPActor {
   }
 
   private boneIdToBoneSprite: {[index: string]: Sprite } = <any>{};
-  private animationTicksOut: Function | undefined;
+  private animationTicksOut?: () => void;
 
   private getBone(id: string) {
     const bone = this.boneIdToBoneSprite[id];

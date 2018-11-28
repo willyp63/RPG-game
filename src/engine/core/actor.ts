@@ -18,7 +18,7 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   get maxVelocity() { return 64; }
   get isWall() { return false; }
   get isWallBound() { return true; }
-  get isGravityBound() { return true; }
+  get gravityBoundCoefficient() { return 1; }
   get isAirFrictionBound() { return true; }
   get airWalkCoefficient() { return 0.066; }
 

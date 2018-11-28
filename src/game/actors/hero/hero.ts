@@ -49,6 +49,7 @@ export default abstract class TGHero extends HPSkeletalActor {
 
   /** @override */
   performAbility(abilityNum: number) { }
+  endAbility(abilityNum: number) { }
 
   init() {
     super.init();
@@ -116,11 +117,11 @@ export default abstract class TGHero extends HPSkeletalActor {
     ));
 
     // abilities
-    this.destroyer.add(new HPKeyListener(81/* q */, () => this.performAbility(0)));
-    this.destroyer.add(new HPKeyListener(69/* e */, () => this.performAbility(1)));
-    this.destroyer.add(new HPKeyListener(82/* r */, () => this.performAbility(2)));
-    this.destroyer.add(new HPKeyListener(70/* f */, () => this.performAbility(3)));
-    this.destroyer.add(new HPKeyListener(67/* c */, () => this.performAbility(4)));
+    this.destroyer.add(new HPKeyListener(81/* q */, () => this.performAbility(0), () => this.endAbility(0)));
+    this.destroyer.add(new HPKeyListener(69/* e */, () => this.performAbility(1), () => this.endAbility(1)));
+    this.destroyer.add(new HPKeyListener(82/* r */, () => this.performAbility(2), () => this.endAbility(2)));
+    this.destroyer.add(new HPKeyListener(70/* f */, () => this.performAbility(3), () => this.endAbility(3)));
+    this.destroyer.add(new HPKeyListener(67/* c */, () => this.performAbility(4), () => this.endAbility(4)));
   }
 
   private onLeftDown() {

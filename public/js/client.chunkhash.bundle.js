@@ -252,7 +252,7 @@ var HPSkeletalActor = /** @class */ (function (_super) {
         var nextIndex = i + 1;
         if (nextIndex >= animation.frames.length)
             nextIndex = 0;
-        this.animationTicksOut = set_ticks_out_1.default(function () {
+        this.animationTicksOut = set_ticks_out_1.setTicksOut(function () {
             _this._playAnimation(animation, nextIndex);
         }, 1 / animation.speed);
     };
@@ -336,6 +336,10 @@ var HPStaticShapeActor = /** @class */ (function (_super) {
         configurable: true
     });
     HPStaticShapeActor.prototype.init = function () {
+        this.paint();
+    };
+    HPStaticShapeActor.prototype.paint = function () {
+        this._sprite.clear();
         this._sprite.beginFill(this.color);
         var adjustedSize = this.size;
         if (this.borderWidth > 0) {
@@ -455,8 +459,8 @@ var HPActor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(HPActor.prototype, "isGravityBound", {
-        get: function () { return true; },
+    Object.defineProperty(HPActor.prototype, "gravityBoundCoefficient", {
+        get: function () { return 1; },
         enumerable: true,
         configurable: true
     });
@@ -569,7 +573,7 @@ exports.HPAppDefaultOptions = {
     areaFile: '',
     hero: undefined,
     heroStart: vector_1.default.Zero,
-    gravityForce: new vector_1.default(0, 1),
+    gravityForce: new vector_1.default(0, .667),
     airFrictionCoefficient: 0.033,
 };
 var HPApp = /** @class */ (function () {
@@ -732,8 +736,7 @@ var HPStage = /** @class */ (function () {
         }
     };
     HPStage.prototype.applyGravity = function (actor) {
-        if (actor.isGravityBound)
-            actor.push(this.gravityForce);
+        actor.push(this.gravityForce.times(actor.gravityBoundCoefficient));
     };
     HPStage.prototype.applyAirFriction = function (actor) {
         if (actor.isAirFrictionBound)
@@ -1270,7 +1273,7 @@ exports.default = HPRandom;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
-exports.default = (function (callback, numTicks) {
+exports.setTicksOut = function (callback, numTicks) {
     var ticks = 0;
     var onTick = function () {
         ticks++;
@@ -1281,10 +1284,23 @@ exports.default = (function (callback, numTicks) {
     };
     pixi_js_1.ticker.shared.add(onTick);
     return onTick;
-});
+};
 exports.clearTicksOut = function (onTick) {
     pixi_js_1.ticker.shared.remove(onTick);
 };
+exports.setTicksInterval = function (callback, numTicks) {
+    var ticks = 0;
+    var onTick = function () {
+        ticks++;
+        if (ticks >= numTicks) {
+            ticks = 0;
+            callback();
+        }
+    };
+    pixi_js_1.ticker.shared.add(onTick);
+    return onTick;
+};
+exports.clearTicksInterval = exports.clearTicksOut;
 
 
 /***/ }),
@@ -1426,7 +1442,7 @@ var TGWanderingTarget = /** @class */ (function (_super) {
     TGWanderingTarget.prototype.changeDirection = function () {
         var _this = this;
         this.move(this.moveForce.flipHorz());
-        set_ticks_out_1.default(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
+        set_ticks_out_1.setTicksOut(function () { return _this.changeDirection(); }, random_1.default.int(80, 160));
     };
     return TGWanderingTarget;
 }(static_shape_actor_1.default));
@@ -1619,6 +1635,97 @@ exports.default = TGBarbarian;
 
 /***/ }),
 
+/***/ "./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts":
+/*!***************************************************************************!*\
+  !*** ./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var static_shape_actor_1 = __webpack_require__(/*! ../../../../../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
+var vector_1 = __webpack_require__(/*! ../../../../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var set_ticks_out_1 = __webpack_require__(/*! ../../../../../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
+var actor_type_1 = __webpack_require__(/*! ../../../../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
+var LIFETIME = 20;
+var TGArcaneMissile = /** @class */ (function (_super) {
+    __extends(TGArcaneMissile, _super);
+    function TGArcaneMissile(position) {
+        return _super.call(this, position) || this;
+    }
+    Object.defineProperty(TGArcaneMissile.prototype, "size", {
+        get: function () { return new vector_1.default(12, 12); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "gravityBoundCoefficient", {
+        get: function () { return 0.2; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "color", {
+        get: function () { return 0x7509C1; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "borderWidth", {
+        get: function () { return 1; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "borderColor", {
+        get: function () { return 0x000000; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGArcaneMissile.prototype, "isRound", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    TGArcaneMissile.prototype.init = function () {
+        var _this = this;
+        _super.prototype.init.call(this);
+        set_ticks_out_1.setTicksOut(function () { return _this.kill(); }, LIFETIME);
+    };
+    TGArcaneMissile.prototype.onCollision = function (actor, collision) {
+        if (!collision.hit)
+            return;
+        if (actor.isWall) {
+            this.kill();
+        }
+        else if (actor.type === actor_type_1.default.Unfriendly) {
+            actor.kill();
+            this.kill();
+        }
+    };
+    return TGArcaneMissile;
+}(static_shape_actor_1.default));
+exports.default = TGArcaneMissile;
+
+
+/***/ }),
+
 /***/ "./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts":
 /*!**********************************************************************!*\
   !*** ./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts ***!
@@ -1644,13 +1751,31 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var static_shape_actor_1 = __webpack_require__(/*! ../../../../../../engine/actors/static-shape-actor */ "./src/engine/actors/static-shape-actor.ts");
 var vector_1 = __webpack_require__(/*! ../../../../../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var set_ticks_out_1 = __webpack_require__(/*! ../../../../../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
+var actor_type_1 = __webpack_require__(/*! ../../../../../../engine/core/actor-type */ "./src/engine/core/actor-type.ts");
+var LIFETIME = 40;
+var INITIAL_SIZE = new vector_1.default(10, 10);
+var MAX_SIZE = new vector_1.default(30, 30);
 var TGFireBall = /** @class */ (function (_super) {
     __extends(TGFireBall, _super);
     function TGFireBall(position) {
-        return _super.call(this, position) || this;
+        var _this = _super.call(this, position) || this;
+        _this.isChanneling = false;
+        _this._size = INITIAL_SIZE;
+        return _this;
     }
     Object.defineProperty(TGFireBall.prototype, "size", {
-        get: function () { return new vector_1.default(20, 20); },
+        get: function () { return this._size; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "isAirFrictionBound", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGFireBall.prototype, "gravityBoundCoefficient", {
+        get: function () { return this.isChanneling ? 0 : 0.5; },
         enumerable: true,
         configurable: true
     });
@@ -1674,6 +1799,40 @@ var TGFireBall = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TGFireBall.prototype.channel = function () {
+        this.isChanneling = true;
+    };
+    TGFireBall.prototype.stopChanneling = function () {
+        var _this = this;
+        this.isChanneling = false;
+        set_ticks_out_1.setTicksOut(function () { return _this.kill(); }, LIFETIME);
+    };
+    TGFireBall.prototype.init = function () {
+        _super.prototype.init.call(this);
+    };
+    TGFireBall.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        if (this.isChanneling) {
+            if (this._size.x < MAX_SIZE.x) {
+                this._size = this._size.times(1.02);
+            }
+            else {
+                this._size = MAX_SIZE;
+            }
+            this.paint();
+        }
+    };
+    TGFireBall.prototype.onCollision = function (actor, collision) {
+        if (!collision.hit)
+            return;
+        if (actor.isWall) {
+            this.kill();
+        }
+        else if (actor.type === actor_type_1.default.Unfriendly) {
+            actor.kill();
+            this.kill();
+        }
+    };
     return TGFireBall;
 }(static_shape_actor_1.default));
 exports.default = TGFireBall;
@@ -1708,18 +1867,30 @@ var hero_1 = __webpack_require__(/*! ../../hero */ "./src/game/actors/hero/hero.
 var weapon_1 = __webpack_require__(/*! ../../weapon */ "./src/game/actors/hero/weapon.ts");
 var constants_1 = __webpack_require__(/*! ../../constants */ "./src/game/actors/hero/constants.ts");
 var fire_ball_1 = __webpack_require__(/*! ./projectiles/fire-ball */ "./src/game/actors/hero/classes/wizard/projectiles/fire-ball.ts");
-var FIRE_BALL_SHOOT_FORCE = 20;
+var arcane_missile_1 = __webpack_require__(/*! ./projectiles/arcane-missile */ "./src/game/actors/hero/classes/wizard/projectiles/arcane-missile.ts");
+var set_ticks_out_1 = __webpack_require__(/*! ../../../../../engine/util/set-ticks-out */ "./src/engine/util/set-ticks-out.ts");
+var FIRE_BALL_SHOOT_FORCE = 16;
+var ARCANE_MISSILE_SHOOT_FORCE = 16;
+var ARCANE_MISSILE_SHOOT_INTERVAL = 32;
 var TGWizard = /** @class */ (function (_super) {
     __extends(TGWizard, _super);
     function TGWizard() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.abilities = [
-            function () { return console.log('arcane missiles'); },
-            function () { return _this.shootFireBall(); },
+        _this.performAbilities = [
+            function () { return _this.channelArcaneMissiles(); },
+            function () { return _this.channelFireBall(); },
             function () { return console.log('blink'); },
             function () { return console.log('frost nova'); },
             function () { return console.log('idk...'); },
         ];
+        _this.endAbilities = [
+            function () { return _this.stopChannelingArcaneMissiles(); },
+            function () { return _this.shootFireBall(); },
+            undefined,
+            undefined,
+            undefined,
+        ];
+        _this.arcaneMissileTicksOut = undefined;
         return _this;
     }
     Object.defineProperty(TGWizard, "id", {
@@ -1743,12 +1914,40 @@ var TGWizard = /** @class */ (function (_super) {
         configurable: true
     });
     TGWizard.prototype.performAbility = function (abilityNum) {
-        this.abilities[abilityNum]();
+        var func = this.performAbilities[abilityNum];
+        if (func)
+            func();
+    };
+    TGWizard.prototype.endAbility = function (abilityNum) {
+        var func = this.endAbilities[abilityNum];
+        if (func)
+            func();
+    };
+    TGWizard.prototype.channelArcaneMissiles = function () {
+        var _this = this;
+        this.arcaneMissileTicksOut = set_ticks_out_1.setTicksInterval(function () {
+            _this.shootArcaneMissile();
+        }, ARCANE_MISSILE_SHOOT_INTERVAL);
+    };
+    TGWizard.prototype.shootArcaneMissile = function () {
+        var missile = new arcane_missile_1.default(this.position);
+        missile.push(this.targetUnitVector.times(ARCANE_MISSILE_SHOOT_FORCE));
+        this.newBornActors.push(missile);
+    };
+    TGWizard.prototype.stopChannelingArcaneMissiles = function () {
+        if (this.arcaneMissileTicksOut)
+            set_ticks_out_1.clearTicksInterval(this.arcaneMissileTicksOut);
+    };
+    TGWizard.prototype.channelFireBall = function () {
+        this.fireBall = new fire_ball_1.default(this.position);
+        this.fireBall.channel();
+        this.newBornActors.push(this.fireBall);
     };
     TGWizard.prototype.shootFireBall = function () {
-        var fireBall = new fire_ball_1.default(this.position);
-        fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE));
-        this.newBornActors.push(fireBall);
+        if (!this.fireBall)
+            return;
+        this.fireBall.stopChanneling();
+        this.fireBall.push(this.targetUnitVector.times(FIRE_BALL_SHOOT_FORCE));
     };
     return TGWizard;
 }(hero_1.default));
@@ -1951,6 +2150,7 @@ var TGHero = /** @class */ (function (_super) {
     });
     /** @override */
     TGHero.prototype.performAbility = function (abilityNum) { };
+    TGHero.prototype.endAbility = function (abilityNum) { };
     TGHero.prototype.init = function () {
         _super.prototype.init.call(this);
         this.initSprite();
@@ -2022,11 +2222,11 @@ var TGHero = /** @class */ (function (_super) {
         // jump
         this.destroyer.add(new key_listener_1.default(87 /* w */, function () { return _this.jump(); }));
         // abilities
-        this.destroyer.add(new key_listener_1.default(81 /* q */, function () { return _this.performAbility(0); }));
-        this.destroyer.add(new key_listener_1.default(69 /* e */, function () { return _this.performAbility(1); }));
-        this.destroyer.add(new key_listener_1.default(82 /* r */, function () { return _this.performAbility(2); }));
-        this.destroyer.add(new key_listener_1.default(70 /* f */, function () { return _this.performAbility(3); }));
-        this.destroyer.add(new key_listener_1.default(67 /* c */, function () { return _this.performAbility(4); }));
+        this.destroyer.add(new key_listener_1.default(81 /* q */, function () { return _this.performAbility(0); }, function () { return _this.endAbility(0); }));
+        this.destroyer.add(new key_listener_1.default(69 /* e */, function () { return _this.performAbility(1); }, function () { return _this.endAbility(1); }));
+        this.destroyer.add(new key_listener_1.default(82 /* r */, function () { return _this.performAbility(2); }, function () { return _this.endAbility(2); }));
+        this.destroyer.add(new key_listener_1.default(70 /* f */, function () { return _this.performAbility(3); }, function () { return _this.endAbility(3); }));
+        this.destroyer.add(new key_listener_1.default(67 /* c */, function () { return _this.performAbility(4); }, function () { return _this.endAbility(4); }));
     };
     TGHero.prototype.onLeftDown = function () {
         this.isLeftDown = true;
@@ -2197,8 +2397,8 @@ var TGWall = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(TGWall.prototype, "isGravityBound", {
-        get: function () { return false; },
+    Object.defineProperty(TGWall.prototype, "gravityBoundCoefficient", {
+        get: function () { return 0; },
         enumerable: true,
         configurable: true
     });
