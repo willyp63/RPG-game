@@ -58,6 +58,8 @@ export default abstract class HPSkeletalActor extends HPActor {
   }
 
   init() {
+    super.init();
+    
     this.bones.forEach(bone => {
       const sprite = this.initBone(bone);
       this.sprite.addChild(sprite);

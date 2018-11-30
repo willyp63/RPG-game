@@ -17,6 +17,8 @@ export default abstract class HPStaticImageActor extends HPActor {
   }
 
   init() {
+    super.init();
+    
     this._sprite.texture = loader.resources[this.imageFile].texture;
     this._sprite.anchor = <ObservablePoint>{ x: 0.5, y: 0.5 };
   }

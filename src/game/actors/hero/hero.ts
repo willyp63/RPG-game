@@ -35,9 +35,12 @@ export default abstract class TGHero extends HPSkeletalActor {
   get weapon() { return new TGWeapon(); }
   get jumpForce() { return JUMP_FORCE; }
   get runForce() { return RUN_FORCE; }
+  get maxHealth() { return 100; }
 
   get type() { return HPActorType.Friendly; }
   get size() { return SIZE; }
+  get hasHealth() { return true; }
+  get hideHealthBar() { return true; }
 
   constructor() {
     super(

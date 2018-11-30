@@ -34,7 +34,7 @@ export default class TGArcaneMissile extends HPStaticShapeActor {
     if (actor.isWall) {
       this.kill();
     } else if (actor.type === HPActorType.Unfriendly) {
-      actor.kill();
+      actor.damage(5);
       this.kill();
     }
   }

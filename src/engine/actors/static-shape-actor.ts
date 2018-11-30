@@ -21,6 +21,8 @@ export default abstract class HPStaticShapeActor extends HPActor {
   }
 
   init() {
+    super.init();
+
     this.paint();
   }
 

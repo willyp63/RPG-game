@@ -42,6 +42,7 @@ export default class HPStage {
 
     this.actors.forEach(actor => {
       this.killIfSquished(actor);
+      this.killIfZeroHealth(actor);
       this.applyGravity(actor);
       this.applyAirFriction(actor);
       actor.onTick();
@@ -70,6 +71,10 @@ export default class HPStage {
         actor.wallContact.all([HPDirection.Left, HPDirection.Right])) {
       actor.kill();
     }
+  }
+
+  private killIfZeroHealth(actor: HPActor) {
+    if (actor.hasHealth && actor.health <= 0) actor.kill();
   }
 
   private applyGravity(actor: HPActor) {

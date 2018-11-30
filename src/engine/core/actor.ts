@@ -6,6 +6,7 @@ import HPWallContactMap from "../physics/wall-contact-map";
 import HPActorType from "./actor-type";
 import HPDirection from "../physics/direction";
 import HPDestroyable from "../util/destroyer";
+import HPHealthBar from "./health-bar";
 
 export default abstract class HPActor implements HPEntity, HPDestroyable {
 
@@ -21,6 +22,9 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   get gravityBoundCoefficient() { return 1; }
   get isAirFrictionBound() { return true; }
   get airWalkCoefficient() { return 0.066; }
+  get hasHealth() { return false; }
+  get maxHealth() { return 0; }
+  get hideHealthBar() { return false; }
 
   velocity = HPVector.Zero;
   acceleration = HPVector.Zero;
@@ -30,6 +34,8 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   isOnGround = false;
   isDead = false;
   newBornActors: Array<HPActor> = [];
+  healthBar = new HPHealthBar();
+  health = 0;
 
   constructor(
     public position: HPVector,
@@ -37,7 +43,10 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
   ) { }
 
   /** @override */
-  init() { }
+  init() {
+    this.health = this.maxHealth;
+    this.initHealthBar();
+  }
   destroy() { }
   onCollision(actor: HPActor, collision: HPCollision) { }
 
@@ -69,10 +78,31 @@ export default abstract class HPActor implements HPEntity, HPDestroyable {
     this.acceleration = this.acceleration.plus(force.times(1 / this.weight));
   }
 
+  damage(amount: number) {
+    this.health = Math.max(0, this.health - amount);
+    this.healthBar.percent = this.healthPercent;
+  }
+
+  heal(amount: number) {
+    this.health = Math.min(this.maxHealth, this.health + amount);
+    this.healthBar.percent = this.healthPercent;
+  }
+
   kill() {
     this.isDead = true;
   }
 
   get isFacingLeft() { return this.facingDirection === HPDirection.Left; }
+
+  private initHealthBar() {
+    if (!this.hasHealth || this.hideHealthBar) return;
+
+    this.healthBar.position = new HPVector(0, this.size.y * -2 / 3);
+    this.sprite.addChild(this.healthBar.sprite);
+  }
+
+  private get healthPercent() {
+    return this.health / this.maxHealth;
+  }
 
 }

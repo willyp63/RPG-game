@@ -13,6 +13,8 @@ export default class TGWanderingTarget extends HPStaticShapeActor {
 
   get size() { return new HPVector(20, 50); }
   get type() { return HPActorType.Unfriendly; }
+  get hasHealth() { return true; }
+  get maxHealth() { return 20; }
 
   get color() { return 0xFF0000; }
   get borderWidth() { return 1; }

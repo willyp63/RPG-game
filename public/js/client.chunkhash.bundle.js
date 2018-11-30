@@ -208,6 +208,7 @@ var HPSkeletalActor = /** @class */ (function (_super) {
     };
     HPSkeletalActor.prototype.init = function () {
         var _this = this;
+        _super.prototype.init.call(this);
         this.bones.forEach(function (bone) {
             var sprite = _this.initBone(bone);
             _this.sprite.addChild(sprite);
@@ -336,6 +337,7 @@ var HPStaticShapeActor = /** @class */ (function (_super) {
         configurable: true
     });
     HPStaticShapeActor.prototype.init = function () {
+        _super.prototype.init.call(this);
         this.paint();
     };
     HPStaticShapeActor.prototype.paint = function () {
@@ -405,6 +407,7 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var wall_contact_map_1 = __webpack_require__(/*! ../physics/wall-contact-map */ "./src/engine/physics/wall-contact-map.ts");
 var actor_type_1 = __webpack_require__(/*! ./actor-type */ "./src/engine/core/actor-type.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
+var health_bar_1 = __webpack_require__(/*! ./health-bar */ "./src/engine/core/health-bar.ts");
 var HPActor = /** @class */ (function () {
     function HPActor(position, sprite) {
         this.position = position;
@@ -417,6 +420,8 @@ var HPActor = /** @class */ (function () {
         this.isOnGround = false;
         this.isDead = false;
         this.newBornActors = [];
+        this.healthBar = new health_bar_1.default();
+        this.health = 0;
     }
     Object.defineProperty(HPActor.prototype, "type", {
         /** @override */
@@ -474,8 +479,26 @@ var HPActor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(HPActor.prototype, "hasHealth", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "maxHealth", {
+        get: function () { return 0; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPActor.prototype, "hideHealthBar", {
+        get: function () { return false; },
+        enumerable: true,
+        configurable: true
+    });
     /** @override */
-    HPActor.prototype.init = function () { };
+    HPActor.prototype.init = function () {
+        this.health = this.maxHealth;
+        this.initHealthBar();
+    };
     HPActor.prototype.destroy = function () { };
     HPActor.prototype.onCollision = function (actor, collision) { };
     /** @override */
@@ -501,11 +524,32 @@ var HPActor = /** @class */ (function () {
     HPActor.prototype.push = function (force) {
         this.acceleration = this.acceleration.plus(force.times(1 / this.weight));
     };
+    HPActor.prototype.damage = function (amount) {
+        this.health = Math.max(0, this.health - amount);
+        this.healthBar.percent = this.healthPercent;
+    };
+    HPActor.prototype.heal = function (amount) {
+        this.health = Math.min(this.maxHealth, this.health + amount);
+        this.healthBar.percent = this.healthPercent;
+    };
     HPActor.prototype.kill = function () {
         this.isDead = true;
     };
     Object.defineProperty(HPActor.prototype, "isFacingLeft", {
         get: function () { return this.facingDirection === direction_1.default.Left; },
+        enumerable: true,
+        configurable: true
+    });
+    HPActor.prototype.initHealthBar = function () {
+        if (!this.hasHealth || this.hideHealthBar)
+            return;
+        this.healthBar.position = new vector_1.default(0, this.size.y * -2 / 3);
+        this.sprite.addChild(this.healthBar.sprite);
+    };
+    Object.defineProperty(HPActor.prototype, "healthPercent", {
+        get: function () {
+            return this.health / this.maxHealth;
+        },
         enumerable: true,
         configurable: true
     });
@@ -668,6 +712,59 @@ exports.default = HPApp;
 
 /***/ }),
 
+/***/ "./src/engine/core/health-bar.ts":
+/*!***************************************!*\
+  !*** ./src/engine/core/health-bar.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
+var SIZE = new vector_1.default(36, 6);
+var HPHealthBar = /** @class */ (function () {
+    function HPHealthBar() {
+        this.sprite = new pixi_js_1.Graphics();
+        this.paint();
+    }
+    Object.defineProperty(HPHealthBar.prototype, "position", {
+        set: function (position) {
+            this.sprite.x = position.x;
+            this.sprite.y = position.y;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPHealthBar.prototype, "percent", {
+        set: function (percent) {
+            this.paint(percent);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    HPHealthBar.prototype.paint = function (percent) {
+        if (percent === void 0) { percent = 1; }
+        this.sprite.clear();
+        this.sprite.beginFill(0xFF0000);
+        this.sprite.drawRect(SIZE.x / -2, SIZE.y / -2, SIZE.x, SIZE.y);
+        this.sprite.endFill();
+        this.sprite.beginFill(0x00FF00);
+        this.sprite.drawRect(SIZE.x / -2, SIZE.y / -2, SIZE.x * percent, SIZE.y);
+        this.sprite.endFill();
+        this.sprite.lineStyle(1, 0x000000);
+        this.sprite.drawRect(SIZE.x / -2, SIZE.y / -2, SIZE.x, SIZE.y);
+        this.sprite.endFill();
+    };
+    return HPHealthBar;
+}());
+exports.default = HPHealthBar;
+
+
+/***/ }),
+
 /***/ "./src/engine/core/stage.ts":
 /*!**********************************!*\
   !*** ./src/engine/core/stage.ts ***!
@@ -713,6 +810,7 @@ var HPStage = /** @class */ (function () {
         this.followActor();
         this.actors.forEach(function (actor) {
             _this.killIfSquished(actor);
+            _this.killIfZeroHealth(actor);
             _this.applyGravity(actor);
             _this.applyAirFriction(actor);
             actor.onTick();
@@ -737,6 +835,10 @@ var HPStage = /** @class */ (function () {
             actor.wallContact.all([direction_1.default.Left, direction_1.default.Right])) {
             actor.kill();
         }
+    };
+    HPStage.prototype.killIfZeroHealth = function (actor) {
+        if (actor.hasHealth && actor.health <= 0)
+            actor.kill();
     };
     HPStage.prototype.applyGravity = function (actor) {
         actor.push(this.gravityForce.times(actor.gravityBoundCoefficient));
@@ -1631,6 +1733,16 @@ var TGWanderingTarget = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TGWanderingTarget.prototype, "hasHealth", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGWanderingTarget.prototype, "maxHealth", {
+        get: function () { return 20; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGWanderingTarget.prototype, "color", {
         get: function () { return 0xFF0000; },
         enumerable: true,
@@ -2106,7 +2218,7 @@ var TGArcaneMissile = /** @class */ (function (_super) {
             this.kill();
         }
         else if (actor.type === actor_type_1.default.Unfriendly) {
-            actor.kill();
+            actor.damage(5);
             this.kill();
         }
     };
@@ -2535,6 +2647,11 @@ var TGHero = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TGHero.prototype, "maxHealth", {
+        get: function () { return 100; },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TGHero.prototype, "type", {
         get: function () { return actor_type_1.default.Friendly; },
         enumerable: true,
@@ -2542,6 +2659,16 @@ var TGHero = /** @class */ (function (_super) {
     });
     Object.defineProperty(TGHero.prototype, "size", {
         get: function () { return constants_1.SIZE; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "hasHealth", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TGHero.prototype, "hideHealthBar", {
+        get: function () { return true; },
         enumerable: true,
         configurable: true
     });
