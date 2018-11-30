@@ -566,6 +566,7 @@ var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physic
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
 var ui_stage_1 = __webpack_require__(/*! ../ui/ui-stage */ "./src/engine/ui/ui-stage.ts");
+var mouse_tracker_1 = __webpack_require__(/*! ../interaction/mouse-tracker */ "./src/engine/interaction/mouse-tracker.ts");
 var DEFAULTS = {
     viewSize: new vector_1.default(850, 550),
     textures: [],
@@ -597,6 +598,7 @@ var HPApp = /** @class */ (function () {
         var gameContainer = new pixi_js_1.Container();
         this.app.stage.addChild(gameContainer);
         this.stage = new stage_1.default(options.viewSize, gameContainer, this.hero, options.gravityForce, options.airFrictionCoefficient);
+        mouse_tracker_1.HPMouseTracker.setContainer(gameContainer);
         var uiContainer = new pixi_js_1.Sprite(pixi_js_1.RenderTexture.create(options.viewSize.x, options.viewSize.y));
         this.app.stage.addChild(uiContainer);
         new ui_stage_1.default(uiContainer, options.viewSize, options.uiElements);
@@ -680,7 +682,6 @@ var collision_detector_1 = __webpack_require__(/*! ../physics/collision-detector
 var collision_handler_1 = __webpack_require__(/*! ../physics/collision-handler */ "./src/engine/physics/collision-handler.ts");
 var direction_1 = __webpack_require__(/*! ../physics/direction */ "./src/engine/physics/direction.ts");
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
-var mouse_tracker_1 = __webpack_require__(/*! ../interaction/mouse-tracker */ "./src/engine/interaction/mouse-tracker.ts");
 var HPStage = /** @class */ (function () {
     function HPStage(viewSize, rootContainer, actorToFollow, gravityForce, airFrictionCoefficient) {
         this.viewSize = viewSize;
@@ -690,7 +691,6 @@ var HPStage = /** @class */ (function () {
         this.airFrictionCoefficient = airFrictionCoefficient;
         this.size = vector_1.default.Zero;
         this.actors = [];
-        mouse_tracker_1.HPMouseTracker.setContainer(rootContainer);
     }
     HPStage.prototype.addActor = function (actor) {
         this.actors.push(actor);
@@ -1197,6 +1197,51 @@ exports.default = HPAreaService;
 
 /***/ }),
 
+/***/ "./src/engine/ui/elements/ui-graphic-element.ts":
+/*!******************************************************!*\
+  !*** ./src/engine/ui/elements/ui-graphic-element.ts ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var ui_element_1 = __webpack_require__(/*! ../ui-element */ "./src/engine/ui/ui-element.ts");
+var HPUIGraphicElement = /** @class */ (function (_super) {
+    __extends(HPUIGraphicElement, _super);
+    function HPUIGraphicElement(_options) {
+        var _this = this;
+        var options = Object.assign({ sprite: new pixi_js_1.Graphics() }, _options);
+        _this = _super.call(this, options) || this;
+        return _this;
+    }
+    Object.defineProperty(HPUIGraphicElement.prototype, "sprite", {
+        get: function () { return this._sprite; },
+        enumerable: true,
+        configurable: true
+    });
+    return HPUIGraphicElement;
+}(ui_element_1.default));
+exports.default = HPUIGraphicElement;
+
+
+/***/ }),
+
 /***/ "./src/engine/ui/ui-element.ts":
 /*!*************************************!*\
   !*** ./src/engine/ui/ui-element.ts ***!
@@ -1242,10 +1287,15 @@ var HPUIElement = /** @class */ (function () {
         this.layoutDirection = options.layoutDirection;
         this.margin = options.margin;
         this.children = options.children;
-        this.sprite = options.sprite || new pixi_js_1.Container();
+        this._sprite = options.sprite || new pixi_js_1.Container();
     }
     Object.defineProperty(HPUIElement.prototype, "size", {
         get: function () { return this._size.plus(this.margin.times(2)); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(HPUIElement.prototype, "sprite", {
+        get: function () { return this._sprite; },
         enumerable: true,
         configurable: true
     });
@@ -2907,17 +2957,14 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var ui_element_1 = __webpack_require__(/*! ../../engine/ui/ui-element */ "./src/engine/ui/ui-element.ts");
 var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var ui_graphic_element_1 = __webpack_require__(/*! ../../engine/ui/elements/ui-graphic-element */ "./src/engine/ui/elements/ui-graphic-element.ts");
 var RADIUS = 16;
 var MARGIN_RIGHT = 4;
 var TGAbilityIcon = /** @class */ (function (_super) {
     __extends(TGAbilityIcon, _super);
     function TGAbilityIcon() {
-        return _super.call(this, {
-            sprite: new pixi_js_1.Graphics(),
-        }) || this;
+        return _super.call(this, {}) || this;
     }
     Object.defineProperty(TGAbilityIcon.prototype, "size", {
         get: function () { return new vector_1.default(RADIUS * 2 + MARGIN_RIGHT, RADIUS * 2); },
@@ -2925,19 +2972,14 @@ var TGAbilityIcon = /** @class */ (function (_super) {
         configurable: true
     });
     TGAbilityIcon.prototype.paint = function () {
-        this._sprite.clear();
-        this._sprite.beginFill(0xFFFFFF);
-        this._sprite.lineStyle(2, 0x000000);
-        this._sprite.drawCircle(RADIUS, RADIUS, RADIUS);
-        this._sprite.endFill();
+        this.sprite.clear();
+        this.sprite.beginFill(0xFFFFFF);
+        this.sprite.lineStyle(2, 0x000000);
+        this.sprite.drawCircle(RADIUS, RADIUS, RADIUS);
+        this.sprite.endFill();
     };
-    Object.defineProperty(TGAbilityIcon.prototype, "_sprite", {
-        get: function () { return this.sprite; },
-        enumerable: true,
-        configurable: true
-    });
     return TGAbilityIcon;
-}(ui_element_1.default));
+}(ui_graphic_element_1.default));
 exports.default = TGAbilityIcon;
 
 
@@ -2966,17 +3008,14 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var ui_element_1 = __webpack_require__(/*! ../../engine/ui/ui-element */ "./src/engine/ui/ui-element.ts");
 var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
-var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var ui_graphic_element_1 = __webpack_require__(/*! ../../engine/ui/elements/ui-graphic-element */ "./src/engine/ui/elements/ui-graphic-element.ts");
 var SIZE = new vector_1.default(240, 16);
 var MARGIN_TOP = 4;
 var TGStatusBar = /** @class */ (function (_super) {
     __extends(TGStatusBar, _super);
     function TGStatusBar(color) {
-        var _this = _super.call(this, {
-            sprite: new pixi_js_1.Graphics(),
-        }) || this;
+        var _this = _super.call(this, {}) || this;
         _this.color = color;
         return _this;
     }
@@ -2986,19 +3025,14 @@ var TGStatusBar = /** @class */ (function (_super) {
         configurable: true
     });
     TGStatusBar.prototype.paint = function () {
-        this._sprite.clear();
-        this._sprite.beginFill(this.color);
-        this._sprite.lineStyle(2, 0x000000);
-        this._sprite.drawRect(0, MARGIN_TOP, SIZE.x, SIZE.y);
-        this._sprite.endFill();
+        this.sprite.clear();
+        this.sprite.beginFill(this.color);
+        this.sprite.lineStyle(2, 0x000000);
+        this.sprite.drawRect(0, MARGIN_TOP, SIZE.x, SIZE.y);
+        this.sprite.endFill();
     };
-    Object.defineProperty(TGStatusBar.prototype, "_sprite", {
-        get: function () { return this.sprite; },
-        enumerable: true,
-        configurable: true
-    });
     return TGStatusBar;
-}(ui_element_1.default));
+}(ui_graphic_element_1.default));
 exports.default = TGStatusBar;
 
 

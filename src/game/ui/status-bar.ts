@@ -1,33 +1,26 @@
-import HPUIElement from '../../engine/ui/ui-element';
 import HPVector from '../../engine/physics/vector';
-import { Graphics } from 'pixi.js';
+import HPUIGraphicElement from '../../engine/ui/elements/ui-graphic-element';
 
 const SIZE = new HPVector(240, 16);
 const MARGIN_TOP = 4;
 
-export default class TGStatusBar extends HPUIElement {
+export default class TGStatusBar extends HPUIGraphicElement {
 
   get size() { return SIZE.plus(new HPVector(0, MARGIN_TOP)); }
   
-  constructor(
-    private color: number,
-  ) {
-    super({
-      sprite: new Graphics(),
-    });
+  constructor(private color: number) {
+    super({});
   }
 
   paint() {
-    this._sprite.clear();
+    this.sprite.clear();
 
-    this._sprite.beginFill(this.color);
-    this._sprite.lineStyle(2, 0x000000);
+    this.sprite.beginFill(this.color);
+    this.sprite.lineStyle(2, 0x000000);
 
-    this._sprite.drawRect(0,  MARGIN_TOP, SIZE.x, SIZE.y);
+    this.sprite.drawRect(0,  MARGIN_TOP, SIZE.x, SIZE.y);
 
-    this._sprite.endFill();
+    this.sprite.endFill();
   }
-
-  private get _sprite() { return <Graphics>this.sprite; }
 
 }

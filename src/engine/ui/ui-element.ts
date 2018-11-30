@@ -19,6 +19,15 @@ export enum HPUIElementPosition {
   Absolute,
 }
 
+export interface HPUIElementOptions {
+  position?: HPUIElementPosition,
+  alignment?: HPUIElementAlignment,
+  layoutDirection?: HPUIElementLayoutDirection,
+  margin?: HPVector,
+  children?: Array<HPUIElement>,
+  sprite?: Container,
+}
+
 const DEFAULTS = {
   position: HPUIElementPosition.Static,
   alignment: HPUIElementAlignment.TopLeft,
@@ -30,23 +39,18 @@ const DEFAULTS = {
 export default class HPUIElement implements HPDestroyable {
 
   get size() { return this._size.plus(this.margin.times(2)); }
+  get sprite() { return this._sprite; }
 
   position: HPUIElementPosition;
   alignment: HPUIElementAlignment;
   layoutDirection: HPUIElementLayoutDirection;
   margin: HPVector;
   children: Array<HPUIElement>;
-  sprite: Container;
+
+  protected _sprite: Container;
 
   constructor(
-    _options: {
-      position?: HPUIElementPosition,
-      alignment?: HPUIElementAlignment,
-      layoutDirection?: HPUIElementLayoutDirection,
-      margin?: HPVector,
-      children?: Array<HPUIElement>,
-      sprite?: Container,
-    },
+    _options: HPUIElementOptions,
   ) {
     const options = Object.assign({}, DEFAULTS, _options); 
     this.position = options.position;
@@ -54,7 +58,7 @@ export default class HPUIElement implements HPDestroyable {
     this.layoutDirection = options.layoutDirection;
     this.margin = options.margin;
     this.children = options.children;
-    this.sprite = options.sprite || new Container();
+    this._sprite = options.sprite || new Container();
   }
 
   /** @override */

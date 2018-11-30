@@ -1,31 +1,26 @@
-import HPUIElement from '../../engine/ui/ui-element';
 import HPVector from '../../engine/physics/vector';
-import { Graphics } from 'pixi.js';
+import HPUIGraphicElement from '../../engine/ui/elements/ui-graphic-element';
 
 const RADIUS = 16;
 const MARGIN_RIGHT = 4;
 
-export default class TGAbilityIcon extends HPUIElement {
+export default class TGAbilityIcon extends HPUIGraphicElement {
 
   get size() { return new HPVector(RADIUS * 2 + MARGIN_RIGHT, RADIUS * 2); }
   
   constructor() {
-    super({
-      sprite: new Graphics(),
-    });
+    super({});
   }
 
   paint() {
-    this._sprite.clear();
+    this.sprite.clear();
 
-    this._sprite.beginFill(0xFFFFFF);
-    this._sprite.lineStyle(2, 0x000000);
+    this.sprite.beginFill(0xFFFFFF);
+    this.sprite.lineStyle(2, 0x000000);
 
-    this._sprite.drawCircle(RADIUS, RADIUS, RADIUS);
+    this.sprite.drawCircle(RADIUS, RADIUS, RADIUS);
 
-    this._sprite.endFill();
+    this.sprite.endFill();
   }
-
-  private get _sprite() { return <Graphics>this.sprite; }
 
 }

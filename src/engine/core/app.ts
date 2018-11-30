@@ -7,6 +7,7 @@ import HPActorFactory from "./actor-factory";
 import HPActor from "./actor";
 import HPUIElement from "../ui/ui-element";
 import HPUIStage from "../ui/ui-stage";
+import { HPMouseTracker } from "../interaction/mouse-tracker";
 
 const DEFAULTS = {
   viewSize: new HPVector(850, 550),
@@ -75,6 +76,7 @@ export default class HPApp {
       options.gravityForce,
       options.airFrictionCoefficient,
     );
+    HPMouseTracker.setContainer(gameContainer);
 
     const uiContainer = new Sprite(RenderTexture.create(options.viewSize.x, options.viewSize.y));
     this.app.stage.addChild(uiContainer);
