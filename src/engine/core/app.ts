@@ -1,14 +1,17 @@
-import { Application, loader, settings } from "pixi.js";
+import { Application, loader, settings, Container, Sprite, RenderTexture } from "pixi.js";
 import HPVector from "../physics/vector";
 import HPStage from "./stage";
 import HPAreaService from "../services/area-service";
 import HPAreaData from "../services/data/area-data";
 import HPActorFactory from "./actor-factory";
 import HPActor from "./actor";
+import HPUIElement from "../ui/ui-element";
+import HPUIStage from "../ui/ui-stage";
 
 const DEFAULTS = {
   viewSize: new HPVector(850, 550),
   textures: [],
+  uiElements: [],
   heroStart: HPVector.Zero,
   gravityForce: new HPVector(0, .667),
   airFrictionCoefficient: 0.033,
@@ -32,6 +35,7 @@ export default class HPApp {
       elementSelector: string,
       actorFactory: HPActorFactory,
       textures?: Array<string>,
+      uiElements?: Array<HPUIElement>,
       areaFile: string,
       hero: HPActor,
       heroStart?: HPVector,
@@ -62,12 +66,22 @@ export default class HPApp {
     this.element = document.body.querySelector(options.elementSelector) ||
       (() => { throw new Error(`Can't find element with selector: ${options.elementSelector}`) })();
 
+    const gameContainer = new Container();
+    this.app.stage.addChild(gameContainer);
     this.stage = new HPStage(
       options.viewSize,
-      this.app.stage,
+      gameContainer,
       this.hero,
       options.gravityForce,
       options.airFrictionCoefficient,
+    );
+
+    const uiContainer = new Sprite(RenderTexture.create(options.viewSize.x, options.viewSize.y));
+    this.app.stage.addChild(uiContainer);
+    new HPUIStage(
+      uiContainer,
+      options.viewSize,
+      options.uiElements,
     );
 
     this.addPIXICanvasToScreen();

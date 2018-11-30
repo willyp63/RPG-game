@@ -565,9 +565,11 @@ var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/i
 var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
 var stage_1 = __webpack_require__(/*! ./stage */ "./src/engine/core/stage.ts");
 var area_service_1 = __webpack_require__(/*! ../services/area-service */ "./src/engine/services/area-service.ts");
+var ui_stage_1 = __webpack_require__(/*! ../ui/ui-stage */ "./src/engine/ui/ui-stage.ts");
 var DEFAULTS = {
     viewSize: new vector_1.default(850, 550),
     textures: [],
+    uiElements: [],
     heroStart: vector_1.default.Zero,
     gravityForce: new vector_1.default(0, .667),
     airFrictionCoefficient: 0.033,
@@ -592,7 +594,12 @@ var HPApp = /** @class */ (function () {
         });
         this.element = document.body.querySelector(options.elementSelector) ||
             (function () { throw new Error("Can't find element with selector: " + options.elementSelector); })();
-        this.stage = new stage_1.default(options.viewSize, this.app.stage, this.hero, options.gravityForce, options.airFrictionCoefficient);
+        var gameContainer = new pixi_js_1.Container();
+        this.app.stage.addChild(gameContainer);
+        this.stage = new stage_1.default(options.viewSize, gameContainer, this.hero, options.gravityForce, options.airFrictionCoefficient);
+        var uiContainer = new pixi_js_1.Sprite(pixi_js_1.RenderTexture.create(options.viewSize.x, options.viewSize.y));
+        this.app.stage.addChild(uiContainer);
+        new ui_stage_1.default(uiContainer, options.viewSize, options.uiElements);
         this.addPIXICanvasToScreen();
     }
     HPApp.prototype.start = function () {
@@ -1186,6 +1193,155 @@ var HPAreaService = /** @class */ (function () {
     return HPAreaService;
 }());
 exports.default = HPAreaService;
+
+
+/***/ }),
+
+/***/ "./src/engine/ui/ui-element.ts":
+/*!*************************************!*\
+  !*** ./src/engine/ui/ui-element.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var HPUIElementAlignment;
+(function (HPUIElementAlignment) {
+    HPUIElementAlignment[HPUIElementAlignment["TopLeft"] = 0] = "TopLeft";
+    HPUIElementAlignment[HPUIElementAlignment["TopRight"] = 1] = "TopRight";
+    HPUIElementAlignment[HPUIElementAlignment["BottomLeft"] = 2] = "BottomLeft";
+    HPUIElementAlignment[HPUIElementAlignment["BottomRight"] = 3] = "BottomRight";
+})(HPUIElementAlignment = exports.HPUIElementAlignment || (exports.HPUIElementAlignment = {}));
+var HPUIElementLayoutDirection;
+(function (HPUIElementLayoutDirection) {
+    HPUIElementLayoutDirection[HPUIElementLayoutDirection["Horz"] = 0] = "Horz";
+    HPUIElementLayoutDirection[HPUIElementLayoutDirection["Vert"] = 1] = "Vert";
+})(HPUIElementLayoutDirection = exports.HPUIElementLayoutDirection || (exports.HPUIElementLayoutDirection = {}));
+var HPUIElementPosition;
+(function (HPUIElementPosition) {
+    HPUIElementPosition[HPUIElementPosition["Static"] = 0] = "Static";
+    HPUIElementPosition[HPUIElementPosition["Absolute"] = 1] = "Absolute";
+})(HPUIElementPosition = exports.HPUIElementPosition || (exports.HPUIElementPosition = {}));
+var DEFAULTS = {
+    position: HPUIElementPosition.Static,
+    alignment: HPUIElementAlignment.TopLeft,
+    layoutDirection: HPUIElementLayoutDirection.Horz,
+    margin: vector_1.default.Zero,
+    children: [],
+};
+var HPUIElement = /** @class */ (function () {
+    function HPUIElement(_options) {
+        this._size = vector_1.default.Zero;
+        var options = Object.assign({}, DEFAULTS, _options);
+        this.position = options.position;
+        this.alignment = options.alignment;
+        this.layoutDirection = options.layoutDirection;
+        this.margin = options.margin;
+        this.children = options.children;
+        this.sprite = options.sprite || new pixi_js_1.Container();
+    }
+    Object.defineProperty(HPUIElement.prototype, "size", {
+        get: function () { return this._size.plus(this.margin.times(2)); },
+        enumerable: true,
+        configurable: true
+    });
+    /** @override */
+    HPUIElement.prototype.paint = function () { };
+    HPUIElement.prototype.destroy = function () { };
+    HPUIElement.prototype.init = function (position, parentSize) {
+        this.addChildren();
+        this.positionSelf(position, parentSize);
+        this.paint();
+    };
+    HPUIElement.prototype.addChildren = function () {
+        var _this = this;
+        if (!this.children.length)
+            return;
+        var childOffset = this.margin;
+        this.children.forEach(function (child) {
+            child.alignment = _this.alignment;
+            child.init(childOffset, _this._size);
+            _this.sprite.addChild(child.sprite);
+            if (_this.layoutDirection === HPUIElementLayoutDirection.Horz) {
+                _this._size = _this._size.newX(_this._size.x + child.size.x);
+                _this._size = _this._size.newY(Math.max(_this._size.y, child.size.y));
+                childOffset = childOffset.newX(childOffset.x + child.size.x);
+            }
+            else {
+                _this._size = _this._size.newX(Math.max(_this._size.x, child.size.x));
+                _this._size = _this._size.newY(_this._size.y + child.size.y);
+                childOffset = childOffset.newY(childOffset.y + child.size.y);
+            }
+        });
+    };
+    HPUIElement.prototype.positionSelf = function (position, parentSize) {
+        var spritePosition = position.plus(this.getAlignmentOffset(parentSize));
+        this.sprite.x = spritePosition.x;
+        this.sprite.y = spritePosition.y;
+    };
+    HPUIElement.prototype.getAlignmentOffset = function (parentSize) {
+        if (this.position !== HPUIElementPosition.Absolute)
+            return vector_1.default.Zero;
+        if (this.alignment === HPUIElementAlignment.TopRight) {
+            return new vector_1.default(parentSize.x - this.size.x, 0);
+        }
+        else if (this.alignment === HPUIElementAlignment.BottomLeft) {
+            return new vector_1.default(0, parentSize.y - this.size.y);
+        }
+        else if (this.alignment === HPUIElementAlignment.BottomRight) {
+            return new vector_1.default(parentSize.x - this.size.x, parentSize.y - this.size.y);
+        }
+        return vector_1.default.Zero;
+    };
+    return HPUIElement;
+}());
+exports.default = HPUIElement;
+
+
+/***/ }),
+
+/***/ "./src/engine/ui/ui-stage.ts":
+/*!***********************************!*\
+  !*** ./src/engine/ui/ui-stage.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_element_1 = __webpack_require__(/*! ./ui-element */ "./src/engine/ui/ui-element.ts");
+var vector_1 = __webpack_require__(/*! ../physics/vector */ "./src/engine/physics/vector.ts");
+var HPUIStage = /** @class */ (function () {
+    function HPUIStage(rootContainer, size, elements) {
+        var _this = this;
+        this.rootContainer = rootContainer;
+        this.size = size;
+        this.elements = elements;
+        ([ui_element_1.HPUIElementAlignment.TopLeft, ui_element_1.HPUIElementAlignment.TopRight]);
+        elements.forEach(function (element) { return _this.addElement(element); });
+    }
+    HPUIStage.prototype.addElement = function (element) {
+        this.elements.push(element);
+        element.init(vector_1.default.Zero, this.size);
+        this.rootContainer.addChild(element.sprite);
+    };
+    HPUIStage.prototype.removeElementAt = function (i) {
+        this.rootContainer.removeChild(this.elements[i].sprite);
+        this.elements[i].destroy();
+        this.elements.splice(i, 1);
+    };
+    HPUIStage.prototype.clearElements = function () {
+        while (this.elements[0])
+            this.removeElementAt(0);
+    };
+    return HPUIStage;
+}());
+exports.default = HPUIStage;
 
 
 /***/ }),
@@ -2662,6 +2818,9 @@ var weapon_1 = __webpack_require__(/*! ./actors/hero/weapon */ "./src/game/actor
 var wizard_1 = __webpack_require__(/*! ./actors/hero/classes/wizard/wizard */ "./src/game/actors/hero/classes/wizard/wizard.ts");
 var warrior_1 = __webpack_require__(/*! ./actors/hero/classes/warrior/warrior */ "./src/game/actors/hero/classes/warrior/warrior.ts");
 var rouge_1 = __webpack_require__(/*! ./actors/hero/classes/rouge/rouge */ "./src/game/actors/hero/classes/rouge/rouge.ts");
+var ability_icon_1 = __webpack_require__(/*! ./ui/ability-icon */ "./src/game/ui/ability-icon.ts");
+var status_bar_1 = __webpack_require__(/*! ./ui/status-bar */ "./src/game/ui/status-bar.ts");
+var ui_element_1 = __webpack_require__(/*! ../engine/ui/ui-element */ "./src/engine/ui/ui-element.ts");
 var urlParams = new URLSearchParams(window.location.search);
 var classId = urlParams.get('class') || warrior_1.default.id;
 var heroFactory = (_a = {},
@@ -2676,15 +2835,159 @@ var textures = [
     hero_1.default.textureFile,
     weapon_1.default.textureFile,
 ];
+var uiElements = [
+    new ui_element_1.default({
+        position: ui_element_1.HPUIElementPosition.Absolute,
+        alignment: ui_element_1.HPUIElementAlignment.BottomLeft,
+        layoutDirection: ui_element_1.HPUIElementLayoutDirection.Vert,
+        margin: new vector_1.default(6, 0),
+        children: [
+            new status_bar_1.default(0xFF0000),
+            new status_bar_1.default(0x00FF00),
+            new ui_element_1.default({
+                margin: new vector_1.default(0, 6),
+                children: [
+                    new ability_icon_1.default(),
+                    new ability_icon_1.default(),
+                    new ability_icon_1.default(),
+                    new ability_icon_1.default(),
+                    new ability_icon_1.default(),
+                    new ability_icon_1.default(),
+                ],
+            }),
+        ],
+    }),
+];
 var app = new app_1.default({
     elementSelector: '#game-container',
     actorFactory: actor_factory_1.default,
     areaFile: 'public/areas/test-1.json',
     textures: textures,
+    uiElements: uiElements,
     hero: hero,
     heroStart: new vector_1.default(200, 700),
 });
 app.start();
+
+
+/***/ }),
+
+/***/ "./src/game/ui/ability-icon.ts":
+/*!*************************************!*\
+  !*** ./src/game/ui/ability-icon.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_element_1 = __webpack_require__(/*! ../../engine/ui/ui-element */ "./src/engine/ui/ui-element.ts");
+var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var RADIUS = 16;
+var MARGIN_RIGHT = 4;
+var TGAbilityIcon = /** @class */ (function (_super) {
+    __extends(TGAbilityIcon, _super);
+    function TGAbilityIcon() {
+        return _super.call(this, {
+            sprite: new pixi_js_1.Graphics(),
+        }) || this;
+    }
+    Object.defineProperty(TGAbilityIcon.prototype, "size", {
+        get: function () { return new vector_1.default(RADIUS * 2 + MARGIN_RIGHT, RADIUS * 2); },
+        enumerable: true,
+        configurable: true
+    });
+    TGAbilityIcon.prototype.paint = function () {
+        this._sprite.clear();
+        this._sprite.beginFill(0xFFFFFF);
+        this._sprite.lineStyle(2, 0x000000);
+        this._sprite.drawCircle(RADIUS, RADIUS, RADIUS);
+        this._sprite.endFill();
+    };
+    Object.defineProperty(TGAbilityIcon.prototype, "_sprite", {
+        get: function () { return this.sprite; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGAbilityIcon;
+}(ui_element_1.default));
+exports.default = TGAbilityIcon;
+
+
+/***/ }),
+
+/***/ "./src/game/ui/status-bar.ts":
+/*!***********************************!*\
+  !*** ./src/game/ui/status-bar.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var ui_element_1 = __webpack_require__(/*! ../../engine/ui/ui-element */ "./src/engine/ui/ui-element.ts");
+var vector_1 = __webpack_require__(/*! ../../engine/physics/vector */ "./src/engine/physics/vector.ts");
+var pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.js");
+var SIZE = new vector_1.default(240, 16);
+var MARGIN_TOP = 4;
+var TGStatusBar = /** @class */ (function (_super) {
+    __extends(TGStatusBar, _super);
+    function TGStatusBar(color) {
+        var _this = _super.call(this, {
+            sprite: new pixi_js_1.Graphics(),
+        }) || this;
+        _this.color = color;
+        return _this;
+    }
+    Object.defineProperty(TGStatusBar.prototype, "size", {
+        get: function () { return SIZE.plus(new vector_1.default(0, MARGIN_TOP)); },
+        enumerable: true,
+        configurable: true
+    });
+    TGStatusBar.prototype.paint = function () {
+        this._sprite.clear();
+        this._sprite.beginFill(this.color);
+        this._sprite.lineStyle(2, 0x000000);
+        this._sprite.drawRect(0, MARGIN_TOP, SIZE.x, SIZE.y);
+        this._sprite.endFill();
+    };
+    Object.defineProperty(TGStatusBar.prototype, "_sprite", {
+        get: function () { return this.sprite; },
+        enumerable: true,
+        configurable: true
+    });
+    return TGStatusBar;
+}(ui_element_1.default));
+exports.default = TGStatusBar;
 
 
 /***/ })
