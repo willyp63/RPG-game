@@ -2458,8 +2458,9 @@ var TGHero = /** @class */ (function (_super) {
     function TGHero() {
         var _this = _super.call(this, vector_1.default.Zero, bones_1.default, resting_1.default) || this;
         _this.destroyer = new destroyable_1.default();
-        _this.isLeftDown = false;
-        _this.isRightDown = false;
+        _this.isLeftKeyDown = false;
+        _this.isRightKeyDown = false;
+        _this.isUpKeyDown = false;
         _this.canRun = true;
         return _this;
     }
@@ -2502,6 +2503,11 @@ var TGHero = /** @class */ (function (_super) {
         this.initSprite();
         this.addKeyListeners();
     };
+    TGHero.prototype.onTick = function () {
+        _super.prototype.onTick.call(this);
+        if (this.isOnGround && this.isUpKeyDown)
+            this.jump();
+    };
     TGHero.prototype.destroy = function () {
         this.destroyer.destroy();
     };
@@ -2526,8 +2532,8 @@ var TGHero = /** @class */ (function (_super) {
     TGHero.prototype.allowRunning = function () {
         this.canRun = true;
         this.isFacingLeft
-            ? this.isLeftDown ? this.runLeft() : this.stopRunning()
-            : this.isRightDown ? this.runRight() : this.stopRunning();
+            ? this.isLeftKeyDown ? this.runLeft() : this.stopRunning()
+            : this.isRightKeyDown ? this.runRight() : this.stopRunning();
     };
     Object.defineProperty(TGHero, "headTexture", {
         get: function () { return texture_helper_1.default.get(TGHero.textureFile, 'head.png'); },
@@ -2573,10 +2579,10 @@ var TGHero = /** @class */ (function (_super) {
     TGHero.prototype.addKeyListeners = function () {
         var _this = this;
         // move
-        this.destroyer.add(new key_listener_1.default(65 /* a */, function () { return _this.onLeftDown(); }, function () { return _this.onLeftUp(); }));
-        this.destroyer.add(new key_listener_1.default(68 /* d */, function () { return _this.onRightDown(); }, function () { return _this.onRightUp(); }));
+        this.destroyer.add(new key_listener_1.default(65 /* a */, function () { return _this.onLeftKeyDown(); }, function () { return _this.onLeftKeyUp(); }));
+        this.destroyer.add(new key_listener_1.default(68 /* d */, function () { return _this.onRightKeyDown(); }, function () { return _this.onRightKeyUp(); }));
         // jump
-        this.destroyer.add(new key_listener_1.default(87 /* w */, function () { return _this.jump(); }));
+        this.destroyer.add(new key_listener_1.default(87 /* w */, function () { return _this.onUpKeyDown(); }, function () { return _this.onUpKeyUp(); }));
         // abilities
         this.destroyer.add(new key_listener_1.default(81 /* q */, function () { return _this.performAbility(0); }, function () { return _this.endAbility(0); }));
         this.destroyer.add(new key_listener_1.default(69 /* e */, function () { return _this.performAbility(1); }, function () { return _this.endAbility(1); }));
@@ -2584,21 +2590,27 @@ var TGHero = /** @class */ (function (_super) {
         this.destroyer.add(new key_listener_1.default(70 /* f */, function () { return _this.performAbility(3); }, function () { return _this.endAbility(3); }));
         this.destroyer.add(new key_listener_1.default(67 /* c */, function () { return _this.performAbility(4); }, function () { return _this.endAbility(4); }));
     };
-    TGHero.prototype.onLeftDown = function () {
-        this.isLeftDown = true;
+    TGHero.prototype.onLeftKeyDown = function () {
+        this.isLeftKeyDown = true;
         this.runLeft();
     };
-    TGHero.prototype.onLeftUp = function () {
-        this.isLeftDown = false;
-        this.isRightDown ? this.runRight() : this.stopRunning();
+    TGHero.prototype.onLeftKeyUp = function () {
+        this.isLeftKeyDown = false;
+        this.isRightKeyDown ? this.runRight() : this.stopRunning();
     };
-    TGHero.prototype.onRightDown = function () {
-        this.isRightDown = true;
+    TGHero.prototype.onRightKeyDown = function () {
+        this.isRightKeyDown = true;
         this.runRight();
     };
-    TGHero.prototype.onRightUp = function () {
-        this.isRightDown = false;
-        this.isLeftDown ? this.runLeft() : this.stopRunning();
+    TGHero.prototype.onRightKeyUp = function () {
+        this.isRightKeyDown = false;
+        this.isLeftKeyDown ? this.runLeft() : this.stopRunning();
+    };
+    TGHero.prototype.onUpKeyDown = function () {
+        this.isUpKeyDown = true;
+    };
+    TGHero.prototype.onUpKeyUp = function () {
+        this.isUpKeyDown = false;
     };
     TGHero.prototype.runLeft = function () {
         if (!this.canRun)

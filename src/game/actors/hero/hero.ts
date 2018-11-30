@@ -58,6 +58,12 @@ export default abstract class TGHero extends HPSkeletalActor {
     this.addKeyListeners();
   }
 
+  onTick() {
+    super.onTick();
+
+    if (this.isOnGround && this.isUpKeyDown) this.jump();
+  }
+
   destroy() {
     this.destroyer.destroy();
   }
@@ -78,8 +84,8 @@ export default abstract class TGHero extends HPSkeletalActor {
   allowRunning() {
     this.canRun = true;
     this.isFacingLeft
-      ? this.isLeftDown ? this.runLeft() : this.stopRunning()
-      : this.isRightDown ? this.runRight() : this.stopRunning();
+      ? this.isLeftKeyDown ? this.runLeft() : this.stopRunning()
+      : this.isRightKeyDown ? this.runRight() : this.stopRunning();
   }
 
   private static get headTexture() { return HPTextureHelper.get(TGHero.textureFile, 'head.png'); }
@@ -102,8 +108,9 @@ export default abstract class TGHero extends HPSkeletalActor {
   }
 
   private destroyer = new HPDestroyer();
-  private isLeftDown = false;
-  private isRightDown = false;
+  private isLeftKeyDown = false;
+  private isRightKeyDown = false;
+  private isUpKeyDown = false;
   private canRun = true;
 
   private initSprite() {
@@ -116,17 +123,18 @@ export default abstract class TGHero extends HPSkeletalActor {
   private addKeyListeners() {
     // move
     this.destroyer.add(new HPKeyListener(65/* a */,
-      () => this.onLeftDown(),
-      () => this.onLeftUp(),
+      () => this.onLeftKeyDown(),
+      () => this.onLeftKeyUp(),
     ));
     this.destroyer.add(new HPKeyListener(68/* d */,
-      () => this.onRightDown(),
-      () => this.onRightUp(),
+      () => this.onRightKeyDown(),
+      () => this.onRightKeyUp(),
     ));
 
     // jump
     this.destroyer.add(new HPKeyListener(87/* w */,
-      () => this.jump(),
+      () => this.onUpKeyDown(),
+      () => this.onUpKeyUp(),
     ));
 
     // abilities
@@ -137,24 +145,32 @@ export default abstract class TGHero extends HPSkeletalActor {
     this.destroyer.add(new HPKeyListener(67/* c */, () => this.performAbility(4), () => this.endAbility(4)));
   }
 
-  private onLeftDown() {
-    this.isLeftDown = true;
+  private onLeftKeyDown() {
+    this.isLeftKeyDown = true;
     this.runLeft();
   }
 
-  private onLeftUp() {
-    this.isLeftDown = false;
-    this.isRightDown ? this.runRight() : this.stopRunning();
+  private onLeftKeyUp() {
+    this.isLeftKeyDown = false;
+    this.isRightKeyDown ? this.runRight() : this.stopRunning();
   }
 
-  private onRightDown() {
-    this.isRightDown = true;
+  private onRightKeyDown() {
+    this.isRightKeyDown = true;
     this.runRight();
   }
 
-  private onRightUp() {
-    this.isRightDown = false;
-    this.isLeftDown ? this.runLeft() : this.stopRunning();
+  private onRightKeyUp() {
+    this.isRightKeyDown = false;
+    this.isLeftKeyDown ? this.runLeft() : this.stopRunning();
+  }
+
+  private onUpKeyDown() {
+    this.isUpKeyDown = true;
+  }
+
+  private onUpKeyUp() {
+    this.isUpKeyDown = false;
   }
 
   private runLeft() {
